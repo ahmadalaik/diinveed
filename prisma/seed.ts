@@ -57,6 +57,9 @@ const SEED_USERS = [
 ];
 
 async function main() {
+  await prisma.session.deleteMany();
+  await prisma.user.deleteMany();
+
   const hash = await bcrypt.hash(PASSWORD, 10);
 
   for (const u of SEED_USERS) {
