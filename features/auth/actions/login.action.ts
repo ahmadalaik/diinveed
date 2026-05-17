@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { loginSchema, LoginType } from "@/features/auth/schemas/login.schema";
 import { verifyPassword } from "@/features/auth/utils/password";
 import { createSession } from "@/features/auth/utils/session";
-import { homeRouteForRole } from "@/features/auth/types/role.type";
+import { homeRouteForRole } from "@/types/role.type";
 
 type FieldErrors = Partial<Record<keyof LoginType | "_form", string[]>>;
 
