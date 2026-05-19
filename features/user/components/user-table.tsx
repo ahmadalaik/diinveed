@@ -80,7 +80,7 @@ export function UserTable({ users, currentUser }: UserTableProps) {
                       </Button>
                       {canManage && (
                         <>
-                          <EditUserDialog user={user} />
+                          <EditUserDialog user={user} actorRole={currentUser.role} />
                           <DeleteUserDialog
                             userId={user.id}
                             userName={user.name}

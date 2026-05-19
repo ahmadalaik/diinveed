@@ -10,9 +10,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { UserRole } from "@/generated/prisma/enums";
 import { UserForm } from "./user-form";
 
-export function CreateUserDialog() {
+export function CreateUserDialog({ actorRole }: { actorRole: UserRole }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -35,6 +36,7 @@ export function CreateUserDialog() {
           </DialogHeader>
           <UserForm
             mode="create"
+            actorRole={actorRole}
             onSuccess={handleSuccess}
             onClose={() => setOpen(false)}
           />

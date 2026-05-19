@@ -13,10 +13,24 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { createUserSchema, type CreateUserType } from "../schemas/create-user.schema";
-import { updateUserSchema, type UpdateUserType } from "../schemas/update-user.schema";
+import {
+  createUserSchema,
+  type CreateUserType,
+} from "../schemas/create-user.schema";
+import {
+  updateUserSchema,
+  type UpdateUserType,
+} from "../schemas/update-user.schema";
 import { createUserAction } from "../actions/create-user.action";
 import { updateUserAction } from "../actions/update-user.action";
+import { UserRole } from "@/types/role.type";
+import { getAllowedRoles } from "@/lib/permissions";
+
+const ALL_ROLES: { value: UserRole; label: string }[] = [
+  { value: "user", label: "User" },
+  { value: "admin", label: "Admin" },
+  { value: "super_admin", label: "Super Admin" },
+];
 
 type CreateMode = {
   mode: "create";
@@ -24,6 +38,7 @@ type CreateMode = {
   defaultValues?: undefined;
   onSuccess?: () => void;
   onClose?: () => void;
+  actorRole: UserRole;
 };
 
 type EditMode = {
@@ -32,6 +47,7 @@ type EditMode = {
   defaultValues: UpdateUserType;
   onSuccess?: () => void;
   onClose?: () => void;
+  actorRole: UserRole;
 };
 
 type UserFormProps = CreateMode | EditMode;
@@ -43,6 +59,7 @@ export function UserForm(props: UserFormProps) {
     return (
       <CreateUserForm
         router={router}
+        actorRole={props.actorRole}
         onSuccess={props.onSuccess}
         onClose={props.onClose}
       />
@@ -53,6 +70,7 @@ export function UserForm(props: UserFormProps) {
     <EditUserForm
       userId={props.userId}
       defaultValues={props.defaultValues}
+      actorRole={props.actorRole}
       router={router}
       onSuccess={props.onSuccess}
       onClose={props.onClose}
@@ -64,11 +82,15 @@ function CreateUserForm({
   router,
   onSuccess,
   onClose,
+  actorRole,
 }: {
   router: ReturnType<typeof useRouter>;
   onSuccess?: () => void;
   onClose?: () => void;
+  actorRole: UserRole;
 }) {
+  const allowedRoles = getAllowedRoles(actorRole);
+
   const form = useForm<CreateUserType>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
@@ -76,7 +98,7 @@ function CreateUserForm({
       username: "",
       email: "",
       password: "",
-      role: "user",
+      role: (allowedRoles.includes("user") ? "user" : allowedRoles[0]) || "user",
       phone: "",
     },
   });
@@ -123,9 +145,7 @@ function CreateUserForm({
                 placeholder="John Doe"
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -141,9 +161,7 @@ function CreateUserForm({
                 placeholder="johndoe"
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -160,9 +178,7 @@ function CreateUserForm({
                 placeholder="john@example.com"
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -179,9 +195,7 @@ function CreateUserForm({
                 placeholder="Min. 8 characters"
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -198,9 +212,7 @@ function CreateUserForm({
                 placeholder="+62..."
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -216,13 +228,13 @@ function CreateUserForm({
                 disabled={form.formState.isSubmitting}
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-                <option value="super_admin">Super Admin</option>
+                {ALL_ROLES.filter((r) => allowedRoles.includes(r.value)).map((role) => (
+                  <option key={role.value} value={role.value}>
+                    {role.label}
+                  </option>
+                ))}
               </select>
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -258,13 +270,17 @@ function EditUserForm({
   router,
   onSuccess,
   onClose,
+  actorRole,
 }: {
   userId: string;
   defaultValues: UpdateUserType;
   router: ReturnType<typeof useRouter>;
   onSuccess?: () => void;
   onClose?: () => void;
+  actorRole: UserRole;
 }) {
+  const allowedRoles = getAllowedRoles(actorRole);
+
   const form = useForm<UpdateUserType>({
     resolver: zodResolver(updateUserSchema),
     defaultValues,
@@ -312,9 +328,7 @@ function EditUserForm({
                 id="name"
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -329,9 +343,7 @@ function EditUserForm({
                 id="username"
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -347,9 +359,7 @@ function EditUserForm({
                 type="email"
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -365,9 +375,7 @@ function EditUserForm({
                 type="tel"
                 disabled={form.formState.isSubmitting}
               />
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -383,13 +391,13 @@ function EditUserForm({
                 disabled={form.formState.isSubmitting}
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-                <option value="super_admin">Super Admin</option>
+                {ALL_ROLES.filter((r) => allowedRoles.includes(r.value) || r.value === defaultValues.role).map((role) => (
+                  <option key={role.value} value={role.value}>
+                    {role.label}
+                  </option>
+                ))}
               </select>
-              {fieldState.invalid && (
-                <FieldError errors={[fieldState.error]} />
-              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
         />
@@ -399,7 +407,9 @@ function EditUserForm({
         <Button
           type="button"
           variant="outline"
-          onClick={() => (onClose ? onClose() : router.push(`/admin/users/${userId}`))}
+          onClick={() =>
+            onClose ? onClose() : router.push(`/admin/users/${userId}`)
+          }
           disabled={form.formState.isSubmitting}
         >
           Cancel

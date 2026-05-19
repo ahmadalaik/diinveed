@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/dialog";
 import { UserForm } from "./user-form";
 import type { UserListItem } from "../types/user.type";
+import type { UserRole } from "@/generated/prisma/enums";
 
 interface EditUserDialogProps {
   user: UserListItem;
+  actorRole: UserRole;
 }
 
-export function EditUserDialog({ user }: EditUserDialogProps) {
+export function EditUserDialog({ user, actorRole }: EditUserDialogProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -50,6 +52,7 @@ export function EditUserDialog({ user }: EditUserDialogProps) {
             mode="edit"
             userId={user.id}
             defaultValues={defaultValues}
+            actorRole={actorRole}
             onSuccess={handleSuccess}
             onClose={() => setOpen(false)}
           />

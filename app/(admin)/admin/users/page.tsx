@@ -32,7 +32,7 @@ export default async function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Users</h1>
-        <CreateUserDialog />
+        <CreateUserDialog actorRole={actor.role} />
       </div>
       <UserTable users={users as UserListItem[]} currentUser={actor} />
     </div>
