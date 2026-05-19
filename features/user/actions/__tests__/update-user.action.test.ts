@@ -31,6 +31,7 @@ const validInput = {
   name: "Updated Name",
   username: "updateduser",
   email: "updated@example.com",
+  role: "user" as const,
 };
 
 beforeEach(() => {
