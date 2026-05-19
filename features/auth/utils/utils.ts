@@ -1,6 +1,5 @@
 import crypto from "crypto";
-
-const SESSION_COOKIE = "diinveed_session";
+import { SESSION_COOKIE } from "./constants";
 
 function sha256(input: string) {
   return crypto.createHash("sha256").update(input).digest("hex");
