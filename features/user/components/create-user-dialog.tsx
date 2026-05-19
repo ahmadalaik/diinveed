@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { UserForm } from "./user-form";
 
-export function UserFormDialog() {
+export function CreateUserDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
