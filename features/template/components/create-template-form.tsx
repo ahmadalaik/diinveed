@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import {
-  createTemplateSchema,
-  CreateTemplateType,
+  createTemplateFormSchema,
+  CreateTemplateFormType,
+  CreateTemplateActionType,
 } from "../schemas/create-template";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -25,35 +26,24 @@ import {
   UploadedImage,
 } from "../hooks/use-cloudinary-upload";
 import Image from "next/image";
+import Link from "next/link";
 
-const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-const MAX_SIZE_BYTES = 5 * 1024 * 1024;
-
-interface CreateTemplateFormProps {
-  onSuccess: () => void;
-  onClose: () => void;
-}
-
-export function CreateTemplateForm({
-  onSuccess,
-  onClose,
-}: CreateTemplateFormProps) {
+export function CreateTemplateForm() {
   const router = useRouter();
   const { upload, remove, isUploading, uploadProgress } = useCloudinaryUpload();
 
   const uploadedImageRef = useRef<UploadedImage | null>(null);
   const submittedRef = useRef(false);
-  const [thumbnailError, setThumbnailError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const form = useForm<CreateTemplateType>({
-    resolver: zodResolver(createTemplateSchema),
+  const form = useForm<CreateTemplateFormType>({
+    resolver: zodResolver(createTemplateFormSchema),
     defaultValues: {
       name: "",
       category: "",
       description: "",
       status: "draft",
-      thumbnailUrl: "",
+      thumbnail: undefined,
     },
   });
 
@@ -68,17 +58,10 @@ export function CreateTemplateForm({
   const handleFileChange = async (file: File | undefined) => {
     if (!file) return;
 
-    setThumbnailError(null);
-
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      setThumbnailError(
-        "Hanya format .jpg, .jpeg, .png dan .webp yang diperbolehkan",
-      );
-      return;
-    }
-
-    if (file.size > MAX_SIZE_BYTES) {
-      setThumbnailError("Ukuran maksimal thumbnail adalah 5MB");
+    const validationResult =
+      createTemplateFormSchema.shape.thumbnail.safeParse(file);
+    if (!validationResult.success) {
+      setPreview(null);
       return;
     }
 
@@ -90,15 +73,30 @@ export function CreateTemplateForm({
     try {
       const uploaded = await upload(file);
       uploadedImageRef.current = uploaded;
-      form.setValue("thumbnailUrl", uploaded.url, { shouldValidate: true });
       setPreview(uploaded.url);
     } catch {
       toast.error("Gagal mengupload thumbnail, coba lagi.");
     }
   };
 
-  const onSubmit = async (data: CreateTemplateType) => {
-    const result = await createTemplateAction(data);
+  const onSubmit = async (data: CreateTemplateFormType) => {
+    if (!uploadedImageRef.current) {
+      form.setError("thumbnail", {
+        type: "manual",
+        message: "Silahkan tunggu upload thumbnail selesai.",
+      });
+      return;
+    }
+
+    const actionData: CreateTemplateActionType = {
+      name: data.name,
+      category: data.category,
+      description: data.description,
+      status: data.status,
+      thumbnailUrl: uploadedImageRef.current.url,
+    };
+
+    const result = await createTemplateAction(actionData);
 
     if (result.errors) {
       if (result.errors._form) {
@@ -106,9 +104,11 @@ export function CreateTemplateForm({
       }
       Object.entries(result.errors).forEach(([field, messages]) => {
         if (field !== "_form" && messages) {
-          form.setError(field as keyof CreateTemplateType, {
-            message: messages[0],
-          });
+          const formField =
+            field === "thumbnailUrl"
+              ? "thumbnail"
+              : (field as keyof CreateTemplateFormType);
+          form.setError(formField, { message: messages[0] });
         }
       });
       return;
@@ -116,7 +116,7 @@ export function CreateTemplateForm({
 
     submittedRef.current = true;
     toast.success("Template berhasil dibuat.");
-    onSuccess();
+    router.push("/admin/templates");
   };
 
   const handleFormSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -194,56 +194,57 @@ export function CreateTemplateForm({
             </Field>
           )}
         />
-
-        <Field
-          data-invalid={
-            !!thumbnailError || !!form.formState.errors.thumbnailUrl
-          }
-        >
-          <FieldLabel htmlFor="thumbnail">Thumbnail</FieldLabel>
-          <Input
-            id="thumbnail"
-            type="file"
-            accept=".jpg,.jpeg,.png,.webp"
-            disabled={form.formState.isSubmitting || isUploading}
-            onChange={(e) => handleFileChange(e.target.files?.[0])}
-          />
-          {isUploading && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              Uploading... {uploadProgress}%
-            </div>
-          )}
-          {preview && !isUploading && (
-            <div className="relative mt-2 aspect-square max-h-24">
-              <Image
-                fill
-                sizes="(max-width: 768px) 50vw, 25vw"
-                src={preview}
-                alt="Thumbnail preview"
-                className="h-24 w-auto rounded-md border object-cover"
+        <Controller
+          control={form.control}
+          name="thumbnail"
+          render={({ field: { onChange, ...field }, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="thumbnail">Thumbnail</FieldLabel>
+              <Input
+                {...field}
+                value=""
+                id="thumbnail"
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp"
+                disabled={form.formState.isSubmitting || isUploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  onChange(file || null);
+                  handleFileChange(file);
+                  form.trigger("thumbnail");
+                }}
               />
-            </div>
+              {isUploading && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Uploading... {uploadProgress}%
+                </div>
+              )}
+              {preview && !isUploading && (
+                <div className="relative mt-2 aspect-square max-h-24">
+                  <Image
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    src={preview}
+                    alt="Thumbnail preview"
+                    className="h-24 w-auto rounded-md border object-cover"
+                  />
+                </div>
+              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
           )}
-          {thumbnailError && (
-            <p className="text-sm text-destructive">{thumbnailError}</p>
-          )}
-          {form.formState.errors.thumbnailUrl && !thumbnailError && (
-            <p className="text-sm text-destructive">
-              {form.formState.errors.thumbnailUrl.message}
-            </p>
-          )}
-        </Field>
+        />
       </FieldGroup>
 
       <div className="flex gap-3">
         <Button
+          asChild
           type="button"
           variant="outline"
-          onClick={onClose}
           disabled={form.formState.isSubmitting || isUploading}
         >
-          Cancel
+          <Link href="/admin/templates">Cancel</Link>
         </Button>
         <Button
           type="submit"
