@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
-import { generateToken, SESSION_COOKIE, sha256 } from "./utils";
+import { generateToken, sha256 } from "./utils";
+import { SESSION_COOKIE } from "./constants";
 
 export async function createSession(userId: string) {
   const token = generateToken();
