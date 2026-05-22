@@ -1,4 +1,4 @@
-import { BarChart3, LucideIcon, Settings, Users } from "lucide-react";
+import { BarChart3, LucideIcon, Palette, Settings, Users } from "lucide-react";
 
 export type NavItem = {
   label?: string;
@@ -12,14 +12,15 @@ export type NavItem = {
 
 export const navData: NavItem[] = [
   // Dashboards Section
-  { label: "General", isSection: true },
+  { label: "Umum", isSection: true },
   { title: "Dashboard", icon: BarChart3, href: "/admin/dashboard" },
   { title: "Users", icon: Users, href: "/admin/users" },
+  { title: "Templates", icon: Palette, href: "/admin/templates" },
 
   // Apps Section
   { label: "Other", isSection: true },
   {
-    title: "Settings",
+    title: "Pengaturan",
     icon: Settings,
     children: [{ title: "Profile", href: "#" }],
   },

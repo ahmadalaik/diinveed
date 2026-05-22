@@ -13,6 +13,28 @@ CREATE TABLE `sessions` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `templates` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `slug` VARCHAR(191) NOT NULL,
+    `category` VARCHAR(191) NOT NULL,
+    `description` TEXT NULL,
+    `thumbnail_url` VARCHAR(191) NOT NULL,
+    `demo_url` VARCHAR(191) NOT NULL,
+    `tags` JSON NOT NULL,
+    `status` ENUM('active', 'draft', 'archived') NOT NULL DEFAULT 'draft',
+    `template_config` JSON NULL,
+    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) NOT NULL,
+    `deleted_at` DATETIME(3) NULL,
+
+    UNIQUE INDEX `templates_name_key`(`name`),
+    UNIQUE INDEX `templates_slug_key`(`slug`),
+    INDEX `templates_slug_category_status_deleted_at_idx`(`slug`, `category`, `status`, `deleted_at`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `users` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
