@@ -1,3 +1,5 @@
+"use server";
+
 import { getCurrentUser } from "@/features/auth/utils/session";
 import {
   createTransactionSchema,
