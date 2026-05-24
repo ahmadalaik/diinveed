@@ -1,0 +1,36 @@
+enum TransactionStatus {
+    pending
+    confirmed
+    cancelled
+}
+
+enum DiscountType {
+    percentage
+    fixed
+}
+
+model Transaction {
+    id              String            @id @default(cuid())
+    userId          String            @map("user_id")
+    originalPrice   Int               @map("original_price")
+    discountType    DiscountType?     @map("discount_type")
+    discountValue   Int?              @map("discount_value")
+    discountAmount  Int               @default(0) @map("discount_amount")
+    finalAmount     Int               @map("final_amount")
+    status          TransactionStatus @default(pending)
+    notes           String?           @db.Text
+    createdBy       String            @map("created_by")
+    accessGrantedAt DateTime?         @map("access_granted_at")
+
+    user    User @relation("UserTransactions", fields: [userId], references: [id])
+    creator User @relation("TransactionCreator", fields: [createdBy], references: [id])
+
+    payments Payment?
+
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+    deletedAt DateTime? @map("deleted_at")
+
+    @@index([userId, status])
+    @@map("transactions")
+}
