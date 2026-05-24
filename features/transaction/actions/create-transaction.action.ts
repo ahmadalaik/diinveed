@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/features/auth/utils/session";
 import {
   createTransactionSchema,
   CreateTransactionType,
-} from "../schemas/create-transaction";
+} from "../schemas/create-transaction.schema";
 import prisma from "@/lib/prisma";
 
 type FieldErrors = Partial<

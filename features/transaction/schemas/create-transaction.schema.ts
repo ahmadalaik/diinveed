@@ -3,15 +3,12 @@ import z from "zod";
 export const createTransactionSchema = z
   .object({
     userId: z.string().min(1, "User wajib dipilih"),
-    originalPrice: z.coerce.number().int().min(1, "Harga wajib diisi"),
+    originalPrice: z.number().int().min(1, "Harga wajib diisi"),
     discountType: z.enum(["percentage", "fixed"]).nullable(),
-    discountValue: z.coerce.number().int().min(0).nullable(),
+    discountValue: z.number().int().min(0).nullable(),
     notes: z.string().optional(),
     paymentMethod: z.enum(["bank_transfer", "qris", "e_wallet", "cash"]),
-    paymentAmount: z.coerce
-      .number()
-      .int()
-      .min(1, "Nominal pembayaran wajib diisi"),
+    paymentAmount: z.number().int().min(1, "Nominal pembayaran wajib diisi"),
     referenceNumber: z.string().optional(),
     senderName: z.string().optional(),
     senderBank: z.string().optional(),
