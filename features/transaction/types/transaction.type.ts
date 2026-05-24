@@ -33,7 +33,7 @@ export type TransactionDetail = {
   finalAmount: number;
   status: TransactionStatus;
   notes: string | null;
-  accessGranted: Date | null;
+  accessGrantedAt: Date | null;
   createdAt: Date;
   creator: { name: string };
   payment: {
