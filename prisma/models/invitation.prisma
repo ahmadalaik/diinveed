@@ -1,0 +1,54 @@
+enum RsvpResponse {
+    ACCEPT
+    DECLINE
+    MAYBE
+}
+
+model Invitation {
+    id             String   @id @default(cuid())
+    userId         String   @unique @map("user_id")
+    token          String   @unique
+    title          String   @default("")
+    subtitle       String   @default("")
+    date           String   @default("")
+    time           String   @default("")
+    hosts          String   @default("")
+    message        String   @db.Text
+    venueName      String   @default("") @map("venue_name")
+    venueAddress   String   @db.Text @map("venue_address")
+    coverImage     String?  @map("cover_image")
+    templateId     String   @default("kelana") @map("template_id")
+    paletteIdx     Int?     @map("palette_idx")
+    fontId         String   @default("serif-display") @map("font_id")
+    backgroundType String   @default("solid") @map("background_type")
+    dressCode      String   @default("") @map("dress_code")
+    rsvpDeadline   String   @default("") @map("rsvp_deadline")
+    rsvpOptions    Json     @map("rsvp_options")
+    events         Json
+    stories        Json
+    gallery        Json
+    stickers       Json
+    gifts          Json
+    isPublished    Boolean  @default(false) @map("is_published")
+    createdAt      DateTime @default(now()) @map("created_at")
+    updatedAt      DateTime @updatedAt @map("updated_at")
+
+    user       User        @relation(fields: [userId], references: [id])
+    guestRsvps GuestRsvp[]
+
+    @@map("invitations")
+}
+
+model GuestRsvp {
+    id           String       @id @default(cuid())
+    invitationId String       @map("invitation_id")
+    name         String
+    email        String?
+    response     RsvpResponse
+    plusOne      Boolean      @default(false) @map("plus_one")
+    submittedAt  DateTime     @default(now()) @map("submitted_at")
+
+    invitation Invitation @relation(fields: [invitationId], references: [id])
+
+    @@map("guest_rsvps")
+}
