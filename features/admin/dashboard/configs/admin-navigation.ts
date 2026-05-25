@@ -1,4 +1,11 @@
-import { BarChart3, LucideIcon, Palette, Settings, Users } from "lucide-react";
+import {
+  BarChart3,
+  LucideIcon,
+  Palette,
+  Receipt,
+  Settings,
+  Users,
+} from "lucide-react";
 
 export type NavItem = {
   label?: string;
@@ -16,6 +23,7 @@ export const navData: NavItem[] = [
   { title: "Dashboard", icon: BarChart3, href: "/admin/dashboard" },
   { title: "Users", icon: Users, href: "/admin/users" },
   { title: "Templates", icon: Palette, href: "/admin/templates" },
+  { title: "Transaksi", icon: Receipt, href: "/admin/transactions" },
 
   // Apps Section
   { label: "Other", isSection: true },
