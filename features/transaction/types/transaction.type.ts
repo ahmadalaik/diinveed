@@ -13,7 +13,7 @@ export type TransactionListItem = {
   discountAmount: number;
   finalAmount: number;
   status: TransactionStatus;
-  accessGranted: Date | null;
+  accessGrantedAt: Date | null;
   createdAt: Date;
   payment: {
     method: PaymentMethod;

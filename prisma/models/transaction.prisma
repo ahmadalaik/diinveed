@@ -25,7 +25,7 @@ model Transaction {
     user    User @relation("UserTransactions", fields: [userId], references: [id])
     creator User @relation("TransactionCreator", fields: [createdBy], references: [id])
 
-    payments Payment?
+    payment Payment?
 
     createdAt DateTime  @default(now()) @map("created_at")
     updatedAt DateTime  @updatedAt @map("updated_at")
