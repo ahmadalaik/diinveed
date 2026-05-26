@@ -1,3 +1,5 @@
+import { TokenOverrides } from "@/features/template/tokens";
+
 export type RsvpOptions = {
   accept: boolean;
   decline: boolean;
@@ -38,9 +40,8 @@ export type InvitationState = {
   venueName: string;
   venueAddress: string;
   coverImage: string | null;
-  templateId: string;
-  paletteIdx: number | null;
-  fontId: string;
+  tokenId: string;
+  tokenOverrides: TokenOverrides | null;
   backgroundType: string;
   dressCode: string;
   rsvpDeadline: string;
