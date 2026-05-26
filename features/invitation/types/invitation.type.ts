@@ -6,18 +6,21 @@ export type RsvpOptions = {
 };
 
 export type EventItem = {
+  id: string;
   time: string;
   title: string;
   description: string;
 };
 
 export type StoryItem = {
+  id: string;
   year: string;
   title: string;
   body: string;
 };
 
 export type GiftItem = {
+  id: string;
   name: string;
   description: string;
 };
