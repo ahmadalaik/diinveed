@@ -1,6 +1,6 @@
 import z from "zod";
 
-const rsvpOptions = z.object({
+const rsvpOptionsSchema = z.object({
   accept: z.boolean(),
   decline: z.boolean(),
   maybe: z.boolean(),
@@ -27,6 +27,20 @@ const giftItemSchema = z.object({
   description: z.string(),
 });
 
+const tokenOverridesSchema = z.object({
+  colors: z.object({
+    primary: z.string().optional(),
+    accent: z.string().optional(),
+    background: z.string().optional(),
+  }).optional(),
+  typography: z.object({
+    heading: z.string().optional(),
+    body: z.string().optional(),
+  }).optional(),
+  borderRadius: z.enum(["minimal", "rounded", "pill"]).optional(),
+  ornamentStyle: z.string().nullable().optional(),
+}).nullable();
+
 export const saveInvitationSchema = z.object({
   title: z.string(),
   subtitle: z.string(),
@@ -37,13 +51,12 @@ export const saveInvitationSchema = z.object({
   venueName: z.string(),
   venueAddress: z.string(),
   coverImage: z.string().nullable(),
-  templateId: z.string(),
-  paletteIdx: z.number().int().nullable(),
-  fontId: z.string(),
+  tokenId: z.string(),
+  tokenOverrides: tokenOverridesSchema,
   backgroundType: z.string(),
   dressCode: z.string(),
   rsvpDeadline: z.string(),
-  rsvpOptions: rsvpOptions,
+  rsvpOptions: rsvpOptionsSchema,
   events: z.array(eventItemSchema),
   stories: z.array(storyItemSchema),
   gallery: z.array(z.string()),
@@ -57,8 +70,7 @@ export const publishReadySchema = z.object({
   title: z.string().min(1, "Nama pengantin wajib diisi"),
   date: z.string().min(1, "Tanggal pernikahan wajib diisi"),
   venueName: z.string().min(1, "Venue wajib diisi"),
-  templateId: z.string().min(1),
-  fontId: z.string().min(1),
+  tokenId: z.string().min(1),
 });
 
 export type PublishReadyType = z.infer<typeof publishReadySchema>;
