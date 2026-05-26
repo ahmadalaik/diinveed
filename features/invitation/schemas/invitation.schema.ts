@@ -8,18 +8,21 @@ const rsvpOptions = z.object({
 });
 
 const eventItemSchema = z.object({
+  id: z.string(),
   time: z.string(),
   title: z.string(),
   description: z.string(),
 });
 
 const storyItemSchema = z.object({
+  id: z.string(),
   year: z.string(),
   title: z.string(),
   body: z.string(),
 });
 
 const giftItemSchema = z.object({
+  id: z.string(),
   name: z.string(),
   description: z.string(),
 });
@@ -28,6 +31,7 @@ export const saveInvitationSchema = z.object({
   title: z.string(),
   subtitle: z.string(),
   date: z.string(),
+  time: z.string(),
   hosts: z.string(),
   message: z.string(),
   venueName: z.string(),
@@ -48,3 +52,13 @@ export const saveInvitationSchema = z.object({
 });
 
 export type SaveInvitationType = z.infer<typeof saveInvitationSchema>;
+
+export const publishReadySchema = z.object({
+  title: z.string().min(1, "Nama pengantin wajib diisi"),
+  date: z.string().min(1, "Tanggal pernikahan wajib diisi"),
+  venueName: z.string().min(1, "Venue wajib diisi"),
+  templateId: z.string().min(1),
+  fontId: z.string().min(1),
+});
+
+export type PublishReadyType = z.infer<typeof publishReadySchema>;
