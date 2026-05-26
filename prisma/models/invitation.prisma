@@ -15,11 +15,10 @@ model Invitation {
     hosts          String   @default("")
     message        String   @db.Text
     venueName      String   @default("") @map("venue_name")
-    venueAddress   String   @db.Text @map("venue_address")
+    venueAddress   String   @map("venue_address") @db.Text
     coverImage     String?  @map("cover_image")
-    templateId     String   @default("kelana") @map("template_id")
-    paletteIdx     Int?     @map("palette_idx")
-    fontId         String   @default("serif-display") @map("font_id")
+    tokenId        String   @default("aura") @map("token_id")
+    tokenOverrides Json?    @map("token_overrides")
     backgroundType String   @default("solid") @map("background_type")
     dressCode      String   @default("") @map("dress_code")
     rsvpDeadline   String   @default("") @map("rsvp_deadline")
