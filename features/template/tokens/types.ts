@@ -12,6 +12,7 @@ export type InvitationToken = {
     heading: string;
     body: string;
   };
+  borderRadius: BorderRadius;
 };
 
 export type TokenOverrides = {
