@@ -22,6 +22,7 @@ export async function getOrCreateInvitation(): Promise<Result> {
     data: {
       userId: user.id,
       token: randomUUID().toString(),
+      tokenId: "aura",
       message: "",
       venueAddress: "",
       rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
