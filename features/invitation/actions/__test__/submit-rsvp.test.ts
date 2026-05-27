@@ -21,7 +21,6 @@ const validGuest = {
   email: "alice@example.com",
   response: "ACCEPT" as const,
   plusOne: false,
-  mealPreference: undefined,
 };
 
 beforeEach(() => { vi.clearAllMocks(); });
