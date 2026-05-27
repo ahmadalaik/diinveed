@@ -22,7 +22,7 @@ const getCurrentUserMock = getCurrentUser as ReturnType<typeof vi.fn>;
 
 const mockUser = { id: "user-1", name: "Test", email: "test@test.com", role: "user" as const };
 const mockRsvps = [
-  { id: "r1", invitationId: "inv-1", name: "Alice", email: null, response: "ACCEPT", plusOne: false, mealPreference: null, submittedAt: new Date() },
+  { id: "r1", invitationId: "inv-1", name: "Alice", email: null, response: "ACCEPT", plusOne: false, submittedAt: new Date() },
 ];
 
 beforeEach(() => { vi.clearAllMocks(); });
