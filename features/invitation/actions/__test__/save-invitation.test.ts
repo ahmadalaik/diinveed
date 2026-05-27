@@ -35,9 +35,8 @@ const validInput = {
   venueName: "Rose Garden",
   venueAddress: "123 Main St",
   coverImage: null,
-  templateId: "aura",
-  paletteIdx: null,
-  fontId: "serif-display",
+  tokenId: "aura",
+  tokenOverrides: null,
   backgroundType: "solid",
   dressCode: "Black Tie",
   rsvpDeadline: "2026-08-01",
@@ -55,7 +54,9 @@ const validInput = {
   gifts: [],
 };
 
-beforeEach(() => { vi.clearAllMocks(); });
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("saveInvitation", () => {
   it("returns Unauthorized when not logged in", async () => {
@@ -70,13 +71,16 @@ describe("saveInvitation", () => {
     const result = await saveInvitation(validInput);
     expect(result.success).toBe(true);
     expect(prismaMock.invitation.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { userId: "user-1" } })
+      expect.objectContaining({ where: { userId: "user-1" } }),
     );
   });
 
   it("returns validation error for invalid input", async () => {
     getCurrentUserMock.mockResolvedValue(mockUser);
-    const result = await saveInvitation({ ...validInput, rsvpOptions: null as never });
+    const result = await saveInvitation({
+      ...validInput,
+      rsvpOptions: null as never,
+    });
     expect(result.errors).toBeDefined();
   });
 });
