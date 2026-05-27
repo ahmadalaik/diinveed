@@ -1,0 +1,49 @@
+import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
+import { InvitationState } from "../types/invitation.type";
+
+export type SaveStatus = "saved" | "saving" | "unsaved";
+
+type InvitationStore = InvitationState & {
+  set: (patch: Partial<InvitationState>) => void;
+  saveStatus: SaveStatus;
+  lastSaved: Date | null;
+  setSaveStatus: (status: SaveStatus) => void;
+  setLastSaved: (data: Date) => void;
+};
+
+export const useInvitationStore = create<InvitationStore>()(
+  subscribeWithSelector((set) => ({
+    id: "",
+    userId: "",
+    token: "",
+    title: "",
+    subtitle: "",
+    date: "",
+    time: "",
+    hosts: "",
+    message: "",
+    venueName: "",
+    venueAddress: "",
+    coverImage: null,
+    tokenId: "aura",
+    tokenOverrides: null,
+    backgroundType: "solid",
+    dressCode: "",
+    rsvpDeadline: "",
+    rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: true },
+    events: [],
+    stories: [],
+    gallery: [],
+    stickers: [],
+    gifts: [],
+    isPublished: false,
+
+    saveStatus: "saved",
+    lastSaved: null,
+
+    set: (patch) => set(patch),
+    setSaveStatus: (status) => set({ saveStatus: status }),
+    setLastSaved: (date) => set({ lastSaved: date }),
+  })),
+);
