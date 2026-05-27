@@ -14,7 +14,7 @@ vi.mock("@/features/auth/utils/session", () => ({
 }));
 
 const prismaMock = prisma as unknown as {
-  invitation: { update: ReturnType<typeof vi.fn> };
+  invitation: { findUnique: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
 };
 const getCurrentUserMock = getCurrentUser as ReturnType<typeof vi.fn>;
 
@@ -23,6 +23,20 @@ const mockUser = {
   name: "Test",
   email: "test@test.com",
   role: "user" as const,
+};
+
+const readyInvitation = {
+  title: "Amelia & Theo",
+  date: "2026-09-12",
+  venueName: "Rose Garden",
+  tokenId: "aura",
+};
+
+const incompleteInvitation = {
+  title: "",
+  date: "",
+  venueName: "",
+  tokenId: "aura",
 };
 
 beforeEach(() => { vi.clearAllMocks(); });
@@ -34,8 +48,18 @@ describe("publishInvitation", () => {
     expect(result.errors?._form).toContain("Unauthorized");
   });
 
-  it("sets isPublished=true and returns token", async () => {
+  it("returns validation errors when required fields are empty", async () => {
     getCurrentUserMock.mockResolvedValue(mockUser);
+    prismaMock.invitation.findUnique.mockResolvedValue(incompleteInvitation);
+    const result = await publishInvitation();
+    expect(result.errors?.title).toBeDefined();
+    expect(result.errors?.date).toBeDefined();
+    expect(prismaMock.invitation.update).not.toHaveBeenCalled();
+  });
+
+  it("sets isPublished=true and returns token when invitation is complete", async () => {
+    getCurrentUserMock.mockResolvedValue(mockUser);
+    prismaMock.invitation.findUnique.mockResolvedValue(readyInvitation);
     prismaMock.invitation.update.mockResolvedValue({ token: "tok-123" });
     const result = await publishInvitation();
     expect(result.token).toBe("tok-123");
