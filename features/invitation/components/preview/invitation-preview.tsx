@@ -35,7 +35,7 @@ import { Input } from "@/components/ui/input";
 type DeviceType = "dekstop" | "tablet" | "mobile";
 
 type Props = {
-  cardRef: RefObject<HTMLDivElement>;
+  cardRef: RefObject<HTMLDivElement | null>;
 };
 
 export function InvitationPreview({ cardRef }: Props) {
