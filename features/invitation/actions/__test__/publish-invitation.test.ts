@@ -5,7 +5,7 @@ import { publishInvitation, unpublishInvitation } from "../publish-invitation";
 
 vi.mock("@/lib/prisma", () => ({
   default: {
-    invitation: { update: vi.fn() },
+    invitation: { findUnique: vi.fn(), update: vi.fn() },
   },
 }));
 
@@ -14,7 +14,10 @@ vi.mock("@/features/auth/utils/session", () => ({
 }));
 
 const prismaMock = prisma as unknown as {
-  invitation: { findUnique: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
+  invitation: {
+    findUnique: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+  };
 };
 const getCurrentUserMock = getCurrentUser as ReturnType<typeof vi.fn>;
 
@@ -39,7 +42,9 @@ const incompleteInvitation = {
   tokenId: "aura",
 };
 
-beforeEach(() => { vi.clearAllMocks(); });
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("publishInvitation", () => {
   it("returns Unauthorized when not logged in", async () => {
@@ -64,7 +69,7 @@ describe("publishInvitation", () => {
     const result = await publishInvitation();
     expect(result.token).toBe("tok-123");
     expect(prismaMock.invitation.update).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { isPublished: true } })
+      expect.objectContaining({ data: { isPublished: true } }),
     );
   });
 });
