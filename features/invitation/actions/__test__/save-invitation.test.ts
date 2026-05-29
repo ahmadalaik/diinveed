@@ -37,6 +37,7 @@ const validInput = {
   coverImage: null,
   tokenId: "aura",
   tokenOverrides: null,
+  templateSlug: "kelana",
   backgroundType: "solid",
   dressCode: "Black Tie",
   rsvpDeadline: "2026-08-01",

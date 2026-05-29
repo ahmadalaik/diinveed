@@ -22,6 +22,7 @@ export function useInvitationAutoSave() {
         coverImage: s.coverImage,
         tokenId: s.tokenId,
         tokenOverrides: s.tokenOverrides,
+        templateSlug: s.templateSlug,
         backgroundType: s.backgroundType,
         dressCode: s.dressCode,
         rsvpDeadline: s.rsvpDeadline,

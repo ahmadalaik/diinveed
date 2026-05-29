@@ -42,6 +42,7 @@ export type InvitationState = {
   coverImage: string | null;
   tokenId: string;
   tokenOverrides: TokenOverrides | null;
+  templateSlug: string;
   backgroundType: string;
   dressCode: string;
   rsvpDeadline: string;

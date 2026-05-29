@@ -28,6 +28,7 @@ export const useInvitationStore = create<InvitationStore>()(
     coverImage: null,
     tokenId: "aura",
     tokenOverrides: null,
+    templateSlug: "kelana",
     backgroundType: "solid",
     dressCode: "",
     rsvpDeadline: "",

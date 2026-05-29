@@ -19,6 +19,7 @@ model Invitation {
     coverImage     String?  @map("cover_image")
     tokenId        String   @default("aura") @map("token_id")
     tokenOverrides Json?    @map("token_overrides")
+    templateSlug   String   @default("kelana") @map("template_slug")
     backgroundType String   @default("solid") @map("background_type")
     dressCode      String   @default("") @map("dress_code")
     rsvpDeadline   String   @default("") @map("rsvp_deadline")

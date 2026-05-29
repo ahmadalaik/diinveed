@@ -53,6 +53,7 @@ export const saveInvitationSchema = z.object({
   coverImage: z.string().nullable(),
   tokenId: z.string(),
   tokenOverrides: tokenOverridesSchema,
+  templateSlug: z.string().min(1),
   backgroundType: z.string(),
   dressCode: z.string(),
   rsvpDeadline: z.string(),
