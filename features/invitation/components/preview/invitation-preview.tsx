@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DeviceFrame } from "./device-frame";
-import { InvitationCard } from "./invitation-card";
+import { getTemplate } from "@/features/template/registry/templates";
 import { RsvpResponsesPanel } from "./rsvp-responses-panel";
 import {
   Dialog,
@@ -47,6 +47,8 @@ export function InvitationPreview({ cardRef }: Props) {
   const [responsesOpen, setResponsesOpen] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const Template = getTemplate(state.templateSlug);
 
   const token = getToken(state.tokenId);
   const tokenName = token?.name ?? state.tokenId;
@@ -145,7 +147,7 @@ export function InvitationPreview({ cardRef }: Props) {
       </div>
 
       {/* Canvas — cardRef attached here so applyTokens CSS vars scope to preview */}
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-6 flex justify-center items-center">
         <div
           ref={cardRef}
           style={{
@@ -154,7 +156,7 @@ export function InvitationPreview({ cardRef }: Props) {
           }}
         >
           <DeviceFrame device={device}>
-            <InvitationCard invitation={state} />
+            <Template invitation={state} />
           </DeviceFrame>
         </div>
       </div>
