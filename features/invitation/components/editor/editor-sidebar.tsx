@@ -12,6 +12,7 @@ import { useInvitationStore } from "@/features/invitation/store/invitation-store
 import { Settings } from "lucide-react";
 import { BasicsSection } from "./sections/basics-section";
 import { TemplateSection } from "./sections/template-section";
+import { TemplateSelectorSection } from "./sections/template-selector-section";
 import { EventsSection } from "./sections/events-section";
 import { LocationSection } from "./sections/location-section";
 import { CoverSection } from "./sections/cover-section";
@@ -86,8 +87,19 @@ export function EditorSidebar({ onPublish }: Props) {
             <AccordionTrigger className="px-4 py-3 text-sm">
               Template
             </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
-              <TemplateSection />
+            <AccordionContent className="px-4 pb-4 space-y-4">
+              <div>
+                <p className="mb-2 text-xs font-medium text-muted-foreground">
+                  Layout
+                </p>
+                <TemplateSelectorSection />
+              </div>
+              <div>
+                <p className="mb-2 text-xs font-medium text-muted-foreground">
+                  Theme
+                </p>
+                <TemplateSection />
+              </div>
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="basics">
