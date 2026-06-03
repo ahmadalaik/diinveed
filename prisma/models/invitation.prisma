@@ -5,9 +5,28 @@ enum RsvpResponse {
 }
 
 model Invitation {
-    id             String   @id @default(cuid())
-    userId         String   @unique @map("user_id")
-    token          String   @unique
+    id     String @id @default(cuid())
+    userId String @unique @map("user_id")
+    token  String @unique
+
+    coverTitle     String @default("") @map("cover_title")
+    coverSubtitle  String @default("") @map("cover_subtitle")
+    music          String @default("")
+    musicPublicId  String @default("") @map("music_public_id")
+    quote          String @default("")
+    quoteReference String @default("")
+
+    brideName          String  @default("") @map("bride_name")
+    brideNickname      String  @default("") @map("bride_nickname")
+    brideDescription   String? @map("bride_description")
+    brideImage         String? @map("bride_image")
+    brideImagePublicId String? @map("bride_image_public_id")
+    groomName          String  @default("") @map("groom_name")
+    groomNickname      String  @default("") @map("groom_nickname")
+    groomDescription   String? @map("groom_description")
+    groomImage         String? @map("groom_image")
+    groomImagePublicId String? @map("groom_image_public_id")
+
     title          String   @default("")
     subtitle       String   @default("")
     date           String   @default("")
@@ -43,12 +62,14 @@ model GuestRsvp {
     id           String       @id @default(cuid())
     invitationId String       @map("invitation_id")
     name         String
-    email        String?
+    phoneNumber  String?
     response     RsvpResponse
-    plusOne      Boolean      @default(false) @map("plus_one")
+    guests       Int          @default(1)
+    hope         String?      @db.Text
     submittedAt  DateTime     @default(now()) @map("submitted_at")
 
     invitation Invitation @relation(fields: [invitationId], references: [id])
 
+    @@index([invitationId])
     @@map("guest_rsvps")
 }
