@@ -57,6 +57,10 @@ const SEED_USERS = [
 ];
 
 async function main() {
+  await prisma.guestRsvp.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.invitation.deleteMany();
+  await prisma.transaction.deleteMany();
   await prisma.session.deleteMany();
   await prisma.user.deleteMany();
 
