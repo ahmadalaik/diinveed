@@ -53,6 +53,16 @@ const validInput = {
   gallery: [],
   stickers: [],
   gifts: [],
+  brideName: "Amelia",
+  brideNickname: "Amel",
+  brideDescription: null,
+  brideImage: null,
+  brideImagePublicId: null,
+  groomName: "Theo",
+  groomNickname: "Theo",
+  groomDescription: null,
+  groomImage: null,
+  groomImagePublicId: null,
 };
 
 beforeEach(() => {

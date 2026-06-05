@@ -1,9 +1,9 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { submitRsvpSchema, SubmitRsvpType } from "../schemas/rsvp.schema";
+import { rsvpFormSchema, RsvpFormType } from "../schemas/rsvp.schema";
 
-type FieldErrors = Partial<Record<keyof SubmitRsvpType | "_form", string[]>>;
+type FieldErrors = Partial<Record<keyof RsvpFormType | "_form", string[]>>;
 
 type Result =
   | { errors: FieldErrors; success?: undefined }
@@ -11,9 +11,9 @@ type Result =
 
 export async function submitRsvp(
   token: string,
-  input: SubmitRsvpType,
+  input: RsvpFormType,
 ): Promise<Result> {
-  const parsed = submitRsvpSchema.safeParse(input);
+  const parsed = rsvpFormSchema.safeParse(input);
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors as FieldErrors };
   }
@@ -27,15 +27,16 @@ export async function submitRsvp(
   if (!invitation.isPublished)
     return { errors: { _form: ["Undangan belum dipublikasikan"] } };
 
-  const { name, email, response, plusOne } = parsed.data;
+  const { name, phoneNumber, response, guests, hope } = parsed.data;
 
   await prisma.guestRsvp.create({
     data: {
       invitationId: invitation.id,
       name,
-      email: email ?? null,
+      phoneNumber,
       response,
-      plusOne,
+      guests: parseInt(guests || "1"),
+      hope: hope,
     },
   });
 

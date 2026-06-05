@@ -49,7 +49,7 @@ export async function saveInvitation(
       rsvpOptions: rsvpOptions as object,
       events: events as object[],
       stories: stories as object[],
-      gallery: gallery as string[],
+      gallery: gallery as object[],
       stickers: stickers as string[],
       gifts: gifts as object[],
     },
