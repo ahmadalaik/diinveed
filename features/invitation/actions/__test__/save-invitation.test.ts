@@ -26,6 +26,12 @@ const mockUser = {
 };
 
 const validInput = {
+  coverTitle: "",
+  coverSubtitle: "",
+  music: "",
+  musicPublicId: "",
+  quote: "",
+  quoteReference: "",
   title: "Amelia & Theo",
   subtitle: "are getting married",
   date: "2026-09-12",

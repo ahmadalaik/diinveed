@@ -2,6 +2,12 @@ import { describe, it, expect } from "vitest";
 import { saveInvitationSchema } from "@/features/invitation/schemas/invitation.schema";
 
 const base = {
+  coverTitle: "",
+  coverSubtitle: "",
+  music: "",
+  musicPublicId: "",
+  quote: "",
+  quoteReference: "",
   title: "",
   subtitle: "",
   date: "",

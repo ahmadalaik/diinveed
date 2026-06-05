@@ -55,6 +55,12 @@ const tokenOverridesSchema = z
   .nullable();
 
 export const saveInvitationSchema = z.object({
+  coverTitle: z.string(),
+  coverSubtitle: z.string(),
+  music: z.string(),
+  musicPublicId: z.string(),
+  quote: z.string(),
+  quoteReference: z.string(),
   brideName: z.string(),
   brideNickname: z.string(),
   brideDescription: z.string().nullable(),
