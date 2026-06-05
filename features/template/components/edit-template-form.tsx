@@ -23,7 +23,7 @@ import { toast } from "sonner";
 import {
   useCloudinaryUpload,
   UploadedImage,
-} from "../hooks/use-cloudinary-upload";
+} from "@/hooks/use-cloudinary-upload";
 import { updateTemplateAction } from "../actions/update-template";
 import Image from "next/image";
 import Link from "next/link";
@@ -233,7 +233,7 @@ export function EditTemplateForm({ values }: Props) {
                     sizes="(max-width: 768px) 50vw, 25vw"
                     src={preview}
                     alt="Thumbnail preview"
-                    className="h-24 w-auto rounded-md border object-cover"
+                    className="rounded-md border object-cover"
                   />
                 </div>
               )}

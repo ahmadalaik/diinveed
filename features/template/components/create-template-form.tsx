@@ -24,7 +24,7 @@ import { createTemplateAction } from "../actions/create-template";
 import {
   useCloudinaryUpload,
   UploadedImage,
-} from "../hooks/use-cloudinary-upload";
+} from "@/hooks/use-cloudinary-upload";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -227,7 +227,7 @@ export function CreateTemplateForm() {
                     sizes="(max-width: 768px) 50vw, 25vw"
                     src={preview}
                     alt="Thumbnail preview"
-                    className="h-24 w-auto rounded-md border object-cover"
+                    className="rounded-md border object-cover"
                   />
                 </div>
               )}

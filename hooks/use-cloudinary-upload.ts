@@ -21,7 +21,7 @@ export function useCloudinaryUpload() {
       throw new Error("Failed to get upload signature");
     }
 
-    const { signature, timestamp, folder, apiKey, cloudName } =
+    const { signature, timestamp, folder, transformation, format, apiKey, cloudName } =
       await sigRes.json();
 
     const formData = new FormData();
@@ -30,6 +30,10 @@ export function useCloudinaryUpload() {
     formData.append("timestamp", String(timestamp));
     formData.append("signature", signature);
     formData.append("folder", folder);
+    // Compress + resize before storing, and store as WebP. Values must match
+    // exactly what the signature route signed, or the upload is rejected.
+    formData.append("transformation", transformation);
+    formData.append("format", format);
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
