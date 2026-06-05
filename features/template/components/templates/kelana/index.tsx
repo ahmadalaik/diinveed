@@ -1,29 +1,83 @@
 "use client";
 
-import { useState } from "react";
-import EnvelopeKelana from "./envelope";
+import { useEffect, useState } from "react";
+import { EnvelopeKelana } from "./envelope-kelana";
 import type { TemplateProps } from "../types";
-import { TemplateModeProvider } from "../context/template-mode-context";
+import { Lightbox } from "./lightbox";
+import { KelanaLayout } from "./layout/kelana-layout";
+import { BannerKelana } from "./banner-kelana";
+import { PrologKelana } from "./prolog-kelana";
+import { Quote } from "./quote";
+import { CoupleKelana } from "./couple-kelana";
+import { CountdownKelana } from "./countdown-kelana";
+import { EventsKelana } from "./events-kelana";
+import { StoriesKelana } from "./stories-kelana";
+import { GalleryKelana } from "./gallery-kelana";
+import { GiftsKelana } from "./gifts-kelana";
+import { RSVPKelana } from "./rsvp-kelana";
+import { FooterKelana } from "./footer-kelana";
+import { MusicPlayer } from "./music-player";
 
 export default function KelanaTemplate({
   invitation,
   mode = "guest",
 }: TemplateProps) {
-  const [opened, setOpened] = useState(mode === "preview");
+  const isPreview = mode === "preview";
+  const [opened, setOpened] = useState(isPreview);
+  const [lightboxOpen, setLightboxOpen] = useState(!isPreview);
+  const [lightboxImg, setLightboxImg] = useState<string | null>(null);
+
+  const openLightbox = (src: string) => {
+    setLightboxImg(src);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    setTimeout(() => setLightboxImg(null), 300);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && lightboxOpen) closeLightbox();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen]);
 
   return (
-    <TemplateModeProvider value={mode}>
-      <div className="relative w-full">
-        {!opened && (
-          <EnvelopeKelana inv={invitation} onOpen={() => setOpened(true)} />
-        )}
-        {opened && (
-          <div className="min-h-svh w-full bg-stone-900 text-stone-100 flex items-center justify-center px-8 py-14 text-center">
-            {/* Cover and remaining Kelana sections will land here in a follow-up. */}
-            <p className="opacity-60 text-sm">Kelana content coming soon.</p>
-          </div>
-        )}
+    <>
+      <div className="fixed inset-0 z-40 bg-[url('https://transparenttextures.com/patterns/cream-paper.png')] opacity-60 pointer-events-none mix-blend-multiply" />
+
+      <Lightbox
+        lightboxOpen={lightboxOpen}
+        closeLightbox={closeLightbox}
+        lightboxImg={lightboxImg}
+        mode={mode}
+      />
+
+      <div className="relative w-full h-screen overflow-hidden font-montserrat">
+        <div className="hidden lg:block fixed left-0 top-0 w-[75%] h-screen">
+          <BannerKelana inv={invitation} />
+        </div>
+        <EnvelopeKelana inv={invitation} onOpen={setOpened} />
+        {!opened && <EnvelopeKelana inv={invitation} onOpen={setOpened} />}
+
+        <KelanaLayout inv={invitation}>
+          <MusicPlayer open={opened} autoPlay={mode === "guest"} />
+
+          <PrologKelana inv={invitation} />
+          <Quote inv={invitation} />
+          <CoupleKelana inv={invitation} />
+          <CountdownKelana inv={invitation} />
+          <EventsKelana inv={invitation} />
+          <StoriesKelana inv={invitation} />
+          <GalleryKelana inv={invitation} openLightbox={openLightbox} />
+          <GiftsKelana inv={invitation} />
+          <RSVPKelana token={invitation.token} mode="preview" />
+          <FooterKelana inv={invitation} />
+        </KelanaLayout>
       </div>
-    </TemplateModeProvider>
+    </>
   );
 }
