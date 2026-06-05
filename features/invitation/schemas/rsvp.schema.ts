@@ -1,10 +1,11 @@
 import z from "zod";
 
-export const submitRsvpSchema = z.object({
+export const rsvpFormSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),
-  email: z.string().optional(),
+  phoneNumber: z.string().optional().nullable(),
   response: z.enum(["ACCEPT", "DECLINE", "MAYBE"]),
-  plusOne: z.boolean().default(false),
+  guests: z.string().optional(),
+  hope: z.string().optional(),
 });
 
-export type SubmitRsvpType = z.infer<typeof submitRsvpSchema>;
+export type RsvpFormType = z.infer<typeof rsvpFormSchema>;

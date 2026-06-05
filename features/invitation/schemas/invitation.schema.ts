@@ -23,25 +23,48 @@ const storyItemSchema = z.object({
 
 const giftItemSchema = z.object({
   id: z.string(),
-  name: z.string(),
-  description: z.string(),
+  provider: z.string(),
+  accountName: z.string(),
+  accountNumber: z.string(),
 });
 
-const tokenOverridesSchema = z.object({
-  colors: z.object({
-    primary: z.string().optional(),
-    accent: z.string().optional(),
-    background: z.string().optional(),
-  }).optional(),
-  typography: z.object({
-    heading: z.string().optional(),
-    body: z.string().optional(),
-  }).optional(),
-  borderRadius: z.enum(["minimal", "rounded", "pill"]).optional(),
-  ornamentStyle: z.string().nullable().optional(),
-}).nullable();
+const galleryItemSchema = z.object({
+  id: z.string(),
+  url: z.string(),
+  publicId: z.string(),
+});
+
+const tokenOverridesSchema = z
+  .object({
+    colors: z
+      .object({
+        primary: z.string().optional(),
+        accent: z.string().optional(),
+        background: z.string().optional(),
+      })
+      .optional(),
+    typography: z
+      .object({
+        heading: z.string().optional(),
+        body: z.string().optional(),
+      })
+      .optional(),
+    borderRadius: z.enum(["minimal", "rounded", "pill"]).optional(),
+    ornamentStyle: z.string().nullable().optional(),
+  })
+  .nullable();
 
 export const saveInvitationSchema = z.object({
+  brideName: z.string(),
+  brideNickname: z.string(),
+  brideDescription: z.string().nullable(),
+  brideImage: z.string().nullable(),
+  brideImagePublicId: z.string().nullable(),
+  groomName: z.string(),
+  groomNickname: z.string(),
+  groomDescription: z.string().nullable(),
+  groomImage: z.string().nullable(),
+  groomImagePublicId: z.string().nullable(),
   title: z.string(),
   subtitle: z.string(),
   date: z.string(),
@@ -60,7 +83,7 @@ export const saveInvitationSchema = z.object({
   rsvpOptions: rsvpOptionsSchema,
   events: z.array(eventItemSchema),
   stories: z.array(storyItemSchema),
-  gallery: z.array(z.string()),
+  gallery: z.array(galleryItemSchema),
   stickers: z.array(z.string()),
   gifts: z.array(giftItemSchema),
 });
