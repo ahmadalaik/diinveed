@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
@@ -24,12 +25,16 @@ export function SortableItem({ id, children }: Props) {
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={isDragging ? "opacity-50 z-10 relative" : ""}
+      className={isDragging ? "z-10 relative" : ""}
     >
       <div className="flex gap-2 items-start">
         <Button
+          variant="secondary"
           type="button"
-          className="mt-2.5 cursor-grab touch-none text-muted-foreground hover:text-foreground"
+          className={cn(
+            "mt-2.5 border-border touch-none text-muted-foreground hover:text-foreground",
+            isDragging ? "cursor-grabbing" : "cursor-grab",
+          )}
           {...attributes}
           {...listeners}
         >

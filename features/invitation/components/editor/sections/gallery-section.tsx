@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
@@ -21,9 +22,11 @@ import { Plus, X } from "lucide-react";
 import { useRef } from "react";
 
 function SortablePhoto({
+  id,
   url,
   onRemove,
 }: {
+  id: string;
   url: string;
   onRemove: () => void;
 }) {
@@ -34,7 +37,7 @@ function SortablePhoto({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: url });
+  } = useSortable({ id });
 
   return (
     <div
@@ -70,14 +73,18 @@ export function GallerySection() {
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const { url } = await upload(file);
-    set({ gallery: [...gallery, url] });
+    
+    const { url, publicId } = await upload(file);
+    set({
+      gallery: [...gallery, { id: crypto.randomUUID(), url, publicId }],
+    });
   };
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
-    const oldIndex = gallery.indexOf(active.id as string);
-    const newIndex = gallery.indexOf(over.id as string);
+
+    const oldIndex = gallery.findIndex((g) => g.id === active.id);
+    const newIndex = gallery.findIndex((g) => g.id === over.id);
     set({ gallery: arrayMove(gallery, oldIndex, newIndex) });
   };
 
@@ -88,14 +95,18 @@ export function GallerySection() {
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext items={gallery} strategy={rectSortingStrategy}>
+        <SortableContext
+          items={gallery.map((g) => g.id)}
+          strategy={rectSortingStrategy}
+        >
           <div className="grid grid-cols-3 gap-2">
-            {gallery.map((url) => (
+            {gallery.map((item) => (
               <SortablePhoto
-                key={url}
-                url={url}
+                key={item.id}
+                id={item.id}
+                url={item.url}
                 onRemove={() =>
-                  set({ gallery: gallery.filter((u) => u !== url) })
+                  set({ gallery: gallery.filter((g) => g.id !== item.id) })
                 }
               />
             ))}

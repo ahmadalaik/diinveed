@@ -20,10 +20,12 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useShallow } from "zustand/shallow";
 
 export function GiftsSection() {
-  const gifts = useInvitationStore((s) => s.gifts as GiftItem[]);
-  const set = useInvitationStore((s) => s.set);
+  const { gifts, set } = useInvitationStore(
+    useShallow((s) => ({ gifts: s.gifts, set: s.set })),
+  );
   const sensors = useSensors(useSensor(PointerSensor));
 
   const update = (id: string, patch: Partial<GiftItem>) => {
@@ -40,12 +42,21 @@ export function GiftsSection() {
 
   const add = () => {
     set({
-      gifts: [...gifts, { id: crypto.randomUUID(), name: "", description: "" }],
+      gifts: [
+        ...gifts,
+        {
+          id: crypto.randomUUID(),
+          provider: "",
+          accountName: "",
+          accountNumber: "",
+        },
+      ],
     });
   };
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
+
     const oldIndex = gifts.findIndex((g) => g.id === active.id);
     const newIndex = gifts.findIndex((g) => g.id === over.id);
     set({ gifts: arrayMove(gifts, oldIndex, newIndex) });
@@ -79,21 +90,33 @@ export function GiftsSection() {
                   </Button>
                 </div>
                 <div>
-                  <Label className="text-xs">Name</Label>
+                  <Label className="text-xs">Nama Bank/E-Wallet</Label>
                   <Input
-                    value={gift.name}
-                    onChange={(e) => update(gift.id, { name: e.target.value })}
-                    placeholder="KitchenAid Mixer"
+                    value={gift.provider}
+                    onChange={(e) =>
+                      update(gift.id, { provider: e.target.value })
+                    }
+                    placeholder="Bank BSI"
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Description</Label>
+                  <Label className="text-xs">Atas Nama</Label>
                   <Input
-                    value={gift.description}
+                    value={gift.accountName}
                     onChange={(e) =>
-                      update(gift.id, { description: e.target.value })
+                      update(gift.id, { accountName: e.target.value })
                     }
-                    placeholder="Optional"
+                    placeholder="Citra Maharani"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">No. Rekening</Label>
+                  <Input
+                    value={gift.accountNumber}
+                    onChange={(e) =>
+                      update(gift.id, { accountNumber: e.target.value })
+                    }
+                    placeholder="1234567890"
                   />
                 </div>
               </div>

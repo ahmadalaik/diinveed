@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useInvitationStore } from "../store/invitation-store";
 import { saveInvitation } from "../actions/save-invitation";
 import { toast } from "sonner";
+import { shallow } from "zustand/shallow";
 
 export function useInvitationAutoSave() {
   useEffect(() => {
@@ -11,6 +12,16 @@ export function useInvitationAutoSave() {
 
     const unsub = useInvitationStore.subscribe(
       (s) => ({
+        brideName: s.brideName,
+        brideNickname: s.brideNickname,
+        brideDescription: s.brideDescription,
+        brideImage: s.brideImage,
+        brideImagePublicId: s.brideImagePublicId,
+        groomName: s.groomName,
+        groomNickname: s.groomNickname,
+        groomDescription: s.groomDescription,
+        groomImage: s.groomImage,
+        groomImagePublicId: s.groomImagePublicId,
         title: s.title,
         subtitle: s.subtitle,
         date: s.date,
@@ -41,7 +52,7 @@ export function useInvitationAutoSave() {
           setSaveStatus("saving");
           try {
             await saveInvitation(data);
-            setSaveStatus("saving");
+            setSaveStatus("saved");
             setLastSaved(new Date());
           } catch {
             setSaveStatus("unsaved");
@@ -49,6 +60,7 @@ export function useInvitationAutoSave() {
           }
         }, 2500);
       },
+      { equalityFn: shallow },
     );
 
     function handleBeforeUnload(e: BeforeUnloadEvent) {

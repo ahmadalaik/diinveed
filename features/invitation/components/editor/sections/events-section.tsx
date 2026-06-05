@@ -15,30 +15,126 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useShallow } from "zustand/react/shallow";
 import { SortableItem } from "../sortable-item";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { FieldGroup } from "@/components/ui/field";
+import {
+  EditorField,
+  EditorInput,
+  EditorLabel,
+  EditorTextarea,
+} from "../editor-field";
+
+function useEventUpdate(id: string) {
+  const set = useInvitationStore((s) => s.set);
+  return (patch: Partial<EventItem>) => {
+    const events = useInvitationStore.getState().events as EventItem[];
+    set({
+      events: events.map((e) => (e.id === id ? { ...e, ...patch } : e)),
+    });
+  };
+}
+
+function EventTitleField({ id }: { id: string }) {
+  const value = useInvitationStore(
+    (s) => (s.events as EventItem[]).find((e) => e.id === id)?.title ?? "",
+  );
+  const update = useEventUpdate(id);
+  return (
+    <EditorField>
+      <EditorLabel htmlFor={`event-title-${id}`}>Nama Acara</EditorLabel>
+      <EditorInput
+        id={`event-title-${id}`}
+        autoComplete="off"
+        placeholder="Akad Nikah"
+        value={value}
+        onChange={(e) => update({ title: e.target.value })}
+      />
+    </EditorField>
+  );
+}
+
+function EventTimeField({ id }: { id: string }) {
+  const value = useInvitationStore(
+    (s) => (s.events as EventItem[]).find((e) => e.id === id)?.time ?? "",
+  );
+  const update = useEventUpdate(id);
+  return (
+    <EditorField>
+      <EditorLabel htmlFor={`event-time-${id}`}>Waktu</EditorLabel>
+      <EditorInput
+        id={`event-time-${id}`}
+        autoComplete="off"
+        placeholder="08.00 - 10.00 WIB"
+        value={value}
+        onChange={(e) => update({ time: e.target.value })}
+      />
+    </EditorField>
+  );
+}
+
+function EventDescField({ id }: { id: string }) {
+  const value = useInvitationStore(
+    (s) =>
+      (s.events as EventItem[]).find((e) => e.id === id)?.description ?? "",
+  );
+  const update = useEventUpdate(id);
+  return (
+    <EditorField>
+      <EditorLabel htmlFor={`event-desc-${id}`}>Deskripsi</EditorLabel>
+      <EditorTextarea
+        id={`event-desc-${id}`}
+        placeholder="Bertempat di Gedung Serbaguna, Jl. Merdeka No. 1"
+        value={value}
+        onChange={(e) => update({ description: e.target.value })}
+      />
+    </EditorField>
+  );
+}
+
+function EventCard({ id, index }: { id: string; index: number }) {
+  const set = useInvitationStore((s) => s.set);
+
+  const remove = () => {
+    const events = useInvitationStore.getState().events as EventItem[];
+    set({ events: events.filter((e) => e.id !== id) });
+  };
+
+  return (
+    <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground">
+          Event {index + 1}
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-6 hover:bg-destructive/10 hover:cursor-pointer"
+          onClick={remove}
+        >
+          <Trash2 className="h-3 w-3 text-destructive" />
+        </Button>
+      </div>
+      <FieldGroup>
+        <EventTitleField id={id} />
+        <EventTimeField id={id} />
+        <EventDescField id={id} />
+      </FieldGroup>
+    </div>
+  );
+}
 
 export function EventsSection() {
-  const events = useInvitationStore((s) => s.events as EventItem[]);
+  const ids = useInvitationStore(
+    useShallow((s) => (s.events as EventItem[]).map((e) => e.id)),
+  );
   const set = useInvitationStore((s) => s.set);
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const update = (id: string, patch: Partial<EventItem>) => {
-    set({
-      events: events.map((event) =>
-        event.id === id ? { ...event, ...patch } : event,
-      ),
-    });
-  };
-
-  const remove = (id: string) => {
-    set({ events: events.filter((event) => event.id !== id) });
-  };
-
   const add = () => {
+    const events = useInvitationStore.getState().events as EventItem[];
     set({
       events: [
         ...events,
@@ -49,9 +145,10 @@ export function EventsSection() {
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
+
+    const events = useInvitationStore.getState().events as EventItem[];
     const oldIndex = events.findIndex((event) => event.id === active.id);
     const newIndex = events.findIndex((event) => event.id === over.id);
-
     set({ events: arrayMove(events, oldIndex, newIndex) });
   };
 
@@ -62,61 +159,16 @@ export function EventsSection() {
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext
-          items={events.map((event) => event.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {events.map((event, index) => (
-            <SortableItem key={event.id} id={event.id}>
-              <div className="space-y-2 border rounded-lg p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    Event {index + 1}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6"
-                    onClick={() => remove(event.id)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-                <div>
-                  <Label className="text-xs">Title</Label>
-                  <Input
-                    value={event.title}
-                    onChange={(e) =>
-                      update(event.id, { title: e.target.value })
-                    }
-                    placeholder="Ceremony"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Time</Label>
-                  <Input
-                    value={event.time}
-                    onChange={(e) => update(event.id, { time: e.target.value })}
-                    placeholder="4:00 PM"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs">Description</Label>
-                  <Input
-                    value={event.description}
-                    onChange={(e) =>
-                      update(event.id, { description: e.target.value })
-                    }
-                    placeholder="Optional details"
-                  />
-                </div>
-              </div>
+        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+          {ids.map((id, index) => (
+            <SortableItem key={id} id={id}>
+              <EventCard id={id} index={index} />
             </SortableItem>
           ))}
         </SortableContext>
       </DndContext>
-      <Button variant="outline" size="sm" className="w-full" onClick={add}>
-        <Plus className="h-4 w-4 mr-1" /> Add Event
+      <Button variant="outline" size="sm" className="w-full hover:cursor-pointer" onClick={add}>
+        <Plus className="h-4 w-4 mr-1" /> Tambah Event
       </Button>
     </div>
   );
