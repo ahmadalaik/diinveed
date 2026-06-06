@@ -9,9 +9,14 @@ export type RsvpOptions = {
 
 export type EventItem = {
   id: string;
-  time: string;
+  date: string;
+  timeStart: string;
+  timeEnd: string;
+  timezone: string;
   title: string;
   description: string;
+  locationName: string;
+  mapsUrl: string;
 };
 
 export type StoryItem = {
@@ -39,6 +44,8 @@ export type InvitationState = {
   userId: string;
   token: string;
 
+  coverImage: string | null;
+  coverImagePublicId: string | null;
   coverTitle: string;
   coverSubtitle: string;
   music: string;
@@ -61,11 +68,9 @@ export type InvitationState = {
   subtitle: string;
   date: string;
   time: string;
+  timezone: string;
   hosts: string;
   message: string;
-  venueName: string;
-  venueAddress: string;
-  coverImage: string | null;
   tokenId: string;
   tokenOverrides: TokenOverrides | null;
   templateSlug: string;
@@ -76,7 +81,6 @@ export type InvitationState = {
   events: EventItem[];
   stories: StoryItem[];
   gallery: Gallery[];
-  stickers: string[];
   gifts: GiftItem[];
   isPublished: boolean;
 };

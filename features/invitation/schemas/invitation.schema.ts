@@ -9,9 +9,14 @@ const rsvpOptionsSchema = z.object({
 
 const eventItemSchema = z.object({
   id: z.string(),
-  time: z.string(),
+  date: z.string().default(""),
+  timeStart: z.string().default(""),
+  timeEnd: z.string().default(""),
+  timezone: z.string().default(""),
   title: z.string(),
   description: z.string(),
+  locationName: z.string().default(""),
+  mapsUrl: z.string().default(""),
 });
 
 const storyItemSchema = z.object({
@@ -55,6 +60,8 @@ const tokenOverridesSchema = z
   .nullable();
 
 export const saveInvitationSchema = z.object({
+  coverImage: z.string().nullable(),
+  coverImagePublicId: z.string().nullable(),
   coverTitle: z.string(),
   coverSubtitle: z.string(),
   music: z.string(),
@@ -75,11 +82,9 @@ export const saveInvitationSchema = z.object({
   subtitle: z.string(),
   date: z.string(),
   time: z.string(),
+  timezone: z.string().default("WIB"),
   hosts: z.string(),
   message: z.string(),
-  venueName: z.string(),
-  venueAddress: z.string(),
-  coverImage: z.string().nullable(),
   tokenId: z.string(),
   tokenOverrides: tokenOverridesSchema,
   templateSlug: z.string().min(1),
@@ -90,7 +95,6 @@ export const saveInvitationSchema = z.object({
   events: z.array(eventItemSchema),
   stories: z.array(storyItemSchema),
   gallery: z.array(galleryItemSchema),
-  stickers: z.array(z.string()),
   gifts: z.array(giftItemSchema),
 });
 
@@ -99,7 +103,6 @@ export type SaveInvitationType = z.infer<typeof saveInvitationSchema>;
 export const publishReadySchema = z.object({
   title: z.string().min(1, "Nama pengantin wajib diisi"),
   date: z.string().min(1, "Tanggal pernikahan wajib diisi"),
-  venueName: z.string().min(1, "Venue wajib diisi"),
   tokenId: z.string().min(1),
 });
 
