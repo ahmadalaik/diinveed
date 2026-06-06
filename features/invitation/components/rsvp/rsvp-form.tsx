@@ -5,8 +5,8 @@ import { submitRsvp } from "../../actions/submit-rsvp";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -17,11 +17,12 @@ type Props = {
 export function RsvpForm({ token, rsvpOptions }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [response, setResponse] = useState<"ACCEPT" | "DECLINE" | "MAYBE">(
     "ACCEPT",
   );
-  const [plusOne, setPlusOne] = useState(false);
+  const [guests, setGuests] = useState("1");
+  const [hope, setHope] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
 
@@ -30,9 +31,10 @@ export function RsvpForm({ token, rsvpOptions }: Props) {
     setLoading(true);
     const result = await submitRsvp(token, {
       name,
-      email: email || undefined,
+      phoneNumber,
       response,
-      plusOne,
+      guests,
+      hope,
     });
     setLoading(false);
     if (result.errors) {
@@ -64,8 +66,9 @@ export function RsvpForm({ token, rsvpOptions }: Props) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <Label>Your Name *</Label>
+            <Label htmlFor="rsvp-name">Your Name *</Label>
             <Input
+              id="rsvp-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Full name"
@@ -77,13 +80,19 @@ export function RsvpForm({ token, rsvpOptions }: Props) {
           </div>
 
           <div>
-            <Label>Email (optional)</Label>
+            <Label htmlFor="rsvp-phone">Phone (optional)</Label>
             <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              id="rsvp-phone"
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="08xxxxxxxxxx"
             />
+            {errors.phoneNumber && (
+              <p className="text-xs text-destructive mt-1">
+                {errors.phoneNumber[0]}
+              </p>
+            )}
           </div>
 
           <div>
@@ -115,11 +124,27 @@ export function RsvpForm({ token, rsvpOptions }: Props) {
           </div>
 
           {rsvpOptions.plusOne && (
-            <div className="flex items-center justify-between">
-              <Label>Bringing a plus one?</Label>
-              <Switch checked={plusOne} onCheckedChange={setPlusOne} />
+            <div>
+              <Label htmlFor="rsvp-guests">Number of guests</Label>
+              <Input
+                id="rsvp-guests"
+                type="number"
+                min={1}
+                value={guests}
+                onChange={(e) => setGuests(e.target.value)}
+              />
             </div>
           )}
+
+          <div>
+            <Label htmlFor="rsvp-hope">Wishes (optional)</Label>
+            <Textarea
+              id="rsvp-hope"
+              value={hope}
+              onChange={(e) => setHope(e.target.value)}
+              placeholder="Your wishes for the couple"
+            />
+          </div>
 
           {errors._form && (
             <p className="text-xs text-destructive">{errors._form[0]}</p>
