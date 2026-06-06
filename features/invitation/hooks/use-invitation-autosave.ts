@@ -12,6 +12,14 @@ export function useInvitationAutoSave() {
 
     const unsub = useInvitationStore.subscribe(
       (s) => ({
+        coverImage: s.coverImage,
+        coverImagePublicId: s.coverImagePublicId,
+        coverTitle: s.coverTitle,
+        coverSubtitle: s.coverSubtitle,
+        music: s.music,
+        musicPublicId: s.musicPublicId,
+        quote: s.quote,
+        quoteReference: s.quoteReference,
         brideName: s.brideName,
         brideNickname: s.brideNickname,
         brideDescription: s.brideDescription,
@@ -26,11 +34,9 @@ export function useInvitationAutoSave() {
         subtitle: s.subtitle,
         date: s.date,
         time: s.time,
+        timezone: s.timezone,
         hosts: s.hosts,
         message: s.message,
-        venueName: s.venueName,
-        venueAddress: s.venueAddress,
-        coverImage: s.coverImage,
         tokenId: s.tokenId,
         tokenOverrides: s.tokenOverrides,
         templateSlug: s.templateSlug,
@@ -41,7 +47,6 @@ export function useInvitationAutoSave() {
         events: s.events,
         stories: s.stories,
         gallery: s.gallery,
-        stickers: s.stickers,
         gifts: s.gifts,
       }),
       (data) => {

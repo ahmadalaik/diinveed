@@ -1,8 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
-import { useCloudinaryUpload } from "@/features/template/hooks/use-cloudinary-upload";
+import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
+import { cldUrl } from "@/lib/cloudinary-url";
+import { cn } from "@/lib/utils";
 import {
   closestCenter,
   DndContext,
@@ -43,22 +47,30 @@ function SortablePhoto({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`relative ${isDragging ? "opacity-50 z-10" : ""}`}
+      className={cn("group relative", isDragging && "z-10 opacity-50")}
     >
-      <img
-        src={url}
-        alt=""
-        className="w-full h-16 object-cover rounded-md cursor-grab"
+      <AspectRatio
+        ratio={3 / 4}
+        className="overflow-hidden rounded-md border bg-muted"
         {...attributes}
         {...listeners}
-      />
-      <button
-        type="button"
-        onClick={onRemove}
-        className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full h-4 w-4 flex items-center justify-center"
       >
-        <X className="h-2.5 w-2.5" />
-      </button>
+        <img
+          src={cldUrl(url, "f_auto,q_auto,w_400")}
+          alt=""
+          className="h-full w-full cursor-grab object-cover"
+        />
+      </AspectRatio>
+      <Button
+        type="button"
+        size="icon"
+        variant="secondary"
+        onClick={onRemove}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="absolute right-1 top-1 size-5 rounded-full bg-background/70 text-muted-foreground shadow-sm backdrop-blur-sm hover:bg-background hover:text-foreground"
+      >
+        <X className="size-3" />
+      </Button>
     </div>
   );
 }
@@ -67,7 +79,7 @@ export function GallerySection() {
   const gallery = useInvitationStore((s) => s.gallery);
   const set = useInvitationStore((s) => s.set);
   const fileRef = useRef<HTMLInputElement>(null);
-  const { upload, isUploading } = useCloudinaryUpload();
+  const { upload, isUploading, uploadProgress } = useCloudinaryUpload();
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,14 +122,19 @@ export function GallerySection() {
                 }
               />
             ))}
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => fileRef.current?.click()}
               disabled={isUploading}
-              className="h-16 border-2 border-dashed rounded-md flex items-center justify-center hover:bg-muted/50 transition-colors"
+              className="aspect-3/4 h-auto w-full border-2 border-dashed text-muted-foreground"
             >
-              <Plus className="h-4 w-4 text-muted-foreground" />
-            </button>
+              {isUploading ? (
+                <span className="text-xs">{uploadProgress}%</span>
+              ) : (
+                <Plus className="size-4" />
+              )}
+            </Button>
           </div>
         </SortableContext>
       </DndContext>

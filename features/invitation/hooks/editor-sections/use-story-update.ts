@@ -7,7 +7,7 @@ export function useStoryUpdate(id: string) {
   return (patch: Partial<StoryItem>) => {
     const stories = useInvitationStore.getState().stories as StoryItem[];
     set({
-      stories: stories.map((e) => (e.id === id ? { ...e, ...patch } : e)),
+      stories: stories.map((s) => (s.id === id ? { ...s, ...patch } : s)),
     });
   };
 }

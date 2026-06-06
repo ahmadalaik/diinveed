@@ -1,23 +1,9 @@
 "use client";
 
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
-import { StoryItem } from "@/features/invitation/types/invitation.type";
-import {
-  closestCenter,
-  DndContext,
-  DragEndEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { SortableItem } from "../sortable-item";
+import { arrayMove } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { useStoryUpdate } from "@/features/invitation/hooks/editor-sections/use-story-update";
 import {
   EditorField,
@@ -30,7 +16,7 @@ import { useShallow } from "zustand/shallow";
 
 function StoryYearField({ id }: { id: string }) {
   const value = useInvitationStore(
-    (s) => (s.stories as StoryItem[]).find((e) => e.id === id)?.year ?? "",
+    (s) => s.stories.find((e) => e.id === id)?.year ?? "",
   );
   const update = useStoryUpdate(id);
 
@@ -50,7 +36,7 @@ function StoryYearField({ id }: { id: string }) {
 
 function StoryTitleField({ id }: { id: string }) {
   const value = useInvitationStore(
-    (s) => (s.stories as StoryItem[]).find((e) => e.id === id)?.title ?? "",
+    (s) => s.stories.find((e) => e.id === id)?.title ?? "",
   );
   const update = useStoryUpdate(id);
 
@@ -70,7 +56,7 @@ function StoryTitleField({ id }: { id: string }) {
 
 function StoryDescriptionField({ id }: { id: string }) {
   const value = useInvitationStore(
-    (s) => (s.stories as StoryItem[]).find((e) => e.id === id)?.body ?? "",
+    (s) => s.stories.find((e) => e.id === id)?.body ?? "",
   );
   const update = useStoryUpdate(id);
 
@@ -87,28 +73,61 @@ function StoryDescriptionField({ id }: { id: string }) {
   );
 }
 
-function StoryCard({ id, index }: { id: string; index: number }) {
+interface StoryCardProps {
+  id: string;
+  index: number;
+  total: number;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+}
+
+function StoryCard({ id, index, total, onMoveUp, onMoveDown }: StoryCardProps) {
   const set = useInvitationStore((s) => s.set);
 
   const remove = () => {
-    const stories = useInvitationStore.getState().stories as StoryItem[];
+    const stories = useInvitationStore.getState().stories;
     set({ stories: stories.filter((e) => e.id !== id) });
   };
 
   return (
-    <div className="border rounded-lg p-3 space-y-2">
+    <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">
           Chapter {index + 1}
         </span>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6"
-          onClick={() => remove}
-        >
-          <Trash2 className="h-3 w-3" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-6 hover:cursor-pointer disabled:opacity-30"
+              disabled={index === 0}
+              onClick={onMoveUp}
+              aria-label="Pindah ke atas"
+            >
+              <ChevronUp className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-6 hover:cursor-pointer disabled:opacity-30"
+              disabled={index === total - 1}
+              onClick={onMoveDown}
+              aria-label="Pindah ke bawah"
+            >
+              <ChevronDown className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-6 hover:bg-destructive/10 hover:cursor-pointer"
+            onClick={remove}
+            aria-label="Hapus story"
+          >
+            <Trash2 className="h-3 w-3 text-destructive" />
+          </Button>
+        </div>
       </div>
       <FieldGroup>
         <StoryYearField id={id} />
@@ -120,14 +139,11 @@ function StoryCard({ id, index }: { id: string; index: number }) {
 }
 
 export function StoriesSection() {
-  const ids = useInvitationStore(
-    useShallow((s) => (s.stories as StoryItem[]).map((e) => e.id)),
-  );
+  const ids = useInvitationStore(useShallow((s) => s.stories.map((e) => e.id)));
   const set = useInvitationStore((s) => s.set);
-  const sensors = useSensors(useSensor(PointerSensor));
 
   const add = () => {
-    const stories = useInvitationStore.getState().stories as StoryItem[];
+    const stories = useInvitationStore.getState().stories;
     set({
       stories: [
         ...stories,
@@ -136,31 +152,31 @@ export function StoriesSection() {
     });
   };
 
-  const handleDragEnd = ({ active, over }: DragEndEvent) => {
-    if (!over || active.id === over.id) return;
-
-    const stories = useInvitationStore.getState().stories as StoryItem[];
-    const oldIndex = stories.findIndex((s) => s.id === active.id);
-    const newIndex = stories.findIndex((s) => s.id === over.id);
-    set({ stories: arrayMove(stories, oldIndex, newIndex) });
+  const move = (index: number, direction: -1 | 1) => {
+    const stories = useInvitationStore.getState().stories;
+    const target = index + direction;
+    if (target < 0 || target >= stories.length) return;
+    set({ stories: arrayMove(stories, index, target) });
   };
 
   return (
     <div className="space-y-3">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
+      {ids.map((id, index) => (
+        <StoryCard
+          key={id}
+          id={id}
+          index={index}
+          total={ids.length}
+          onMoveUp={() => move(index, -1)}
+          onMoveDown={() => move(index, 1)}
+        />
+      ))}
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-full hover:cursor-pointer"
+        onClick={add}
       >
-        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-          {ids.map((id, index) => (
-            <SortableItem key={id} id={id}>
-              <StoryCard id={id} index={index} />
-            </SortableItem>
-          ))}
-        </SortableContext>
-      </DndContext>
-      <Button variant="outline" size="sm" className="w-full" onClick={add}>
         <Plus className="h-4 w-4 mr-1" /> Add Chapter
       </Button>
     </div>

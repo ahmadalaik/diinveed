@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCloudinaryUpload } from "@/features/template/hooks/use-cloudinary-upload";
+import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
 import type { InvitationState } from "@/features/invitation/types/invitation.type";
 import { ImageCropperDialog } from "../image-cropper-dialog";
 import {
@@ -20,6 +20,8 @@ import {
   EditorLabel,
   EditorTextarea,
 } from "../editor-field";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 function BrideNameField() {
   const brideName = useInvitationStore((s) => s.brideName);
@@ -43,7 +45,9 @@ function BrideNicknameField() {
   const set = useInvitationStore((s) => s.set);
   return (
     <EditorField>
-      <EditorLabel htmlFor="brideNickname">Nama Panggilan Mempelai Wanita</EditorLabel>
+      <EditorLabel htmlFor="brideNickname">
+        Nama Panggilan Mempelai Wanita
+      </EditorLabel>
       <EditorInput
         id="brideNickname"
         autoComplete="off"
@@ -93,7 +97,9 @@ function GroomNicknameField() {
   const set = useInvitationStore((s) => s.set);
   return (
     <EditorField>
-      <EditorLabel htmlFor="groomNickname">Nama Panggilan Mempelai Pria</EditorLabel>
+      <EditorLabel htmlFor="groomNickname">
+        Nama Panggilan Mempelai Pria
+      </EditorLabel>
       <EditorInput
         id="groomNickname"
         autoComplete="off"
@@ -133,7 +139,7 @@ function PhotoField({
   const image = useInvitationStore((s) => s[imageKey]);
   const publicId = useInvitationStore((s) => s[publicIdKey]);
   const set = useInvitationStore((s) => s.set);
-  const { upload, remove, isUploading } = useCloudinaryUpload();
+  const { upload, remove, isUploading, uploadProgress } = useCloudinaryUpload();
 
   const fileRef = useRef<HTMLInputElement>(null);
   const [src, setSrc] = useState<string | null>(null);
@@ -171,11 +177,12 @@ function PhotoField({
         <div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 disabled={isUploading}
                 aria-label={`Ubah ${label}`}
-                className="relative h-24 w-24 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60"
+                className="relative h-24 w-24 rounded-full p-0  outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60"
               >
                 <img
                   src={image}
@@ -185,7 +192,7 @@ function PhotoField({
                 <span className="absolute -bottom-0.5 -right-0.5 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground shadow-sm">
                   <Camera className="h-3.5 w-3.5" />
                 </span>
-              </button>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem onClick={() => fileRef.current?.click()}>
@@ -200,18 +207,19 @@ function PhotoField({
           </DropdownMenu>
         </div>
       ) : (
-        <button
+        <Button
           id={imageKey}
+          variant="outline"
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={isUploading}
-          className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed transition-colors hover:bg-muted/50"
+          className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed transition-colors hover:bg-muted/50 shadow-none"
         >
           <Upload className="h-5 w-5 text-muted-foreground" />
           <span className="text-[10px] text-muted-foreground">Unggah</span>
-        </button>
+        </Button>
       )}
-      <input
+      <Input
         ref={fileRef}
         type="file"
         accept="image/*"
@@ -230,6 +238,7 @@ function PhotoField({
         imageSrc={src}
         onCropped={handleCropped}
         isUploading={isUploading}
+        uploadProgress={uploadProgress}
         title={`Sesuaikan ${label}`}
       />
     </EditorField>

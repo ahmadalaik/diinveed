@@ -19,6 +19,7 @@ interface Props {
   imageSrc: string | null;
   onCropped: (blob: Blob) => void | Promise<void>;
   isUploading?: boolean;
+  uploadProgress?: number;
   title?: string;
 }
 
@@ -28,6 +29,7 @@ export function ImageCropperDialog({
   imageSrc,
   onCropped,
   isUploading = false,
+  uploadProgress = 0,
   title = "Sesuaikan Foto",
 }: Props) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -83,7 +85,7 @@ export function ImageCropperDialog({
             Batal
           </Button>
           <Button onClick={handleSave} disabled={isUploading || !areaPixels}>
-            {isUploading ? "Mengunggah..." : "Simpan"}
+            {isUploading ? `Mengunggah ${uploadProgress}%` : "Simpan"}
           </Button>
         </DialogFooter>
       </DialogContent>

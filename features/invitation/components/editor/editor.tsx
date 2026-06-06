@@ -2,30 +2,54 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { GalleryVerticalEnd } from "lucide-react";
+import { GalleryVerticalEnd, Loader2 } from "lucide-react";
 import { AccordionSection } from "./accordion-section";
 import { useInvitationStore } from "../../store/invitation-store";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
-function SaveIndicator() {
+function SaveDot() {
   const saveStatus = useInvitationStore((s) => s.saveStatus);
   const lastSaved = useInvitationStore((s) => s.lastSaved);
 
-  if (saveStatus === "saving")
-    return <span className="text-xs">Saving...</span>;
-  if (saveStatus === "saved" && lastSaved)
-    return (
-      <span className="text-xs text-muted-foreground">
-        Auto-saved · just now
-      </span>
-    );
-  if (saveStatus === "unsaved")
-    return <span className="text-xs text-amber-500">Unsaved changes</span>;
-  return null;
+  const getLabel = () => {
+    if (saveStatus === "saving") return "Saving...";
+    if (saveStatus === "unsaved") return "Unsaved changes";
+    if (lastSaved) return "Auto-saved · just now";
+    return null;
+  };
+
+  const label = getLabel();
+  if (!label) return null;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="flex size-6 shrink-0 items-center justify-center">
+            {saveStatus === "saving" ? (
+              <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+            ) : (
+              <span
+                className={cn(
+                  "size-2 rounded-full",
+                  saveStatus === "unsaved" ? "bg-amber-500" : "bg-emerald-500",
+                )}
+              />
+            )}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 }
 
 function TitleInput() {
@@ -36,16 +60,15 @@ function TitleInput() {
       value={title}
       onChange={(e) => set({ title: e.target.value })}
       placeholder="Invitation title"
-      className="border-none shadow-none px-0 text-sm font-medium focus-visible:ring-0"
+      className="h-auto border-none px-0 py-0 text-sm font-medium shadow-none focus-visible:ring-0"
     />
   );
 }
 
-function TitleAndIndicator() {
+function Brand() {
   return (
-    <div className="border-t border-b px-4 py-2 space-y-1">
-      <TitleInput />
-      <SaveIndicator />
+    <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+      <GalleryVerticalEnd className="size-4" />
     </div>
   );
 }
@@ -60,25 +83,12 @@ export function Editor({ onPublish }: Props) {
       collapsible="none"
       className="w-full border-r bg-background md:w-(--sidebar-width)"
     >
-      <SidebarHeader className="px-0">
-        <SidebarMenu className="px-2">
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0 leading-none">
-                  <span className="text-sm font-semibold">Diinveed</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    Invitation Studio
-                  </span>
-                </div>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <TitleAndIndicator />
+      <SidebarHeader className="border-b p-2">
+        <div className="flex items-center gap-2">
+          <Brand />
+          <TitleInput />
+          <SaveDot />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <AccordionSection />

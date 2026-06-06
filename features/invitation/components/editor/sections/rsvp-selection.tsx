@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
@@ -26,10 +26,11 @@ export function RsvpSection() {
     <div className="space-y-4">
       <div>
         <Label className="text-xs">RSVP Deadline</Label>
-        <Input
-          type="date"
+        <DatePicker
           value={rsvpDeadline}
-          onChange={(e) => set({ rsvpDeadline: e.target.value })}
+          onChange={(value) => set({ rsvpDeadline: value })}
+          yearsBack={1}
+          yearsForward={2}
         />
       </div>
       <div className="space-y-2">
