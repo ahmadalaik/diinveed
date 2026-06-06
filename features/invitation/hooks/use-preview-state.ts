@@ -11,6 +11,8 @@ function getPreviewSnapshot(): InvitationState {
     id: s.id,
     userId: s.userId,
     token: s.token,
+    coverImage: s.coverImage,
+    coverImagePublicId: s.coverImagePublicId,
     coverTitle: s.coverTitle,
     coverSubtitle: s.coverSubtitle,
     music: s.music,
@@ -31,11 +33,9 @@ function getPreviewSnapshot(): InvitationState {
     subtitle: s.subtitle,
     date: s.date,
     time: s.time,
+    timezone: s.timezone,
     hosts: s.hosts,
     message: s.message,
-    venueName: s.venueName,
-    venueAddress: s.venueAddress,
-    coverImage: s.coverImage,
     tokenId: s.tokenId,
     tokenOverrides: s.tokenOverrides,
     templateSlug: s.templateSlug,
@@ -46,14 +46,17 @@ function getPreviewSnapshot(): InvitationState {
     events: s.events,
     stories: s.stories,
     gallery: s.gallery,
-    stickers: s.stickers,
     gifts: s.gifts,
     isPublished: s.isPublished,
   };
 }
 
-function selectPreviewFields(s: ReturnType<typeof useInvitationStore.getState>) {
+function selectPreviewFields(
+  s: ReturnType<typeof useInvitationStore.getState>,
+) {
   return {
+    coverImage: s.coverImage,
+    coverImagePublicId: s.coverImagePublicId,
     coverTitle: s.coverTitle,
     coverSubtitle: s.coverSubtitle,
     music: s.music,
@@ -71,11 +74,9 @@ function selectPreviewFields(s: ReturnType<typeof useInvitationStore.getState>) 
     subtitle: s.subtitle,
     date: s.date,
     time: s.time,
+    timezone: s.timezone,
     hosts: s.hosts,
     message: s.message,
-    venueName: s.venueName,
-    venueAddress: s.venueAddress,
-    coverImage: s.coverImage,
     tokenId: s.tokenId,
     tokenOverrides: s.tokenOverrides,
     templateSlug: s.templateSlug,
@@ -86,7 +87,6 @@ function selectPreviewFields(s: ReturnType<typeof useInvitationStore.getState>) 
     events: s.events,
     stories: s.stories,
     gallery: s.gallery,
-    stickers: s.stickers,
     gifts: s.gifts,
   };
 }
