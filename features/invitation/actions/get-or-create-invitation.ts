@@ -47,12 +47,10 @@ export async function getOrCreateInvitation(): Promise<Result> {
       tokenId: "aura",
       templateSlug: "kelana",
       message: "",
-      venueAddress: "",
       rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
       events: [],
       stories: [],
       gallery: [],
-      stickers: [],
       gifts: [],
     },
   });

@@ -31,14 +31,12 @@ const mockUser = {
 const readyInvitation = {
   title: "Amelia & Theo",
   date: "2026-09-12",
-  venueName: "Rose Garden",
   tokenId: "aura",
 };
 
 const incompleteInvitation = {
   title: "",
   date: "",
-  venueName: "",
   tokenId: "aura",
 };
 

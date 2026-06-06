@@ -24,7 +24,12 @@ const prismaMock = prisma as unknown as {
 };
 const getCurrentUserMock = getCurrentUser as ReturnType<typeof vi.fn>;
 
-const mockUser = { id: "user-1", name: "Test", email: "test@test.com", role: "user" as const };
+const mockUser = {
+  id: "user-1",
+  name: "Test",
+  email: "test@test.com",
+  role: "user" as const,
+};
 
 const mockInvitation = {
   id: "inv-1",
@@ -32,19 +37,35 @@ const mockInvitation = {
   token: "tok-123",
   title: "",
   subtitle: "are getting married",
-  date: "", time: "", hosts: "", message: "",
-  venueName: "", venueAddress: "",
+  date: "",
+  time: "",
+  hosts: "",
+  message: "",
   coverImage: null,
-  tokenId: "aura", tokenOverrides: null,
+  tokenId: "aura",
+  tokenOverrides: null,
   backgroundType: "solid",
-  dressCode: "", rsvpDeadline: "",
-  rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false, meal: false },
-  events: [], stories: [], gallery: [], stickers: [], gifts: [],
+  dressCode: "",
+  rsvpDeadline: "",
+  rsvpOptions: {
+    accept: true,
+    decline: true,
+    maybe: true,
+    plusOne: false,
+    meal: false,
+  },
+  events: [],
+  stories: [],
+  gallery: [],
+  gifts: [],
   isPublished: false,
-  createdAt: new Date(), updatedAt: new Date(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };
 
-beforeEach(() => { vi.clearAllMocks(); });
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("getOrCreateInvitation", () => {
   it("returns Unauthorized when not logged in", async () => {

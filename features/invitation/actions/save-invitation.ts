@@ -32,7 +32,6 @@ export async function saveInvitation(
     events,
     stories,
     gallery,
-    stickers,
     gifts,
     tokenOverrides,
     ...rest
@@ -50,7 +49,6 @@ export async function saveInvitation(
       events: events as object[],
       stories: stories as object[],
       gallery: gallery as object[],
-      stickers: stickers as string[],
       gifts: gifts as object[],
     },
   });
