@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { format } from "date-fns";
+import { formatDate } from "@/features/invitation/lib/datetime";
 import { CalendarHeart } from "lucide-react";
 import { InvitationState } from "@/features/invitation/types/invitation.type";
 import { cloudinaryLoader } from "@/lib/cloudinary-loader";
@@ -45,7 +45,7 @@ export function BannerKelana({ inv }: Props) {
         <div className="mt-8 flex items-center gap-4 text-[#d4cbb3]">
           <CalendarHeart />
           <span className="font-serif-heading text-xl tracking-wide">
-            {inv.time && format(inv.time, "PPP")}
+            {formatDate(inv.date, "PPP")}
           </span>
         </div>
       </div>

@@ -1,17 +1,21 @@
 "use client";
 
 import { InvitationState } from "@/features/invitation/types/invitation.type";
-import { format } from "date-fns";
+import { formatDate } from "@/features/invitation/lib/datetime";
 import { ArrowUpRight, CalendarHeart } from "lucide-react";
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 
 const fadeUp = (delay: number) => ({
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] as const, delay },
+    transition: {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1] as const,
+      delay,
+    },
   },
 });
 
@@ -27,7 +31,7 @@ function EventCard({
   return (
     <motion.div
       ref={ref}
-      className="relative p-7 rounded-lg hover:bg-white/5 hover:backdrop-blur-sm transition-all group"
+      className="relative p-7 rounded-lg hover:bg-white/5 hover:backdrop-blur-sm transition-[background-color,backdrop-filter] duration-300 group"
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={fadeUp(delay)}
@@ -66,15 +70,16 @@ export function EventsKelana({ inv }: Props) {
               <CalendarHeart strokeWidth={1.5} />
             </div>
             <span className="inline-block py-1 text-[#d4cbb3] text-xs tracking-[0.2em] font-semibold uppercase mb-4 border-b border-stone-50/20">
-              {event.time && format(event.time, "PP")}
+              {formatDate(event.date, "PP")}
             </span>
             <div className="text-stone-50 tracking-wide">
               <h3 className="font-script text-3xl font-medium tracking-wider">
                 {event.title}
               </h3>
               <p className="text-lg font-serif font-semibold italic mt-2 mb-2">
-                {event.time && format(event.time, "hh:mm a")} -{" "}
-                {event.time && format(event.time, "hh:mm a")}
+                {event.timeStart}
+                {event.timeEnd && ` - ${event.timeEnd}`}
+                {event.timezone && ` ${event.timezone}`}
               </p>
               <p className="text-sm font-light leading-relaxed mb-8">
                 {event.description
@@ -87,13 +92,17 @@ export function EventsKelana({ inv }: Props) {
                     </span>
                   ))}
               </p>
-              <a
-                href="#"
-                className="inline-flex items-center gap-2 text-xs text-[#d4cbb3] uppercase border-b/10 pb-0.5 hover:text-stone-50 transition-all duration-500"
-              >
-                View Map
-                <ArrowUpRight strokeWidth={1.5} />
-              </a>
+              {event.mapsUrl && (
+                <a
+                  href={event.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs text-[#d4cbb3] uppercase border-b/10 pb-0.5 hover:text-stone-50 transition-all duration-500"
+                >
+                  View Map
+                  <ArrowUpRight strokeWidth={1.5} />
+                </a>
+              )}
             </div>
           </EventCard>
         ))}

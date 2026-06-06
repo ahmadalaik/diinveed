@@ -1,7 +1,7 @@
 "use client";
 
 import { MoveDown } from "lucide-react";
-import { format } from "date-fns";
+import { formatDate } from "@/features/invitation/lib/datetime";
 import { motion } from "motion/react";
 import { InvitationState } from "@/features/invitation/types/invitation.type";
 
@@ -57,7 +57,7 @@ export function PrologKelana({ inv }: Props) {
         >
           <div className="flex items-baseline-last justify-center">
             <span className="font-serif font-medium text-3xl text-stone-50 mb-4">
-              {inv.date && format(inv.date, "PP")}
+              {formatDate(inv.date, "PP")}
             </span>
           </div>
           <p className="font-serif text-lg italic text-stone-200 leading-relaxed">

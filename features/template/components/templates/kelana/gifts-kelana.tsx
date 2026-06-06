@@ -7,11 +7,15 @@ import { useRef } from "react";
 import CopyButton from "../shared/copy-button";
 
 const fadeUp = (delay: number) => ({
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] as const, delay },
+    transition: {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1] as const,
+      delay,
+    },
   },
 });
 
@@ -27,7 +31,7 @@ function GiftCard({
   return (
     <motion.div
       ref={ref}
-      className="p-5 rounded-xl text-center hover:bg-white/5 hover:backdrop-blur-sm transition-all group"
+      className="p-5 rounded-xl text-center hover:bg-white/5 hover:backdrop-blur-sm transition-[background-color,backdrop-filter] duration-300 group"
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={fadeUp(delay)}

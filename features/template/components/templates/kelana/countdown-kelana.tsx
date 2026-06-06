@@ -1,6 +1,7 @@
 "use client";
 
 import { InvitationState } from "@/features/invitation/types/invitation.type";
+import { toDateTime } from "@/features/invitation/lib/datetime";
 import { cldUrl } from "@/lib/cloudinary-url";
 import { cn } from "@/lib/utils";
 import { motion, useInView } from "motion/react";
@@ -58,11 +59,11 @@ export function CountdownKelana({ inv }: Props) {
   }, [currentIndex, gallery.length]);
 
   useEffect(() => {
-    const weddingDate = new Date(inv.time).getTime();
-
-    if (Number.isNaN(weddingDate)) {
+    const target = toDateTime(inv.date, inv.time, inv.timezone);
+    if (!target) {
       return;
     }
+    const weddingDate = target.getTime();
 
     const timer = setInterval(() => {
       const now = new Date().getTime();
@@ -91,7 +92,7 @@ export function CountdownKelana({ inv }: Props) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [inv.time]);
+  }, [inv.date, inv.time, inv.timezone]);
 
   return (
     <section
