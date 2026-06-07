@@ -68,6 +68,7 @@ export const saveInvitationSchema = z.object({
   musicPublicId: z.string(),
   quote: z.string(),
   quoteReference: z.string(),
+  isBrideFirst: z.boolean(),
   brideName: z.string(),
   brideNickname: z.string(),
   brideDescription: z.string().nullable(),

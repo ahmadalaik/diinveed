@@ -27,6 +27,7 @@ const base = {
   stories: [],
   gallery: [],
   gifts: [],
+  isBrideFirst: true,
   brideName: "Citra",
   brideNickname: "Citra",
   brideDescription: "Putri kedua",

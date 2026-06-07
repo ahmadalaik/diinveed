@@ -53,6 +53,7 @@ export type InvitationState = {
   quote: string;
   quoteReference: string;
 
+  isBrideFirst: boolean;
   brideName: string;
   brideNickname: string;
   brideDescription: string | null;
