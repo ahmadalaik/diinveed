@@ -24,8 +24,8 @@ export function KelanaLayout({ children, inv }: Props) {
   }, [inv.gallery.length]);
 
   return (
-    <main className="fixed right-0 top-0 w-full lg:w-[25%] h-svh overflow-y-auto overflow-x-hidden bg-stone-900 scroll-smooth z-10 scrollbar-none [&::-webkit-scrollbar]:hidden">
-      <div className="fixed top-0 bottom-0 right-0 w-full lg:w-[25%] pointer-events-none -z-10">
+    <main className="fixed right-0 top-0 w-full lg:w-[30%] h-svh overflow-y-auto overflow-x-hidden bg-stone-900 scroll-smooth z-10 scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <div className="fixed top-0 bottom-0 right-0 w-full lg:w-[30%] pointer-events-none -z-10">
         {inv.gallery
           .filter((g) => g.url)
           .map((gallery, index) => (

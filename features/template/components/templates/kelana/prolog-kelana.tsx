@@ -37,17 +37,31 @@ export function PrologKelana({ inv }: Props) {
           </p>
         </motion.div>
 
-        <motion.h1
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          custom={0.5}
-          className="text-stone-50 leading-none text-5xl font-script mb-2 drop-shadow-lg"
-        >
-          {inv.brideNickname}{" "}
-          <span className="text-3xl opacity-80 mx-2">&amp;</span>{" "}
-          {inv.groomNickname}
-        </motion.h1>
+        {inv.isBrideFirst ? (
+          <motion.h1
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.5}
+            className="text-stone-50 leading-none text-5xl font-script mb-2 drop-shadow-lg"
+          >
+            {inv.brideNickname}{" "}
+            <span className="text-3xl opacity-80 mx-2">&amp;</span>{" "}
+            {inv.groomNickname}
+          </motion.h1>
+        ) : (
+          <motion.h1
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.5}
+            className="text-stone-50 leading-none text-5xl font-script mb-2 drop-shadow-lg"
+          >
+            {inv.groomNickname}{" "}
+            <span className="text-3xl opacity-80 mx-2">&amp;</span>{" "}
+            {inv.brideNickname}
+          </motion.h1>
+        )}
 
         <motion.div
           variants={fadeUp}

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { formatDate } from "@/features/invitation/lib/datetime";
 import { CalendarHeart } from "lucide-react";
+import { motion } from "motion/react";
 import { InvitationState } from "@/features/invitation/types/invitation.type";
 import { cloudinaryLoader } from "@/lib/cloudinary-loader";
 
@@ -29,26 +30,90 @@ export function BannerKelana({ inv }: Props) {
         <div className="absolute inset-0 bg-stone-900/10 mix-blend-overlay"></div>
       </div>
 
-      <div className="absolute bottom-10 left-6 lg:bottom-16 lg:left-16 z-20 text-white max-w-4xl">
-        <p className="lg:text-xl uppercase text-lg italic text-[#d4cbb3] tracking-widest font-serif font-medium border-[#d4cbb3] border-l-2 mb-6 pl-4">
+      <motion.div
+        className="absolute bottom-10 left-6 lg:bottom-16 lg:left-16 z-20 text-white max-w-4xl"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.2,
+              delayChildren: 0.3,
+            },
+          },
+        }}
+      >
+        <motion.p
+          className="lg:text-xl uppercase text-lg italic text-[#d4cbb3] tracking-widest font-serif font-medium border-[#d4cbb3] border-l-2 mb-6 pl-4"
+          variants={{
+            hidden: { opacity: 0, x: -20 },
+            visible: {
+              opacity: 1,
+              x: 0,
+              transition: { duration: 0.8, ease: "easeOut" },
+            },
+          }}
+        >
           The Wedding Celebration
-        </p>
+        </motion.p>
 
-        <h1 className="lg:text-9xl leading-none text-7xl font-script mb-2 drop-shadow-lg">
-          {inv.brideNickname}{" "}
-          <span className="lg:text-7xl sm:ml-0 lg:ml-24 xl:ml-0 text-5xl opacity-80 ml-16">
-            &amp;
-          </span>{" "}
-          {inv.groomNickname}
-        </h1>
+        {inv.isBrideFirst ? (
+          <motion.h1
+            className="lg:text-9xl leading-none text-7xl font-script mb-2 drop-shadow-lg"
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.9, ease: "easeOut" },
+              },
+            }}
+          >
+            {inv.brideNickname}{" "}
+            <span className="lg:text-7xl sm:ml-0 lg:ml-24 xl:ml-0 text-5xl opacity-80 ml-16">
+              &amp;
+            </span>{" "}
+            {inv.groomNickname}
+          </motion.h1>
+        ) : (
+          <motion.h1
+            className="lg:text-9xl leading-none text-7xl font-script mb-2 drop-shadow-lg"
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.9, ease: "easeOut" },
+              },
+            }}
+          >
+            {inv.groomNickname}{" "}
+            <span className="lg:text-7xl sm:ml-0 lg:ml-24 xl:ml-0 text-5xl opacity-80 ml-16">
+              &amp;
+            </span>{" "}
+            {inv.brideNickname}
+          </motion.h1>
+        )}
 
-        <div className="mt-8 flex items-center gap-4 text-[#d4cbb3]">
+        <motion.div
+          className="mt-8 flex items-center gap-4 text-[#d4cbb3]"
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.8, ease: "easeOut" },
+            },
+          }}
+        >
           <CalendarHeart />
           <span className="font-serif-heading text-xl tracking-wide">
             {formatDate(inv.date, "PPP")}
           </span>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </aside>
   );
 }

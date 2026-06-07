@@ -26,20 +26,37 @@ export function Quote({ inv }: Props) {
       ref={ref}
       className="px-8 py-12 bg-[#fcfbf9] border-b border-[#e5e0d6] text-center"
     >
-      <motion.div
-        className="flex justify-center items-center gap-4 font-script mb-8"
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        variants={fadeUp(0)}
-      >
-        <p className="text-3xl tracking-[0.2em] text-[#2c2c2c]/80">
-          {inv.brideNickname && inv.brideNickname.charAt(0)}
-        </p>
-        <div className="w-px h-16 bg-[#6b7c62]/60"></div>
-        <p className="text-3xl tracking-[0.2em] text-[#2c2c2c]/80">
-          {inv.groomNickname && inv.groomNickname.charAt(0)}
-        </p>
-      </motion.div>
+      {inv.isBrideFirst ? (
+        <motion.div
+          className="flex justify-center items-center gap-4 font-script mb-8"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={fadeUp(0)}
+        >
+          <p className="text-3xl tracking-[0.2em] text-[#2c2c2c]/80">
+            {inv.brideNickname && inv.brideNickname.charAt(0)}
+          </p>
+          <div className="w-px h-16 bg-[#6b7c62]/60"></div>
+          <p className="text-3xl tracking-[0.2em] text-[#2c2c2c]/80">
+            {inv.groomNickname && inv.groomNickname.charAt(0)}
+          </p>
+        </motion.div>
+      ) : (
+        <motion.div
+          className="flex justify-center items-center gap-4 font-script mb-8"
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={fadeUp(0)}
+        >
+          <p className="text-3xl tracking-[0.2em] text-[#2c2c2c]/80">
+            {inv.groomNickname && inv.groomNickname.charAt(0)}
+          </p>
+          <div className="w-px h-16 bg-[#6b7c62]/60"></div>
+          <p className="text-3xl tracking-[0.2em] text-[#2c2c2c]/80">
+            {inv.brideNickname && inv.brideNickname.charAt(0)}
+          </p>
+        </motion.div>
+      )}
 
       {inv.quote && (
         <motion.p

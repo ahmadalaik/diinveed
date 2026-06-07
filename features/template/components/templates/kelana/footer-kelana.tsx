@@ -20,11 +20,19 @@ export function FooterKelana({ inv }: Props) {
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
       >
-        <div className="flex justify-center gap-3 font-script text-3xl text-[#6b7c62] mb-4">
-          <p>{inv.brideNickname?.charAt(0) || "C"}</p>
-          <span className="text-2xl">&amp;</span>
-          <p>{inv.groomNickname?.charAt(0) || "G"}</p>
-        </div>
+        {inv.isBrideFirst ? (
+          <div className="flex justify-center gap-3 font-script text-3xl text-[#6b7c62] mb-4">
+            <p>{inv.brideNickname?.charAt(0) || "C"}</p>
+            <span className="text-2xl">&amp;</span>
+            <p>{inv.groomNickname?.charAt(0) || "G"}</p>
+          </div>
+        ) : (
+          <div className="flex justify-center gap-3 font-script text-3xl text-[#6b7c62] mb-4">
+            <p>{inv.groomNickname?.charAt(0) || "C"}</p>
+            <span className="text-2xl">&amp;</span>
+            <p>{inv.brideNickname?.charAt(0) || "G"}</p>
+          </div>
+        )}
         <div className="mb-4">
           <a
             href="#"

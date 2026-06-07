@@ -68,21 +68,39 @@ export function EnvelopeKelana({ inv, onOpen }: Props) {
           </p>
         </motion.div>
 
-        <motion.h1
-          className="text-stone-50 leading-none text-5xl font-script mb-5 drop-shadow-lg"
-          variants={{
-            hidden: { opacity: 0, y: 16 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: { duration: 0.7, ease: "easeOut" },
-            },
-          }}
-        >
-          {inv.brideNickname}{" "}
-          <span className="text-3xl opacity-80 mx-2">&amp;</span>{" "}
-          {inv.groomNickname}
-        </motion.h1>
+        {inv.isBrideFirst ? (
+          <motion.h1
+            className="text-stone-50 leading-none text-5xl font-script mb-5 drop-shadow-lg"
+            variants={{
+              hidden: { opacity: 0, y: 16 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.7, ease: "easeOut" },
+              },
+            }}
+          >
+            {inv.brideNickname}{" "}
+            <span className="text-3xl opacity-80 mx-2">&amp;</span>{" "}
+            {inv.groomNickname}
+          </motion.h1>
+        ) : (
+          <motion.h1
+            className="text-stone-50 leading-none text-5xl font-script mb-5 drop-shadow-lg"
+            variants={{
+              hidden: { opacity: 0, y: 16 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.7, ease: "easeOut" },
+              },
+            }}
+          >
+            {inv.groomNickname}{" "}
+            <span className="text-3xl opacity-80 mx-2">&amp;</span>{" "}
+            {inv.brideNickname}
+          </motion.h1>
+        )}
 
         <motion.div
           variants={{

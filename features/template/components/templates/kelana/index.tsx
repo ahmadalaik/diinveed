@@ -24,7 +24,7 @@ export default function KelanaTemplate({
 }: TemplateProps) {
   const isPreview = mode === "preview";
   const [opened, setOpened] = useState(isPreview);
-  const [lightboxOpen, setLightboxOpen] = useState(!isPreview);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
 
   const openLightbox = (src: string) => {
@@ -57,10 +57,9 @@ export default function KelanaTemplate({
       />
 
       <div className="relative w-full h-screen overflow-hidden font-montserrat">
-        <div className="hidden lg:block fixed left-0 top-0 w-[75%] h-screen">
+        <div className="hidden lg:block fixed left-0 top-0 w-[70%] h-screen">
           <BannerKelana inv={invitation} />
         </div>
-        <EnvelopeKelana inv={invitation} onOpen={setOpened} />
         {!opened && <EnvelopeKelana inv={invitation} onOpen={setOpened} />}
 
         <KelanaLayout inv={invitation}>
@@ -74,7 +73,7 @@ export default function KelanaTemplate({
           <StoriesKelana inv={invitation} />
           <GalleryKelana inv={invitation} openLightbox={openLightbox} />
           <GiftsKelana inv={invitation} />
-          <RSVPKelana token={invitation.token} mode="preview" />
+          <RSVPKelana token={invitation.token} mode={mode} />
           <FooterKelana inv={invitation} />
         </KelanaLayout>
       </div>
