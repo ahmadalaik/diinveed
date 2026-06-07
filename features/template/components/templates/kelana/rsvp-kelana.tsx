@@ -166,7 +166,10 @@ export function RSVPKelana({ token, mode }: Props) {
                   })
                 }
               >
-                <SelectTrigger className="w-full bg-[#f9f7f2] border-none text-sm py-6 px-3 rounded-md text-stone-700 data-placeholder:text-stone-300 focus:ring-2 focus:ring-[#6b7c62]/20 transition-all duration-300 shadow-sm">
+                <SelectTrigger
+                  className="w-full bg-[#f9f7f2] border-none text-sm py-6 px-3 rounded-md text-stone-700 data-placeholder:text-stone-300 focus:ring-2 focus:ring-[#6b7c62]/20 transition-all duration-300 shadow-sm"
+                  disabled={isSubmitting || isPreview}
+                >
                   <div className="flex items-center gap-3">
                     <CalendarCheck2
                       strokeWidth={1.5}
@@ -211,7 +214,10 @@ export function RSVPKelana({ token, mode }: Props) {
                     setValue("guests", val, { shouldValidate: true })
                   }
                 >
-                  <SelectTrigger className="w-full bg-[#f9f7f2] border-none text-sm py-6 px-3 rounded-md text-stone-700 data-placeholder:text-stone-300 focus:ring-2 focus:ring-[#6b7c62]/20 transition-all duration-300 shadow-sm">
+                  <SelectTrigger
+                    className="w-full bg-[#f9f7f2] border-none text-sm py-6 px-3 rounded-md text-stone-700 data-placeholder:text-stone-300 focus:ring-2 focus:ring-[#6b7c62]/20 transition-all duration-300 shadow-sm"
+                    disabled={isSubmitting || isPreview}
+                  >
                     <div className="flex items-center gap-3">
                       <Users
                         strokeWidth={1.5}
