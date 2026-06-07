@@ -20,6 +20,7 @@ export function useInvitationAutoSave() {
         musicPublicId: s.musicPublicId,
         quote: s.quote,
         quoteReference: s.quoteReference,
+        isBrideFirst: s.isBrideFirst,
         brideName: s.brideName,
         brideNickname: s.brideNickname,
         brideDescription: s.brideDescription,

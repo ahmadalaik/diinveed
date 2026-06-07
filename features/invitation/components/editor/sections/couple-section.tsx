@@ -22,6 +22,24 @@ import {
 } from "../editor-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+
+function SwitchNameOrderField() {
+  const isBrideFirst = useInvitationStore((s) => s.isBrideFirst);
+  const set = useInvitationStore((s) => s.set);
+  return (
+    <EditorField className="flex-row">
+      <EditorLabel htmlFor="is-bride-first">
+        Nama Mempelai Wanita Dahulu
+      </EditorLabel>
+      <Switch
+        id="is-bride-first"
+        checked={isBrideFirst}
+        onCheckedChange={() => set({ isBrideFirst: !isBrideFirst })}
+      />
+    </EditorField>
+  );
+}
 
 function BrideNameField() {
   const brideName = useInvitationStore((s) => s.brideName);
@@ -246,8 +264,35 @@ function PhotoField({
 }
 
 export function CoupleSection() {
+  const isBrideFirst = useInvitationStore((s) => s.isBrideFirst);
+
+  if (!isBrideFirst) {
+    return (
+      <FieldGroup>
+        <SwitchNameOrderField />
+        <PhotoField
+          label="Foto Mempelai Pria"
+          imageKey="groomImage"
+          publicIdKey="groomImagePublicId"
+        />
+        <GroomNameField />
+        <GroomNicknameField />
+        <GroomDescField />
+        <PhotoField
+          label="Foto Mempelai Wanita"
+          imageKey="brideImage"
+          publicIdKey="brideImagePublicId"
+        />
+        <BrideNameField />
+        <BrideNicknameField />
+        <BrideDescField />
+      </FieldGroup>
+    );
+  }
+
   return (
     <FieldGroup>
+      <SwitchNameOrderField />
       <PhotoField
         label="Foto Mempelai Wanita"
         imageKey="brideImage"

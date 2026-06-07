@@ -27,6 +27,7 @@ export const useInvitationStore = create<InvitationStore>()(
     quote: "",
     quoteReference: "",
 
+    isBrideFirst: true,
     brideName: "",
     brideNickname: "",
     brideDescription: null,
