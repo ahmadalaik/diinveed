@@ -32,8 +32,8 @@ export async function publishInvitation(): Promise<PublishResult> {
   const slug =
     invitation.slug ||
     buildCoupleSlug(
-      invitation.brideName,
-      invitation.groomName,
+      invitation.brideNickname,
+      invitation.groomNickname,
       invitation.isBrideFirst,
     );
 

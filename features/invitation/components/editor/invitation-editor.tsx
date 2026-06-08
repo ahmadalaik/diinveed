@@ -19,7 +19,7 @@ export function InvitationEditor({ initialData }: Props) {
 
   return (
     <div className="flex h-svh w-full overflow-hidden">
-      <Editor onPublish={() => {}} />
+      <Editor />
       <Preview />
     </div>
   );

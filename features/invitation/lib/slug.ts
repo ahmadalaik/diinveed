@@ -13,14 +13,14 @@ export function slugifyName(input: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-/** "citra-dan-rama" from bride/groom names, ordered by isBrideFirst. */
+/** "citra-dan-rama" from bride/groom nicknames, ordered by isBrideFirst. */
 export function buildCoupleSlug(
-  brideName: string,
-  groomName: string,
+  brideNickname: string,
+  groomNickname: string,
   isBrideFirst: boolean,
 ): string {
-  const first = isBrideFirst ? brideName : groomName;
-  const second = isBrideFirst ? groomName : brideName;
+  const first = isBrideFirst ? brideNickname : groomNickname;
+  const second = isBrideFirst ? groomNickname : brideNickname;
   const joined = [first, second]
     .map((n) => n.trim())
     .filter(Boolean)

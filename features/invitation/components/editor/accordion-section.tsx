@@ -6,6 +6,21 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  BookHeart,
+  CalendarDays,
+  Gift,
+  Heart,
+  Images,
+  Info,
+  MailCheck,
+  Palette,
+  Quote,
+  Shirt,
+  Type,
+  Wallpaper,
+  type LucideIcon,
+} from "lucide-react";
 import { TemplateSelectorSection } from "./sections/template-selector-section";
 import { BasicsSection } from "./sections/basics-section";
 import { CoupleSection } from "./sections/couple-section";
@@ -25,115 +40,53 @@ const triggerClassName =
 
 const itemClassName = "border-none";
 
+type Section = {
+  value: string;
+  label: string;
+  Icon: LucideIcon;
+  Content: React.ComponentType;
+  contentClassName?: string;
+};
+
+const sections: Section[] = [
+  { value: "basics", label: "Informasi Dasar", Icon: Info, Content: BasicsSection },
+  { value: "couple", label: "Mempelai", Icon: Heart, Content: CoupleSection },
+  { value: "quote", label: "Kutipan", Icon: Quote, Content: QuoteSection },
+  { value: "events", label: "Acara", Icon: CalendarDays, Content: EventsSection },
+  { value: "stories", label: "Cerita", Icon: BookHeart, Content: StoriesSection },
+  { value: "gallery", label: "Galeri", Icon: Images, Content: GallerySection },
+  { value: "gifts", label: "Hadiah", Icon: Gift, Content: GiftsSection },
+  { value: "rsvp", label: "RSVP", Icon: MailCheck, Content: RsvpSection },
+  { value: "dress", label: "Dress Code", Icon: Shirt, Content: DressSection },
+  { value: "theme", label: "Tema Warna", Icon: Palette, Content: ThemeSection },
+  { value: "font", label: "Tipografi", Icon: Type, Content: FontSection },
+  {
+    value: "background",
+    label: "Latar Belakang",
+    Icon: Wallpaper,
+    Content: BackgroundSection,
+  },
+];
+
 export function AccordionSection() {
   return (
-    <Accordion type="multiple" defaultValue={["template"]}>
-      <AccordionItem value="template" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>
-          Template
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 space-y-4">
-          <TemplateSelectorSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="basics" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>
-          Informasi Dasar
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <BasicsSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="couple" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>
-          Mempelai
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <CoupleSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="quote" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>
-          Kutipan
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <QuoteSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="events" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>Acara</AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <EventsSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="stories" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>Cerita</AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <StoriesSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="gallery" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>Galeri</AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <GallerySection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="gifts" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>Hadiah</AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <GiftsSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="rsvp" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>RSVP</AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <RsvpSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="dress" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>
-          Dress Code
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <DressSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="theme" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>
-          Tema Warna
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <ThemeSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="font" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>
-          Tipografi
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <FontSection />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="background" className={itemClassName}>
-        <AccordionTrigger className={triggerClassName}>
-          Latar Belakang
-        </AccordionTrigger>
-        <AccordionContent className="px-4 pb-4 h-auto!">
-          <BackgroundSection />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <>
+      <TemplateSelectorSection />
+      <Accordion type="multiple" defaultValue={["basics"]}>
+        {sections.map(({ value, label, Icon, Content, contentClassName }) => (
+          <AccordionItem key={value} value={value} className={itemClassName}>
+            <AccordionTrigger className={triggerClassName}>
+              <span className="flex items-center gap-2">
+                <Icon className="size-4 shrink-0 text-muted-foreground" />
+                {label}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className={contentClassName ?? "px-4 pb-4 h-auto!"}>
+              <Content />
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </>
   );
 }
