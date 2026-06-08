@@ -10,9 +10,10 @@ import { useState } from "react";
 interface Props {
   inv: InvitationState;
   onOpen: (open: boolean) => void;
+  guestName?: string;
 }
 
-export function EnvelopeKelana({ inv, onOpen }: Props) {
+export function EnvelopeKelana({ inv, onOpen, guestName }: Props) {
   const [isClosing, setIsClosing] = useState(false);
 
   const handleOpen = () => {
@@ -113,8 +114,8 @@ export function EnvelopeKelana({ inv, onOpen }: Props) {
           }}
         >
           <div className="flex items-baseline-last justify-center">
-            <span className="font-serif font-medium text-2xl text-stone-50 mb-1 drop-shadow-md">
-              Dear Guest
+            <span className="font-serif font-medium text-2xl text-stone-50 mb-1 drop-shadow-md text-balance">
+              Dear {guestName ?? "Guest"}
             </span>
           </div>
           <p className="font-serif text-sm text-stone-200 leading-relaxed text-balance drop-shadow-md">

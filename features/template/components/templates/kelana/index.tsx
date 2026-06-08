@@ -62,7 +62,13 @@ export default function KelanaTemplate({
         <div className="hidden lg:block fixed left-0 top-0 w-[70%] h-screen">
           <BannerKelana inv={invitation} />
         </div>
-        {!opened && <EnvelopeKelana inv={invitation} onOpen={setOpened} />}
+        {!opened && (
+          <EnvelopeKelana
+            inv={invitation}
+            onOpen={setOpened}
+            guestName={guestName}
+          />
+        )}
 
         <KelanaLayout inv={invitation}>
           <MusicPlayer open={opened} autoPlay={mode === "guest"} />
