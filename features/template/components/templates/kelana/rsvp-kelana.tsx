@@ -63,7 +63,7 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
     defaultValues: {
       name: guestName ?? "",
       phoneNumber: "",
-      response: "ACCEPT",
+      response: undefined,
       guests: "1",
       hope: "",
     },
@@ -185,16 +185,22 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
                   className="rounded-md bg-[#fcfbf9] border-[#f4f1ea] shadow-xl"
                 >
                   <SelectItem
-                    value="yes"
+                    value="ACCEPT"
                     className="py-3 px-3 focus:bg-[#6b7c62]/10 rounded-sm"
                   >
                     Joyfully Attend
                   </SelectItem>
                   <SelectItem
-                    value="no"
+                    value="DECLINE"
                     className="py-3 px-3 focus:bg-[#6b7c62]/10 rounded-sm"
                   >
                     Regretfully Decline
+                  </SelectItem>
+                  <SelectItem
+                    value="MAYBE"
+                    className="py-3 px-3 focus:bg-[#6b7c62]/10 rounded-sm"
+                  >
+                    MAYBE
                   </SelectItem>
                 </SelectContent>
               </Select>

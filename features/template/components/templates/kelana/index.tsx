@@ -58,8 +58,8 @@ export default function KelanaTemplate({
         mode={mode}
       />
 
-      <div className="relative w-full h-screen overflow-hidden font-montserrat">
-        <div className="hidden lg:block fixed left-0 top-0 w-[70%] h-screen">
+      <div className="relative w-full h-dvh overflow-hidden font-montserrat">
+        <div className="hidden lg:block fixed left-0 top-0 w-[70%] h-dvh">
           <BannerKelana inv={invitation} />
         </div>
         {!opened && (

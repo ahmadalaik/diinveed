@@ -26,7 +26,7 @@ export function EnvelopeKelana({ inv, onOpen, guestName }: Props) {
   return (
     <section
       className={cn(
-        "fixed right-0 top-0 z-50 transition-transform duration-1000 ease-in-out w-full lg:w-[25%] h-svh flex justify-center items-center px-8 py-14 text-center bg-stone-900",
+        "fixed right-0 top-0 z-50 transition-transform duration-1000 ease-in-out w-full lg:w-[30%] h-dvh flex justify-center items-center px-8 py-14 text-center bg-stone-900",
         isClosing ? "-translate-y-full" : "translate-y-0",
       )}
     >
