@@ -7,7 +7,9 @@ enum RsvpResponse {
 model Invitation {
     id     String @id @default(cuid())
     userId String @unique @map("user_id")
-    token  String @unique
+
+    slug        String @default("") @map("slug")
+    publicToken String @unique      @map("public_token")
 
     coverTitle     String @default("") @map("cover_title")
     coverSubtitle  String @default("") @map("cover_subtitle")
@@ -55,6 +57,7 @@ model Invitation {
 
     user       User        @relation(fields: [userId], references: [id])
     guestRsvps GuestRsvp[]
+    guests     Guest[]
 
     @@map("invitations")
 }
@@ -68,9 +71,30 @@ model GuestRsvp {
     guests       Int          @default(1)
     hope         String?      @db.Text
     submittedAt  DateTime     @default(now()) @map("submitted_at")
+    guestId      String?      @map("guest_id")
 
     invitation Invitation @relation(fields: [invitationId], references: [id])
+    guest      Guest?     @relation(fields: [guestId], references: [id], onDelete: SetNull)
 
     @@index([invitationId])
+    @@index([guestId])
     @@map("guest_rsvps")
+}
+
+model Guest {
+    id           String    @id @default(cuid())
+    invitationId String    @map("invitation_id")
+    slug         String    @unique
+    name         String
+    phoneNumber  String?   @map("phone_number")
+    invitedCount Int       @default(1) @map("invited_count")
+    sentAt       DateTime? @map("sent_at")
+    createdAt    DateTime  @default(now()) @map("created_at")
+    updatedAt    DateTime  @updatedAt @map("updated_at")
+
+    invitation Invitation  @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+    rsvps      GuestRsvp[]
+
+    @@index([invitationId])
+    @@map("guests")
 }
