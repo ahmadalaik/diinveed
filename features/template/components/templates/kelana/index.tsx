@@ -21,6 +21,8 @@ import { MusicPlayer } from "./music-player";
 export default function KelanaTemplate({
   invitation,
   mode = "guest",
+  guestSlug,
+  guestName,
 }: TemplateProps) {
   const isPreview = mode === "preview";
   const [opened, setOpened] = useState(isPreview);
@@ -73,7 +75,12 @@ export default function KelanaTemplate({
           <StoriesKelana inv={invitation} />
           <GalleryKelana inv={invitation} openLightbox={openLightbox} />
           <GiftsKelana inv={invitation} />
-          <RSVPKelana token={invitation.token} mode={mode} />
+          <RSVPKelana
+            publicToken={invitation.publicToken}
+            mode={mode}
+            guestSlug={guestSlug}
+            guestName={guestName}
+          />
           <FooterKelana inv={invitation} />
         </KelanaLayout>
       </div>

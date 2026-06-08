@@ -10,7 +10,8 @@ function getPreviewSnapshot(): InvitationState {
   return {
     id: s.id,
     userId: s.userId,
-    token: s.token,
+    slug: s.slug,
+    publicToken: s.publicToken,
     coverImage: s.coverImage,
     coverImagePublicId: s.coverImagePublicId,
     coverTitle: s.coverTitle,

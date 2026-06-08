@@ -3,12 +3,13 @@
 import { getCurrentUser } from "@/features/auth/utils/session";
 import prisma from "@/lib/prisma";
 import { publishReadySchema } from "../schemas/invitation.schema";
+import { buildCoupleSlug, buildInvitationSlug } from "../lib/slug";
 
 type FieldErrors = Partial<Record<string, string[]>>;
 
 type PublishResult =
-  | { errors: FieldErrors; token?: undefined }
-  | { errors?: undefined; token: string };
+  | { errors: FieldErrors; invitationSlug?: undefined }
+  | { errors?: undefined; invitationSlug: string };
 
 type UnpublishResult =
   | { errors: { _form: string[] }; success?: undefined }
@@ -28,13 +29,23 @@ export async function publishInvitation(): Promise<PublishResult> {
     return { errors: check.error.flatten().fieldErrors };
   }
 
+  const slug =
+    invitation.slug ||
+    buildCoupleSlug(
+      invitation.brideName,
+      invitation.groomName,
+      invitation.isBrideFirst,
+    );
+
   const updated = await prisma.invitation.update({
     where: { userId: user.id },
-    data: { isPublished: true },
-    select: { token: true },
+    data: { isPublished: true, slug },
+    select: { slug: true, publicToken: true },
   });
 
-  return { token: updated.token };
+  return {
+    invitationSlug: buildInvitationSlug(updated.slug, updated.publicToken),
+  };
 }
 
 export async function unpublishInvitation(): Promise<UnpublishResult> {

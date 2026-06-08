@@ -58,6 +58,8 @@ const validInput = {
   stories: [],
   gallery: [],
   gifts: [],
+  isBrideFirst: true,
+  slug: "amelia-dan-theo",
   brideName: "Amelia",
   brideNickname: "Amel",
   brideDescription: null,

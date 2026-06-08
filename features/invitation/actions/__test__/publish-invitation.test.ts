@@ -60,14 +60,26 @@ describe("publishInvitation", () => {
     expect(prismaMock.invitation.update).not.toHaveBeenCalled();
   });
 
-  it("sets isPublished=true and returns token when invitation is complete", async () => {
+  it("sets isPublished=true, backfills slug, and returns the composed invitationSlug", async () => {
     getCurrentUserMock.mockResolvedValue(mockUser);
-    prismaMock.invitation.findUnique.mockResolvedValue(readyInvitation);
-    prismaMock.invitation.update.mockResolvedValue({ token: "tok-123" });
+    prismaMock.invitation.findUnique.mockResolvedValue({
+      ...readyInvitation,
+      slug: "",
+      publicToken: "7gk2mq8p",
+      brideName: "Amelia",
+      groomName: "Theo",
+      isBrideFirst: true,
+    });
+    prismaMock.invitation.update.mockResolvedValue({
+      slug: "amelia-dan-theo",
+      publicToken: "7gk2mq8p",
+    });
     const result = await publishInvitation();
-    expect(result.token).toBe("tok-123");
+    expect(result.invitationSlug).toBe("amelia-dan-theo-7gk2mq8p");
     expect(prismaMock.invitation.update).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { isPublished: true } }),
+      expect.objectContaining({
+        data: { isPublished: true, slug: "amelia-dan-theo" },
+      }),
     );
   });
 });

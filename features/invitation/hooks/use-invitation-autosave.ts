@@ -31,6 +31,7 @@ export function useInvitationAutoSave() {
         groomDescription: s.groomDescription,
         groomImage: s.groomImage,
         groomImagePublicId: s.groomImagePublicId,
+        slug: s.slug,
         title: s.title,
         subtitle: s.subtitle,
         date: s.date,

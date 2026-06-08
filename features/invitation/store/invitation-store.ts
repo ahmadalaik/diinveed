@@ -16,7 +16,8 @@ export const useInvitationStore = create<InvitationStore>()(
   subscribeWithSelector((set) => ({
     id: "",
     userId: "",
-    token: "",
+    slug: "",
+    publicToken: "",
 
     coverImage: null,
     coverImagePublicId: null,

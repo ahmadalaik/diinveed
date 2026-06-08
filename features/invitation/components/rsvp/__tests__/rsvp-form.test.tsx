@@ -20,7 +20,7 @@ describe("RsvpForm", () => {
   it("submits the payload shape expected by the RSVP schema", async () => {
     render(
       <RsvpForm
-        token="tok-123"
+        publicToken="tok-123"
         rsvpOptions={{ accept: "1", maybe: "1", decline: "1", plusOne: "1" }}
       />,
     );
@@ -32,12 +32,38 @@ describe("RsvpForm", () => {
 
     await waitFor(() => expect(submitRsvpMock).toHaveBeenCalled());
 
-    expect(submitRsvpMock).toHaveBeenCalledWith("tok-123", {
-      name: "Alice",
-      phoneNumber: "",
-      response: "ACCEPT",
-      guests: "1",
-      hope: "",
-    });
+    expect(submitRsvpMock).toHaveBeenCalledWith(
+      "tok-123",
+      {
+        name: "Alice",
+        phoneNumber: "",
+        response: "ACCEPT",
+        guests: "1",
+        hope: "",
+      },
+      undefined,
+    );
+  });
+
+  it("prefills the guest name and forwards guestSlug to submitRsvp", async () => {
+    render(
+      <RsvpForm
+        publicToken="tok-123"
+        guestSlug="guest-abc"
+        guestName="Budi"
+        rsvpOptions={{ accept: "1", maybe: "1", decline: "1", plusOne: "1" }}
+      />,
+    );
+
+    expect((screen.getByPlaceholderText("Full name") as HTMLInputElement).value).toBe("Budi");
+
+    fireEvent.click(screen.getByRole("button", { name: /submit rsvp/i }));
+    await waitFor(() => expect(submitRsvpMock).toHaveBeenCalled());
+
+    expect(submitRsvpMock).toHaveBeenCalledWith(
+      "tok-123",
+      expect.objectContaining({ name: "Budi" }),
+      "guest-abc",
+    );
   });
 });

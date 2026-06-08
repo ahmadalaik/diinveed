@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/features/auth/utils/session";
 import { Gallery, InvitationState } from "../types/invitation.type";
 import prisma from "@/lib/prisma";
 import { randomUUID } from "crypto";
+import { generatePublicToken } from "../lib/slug";
 
 type Result =
   | { errors: { _form: string[] }; invitation?: undefined }
@@ -43,7 +44,7 @@ export async function getOrCreateInvitation(): Promise<Result> {
   const created = await prisma.invitation.create({
     data: {
       userId: user.id,
-      token: randomUUID().toString(),
+      publicToken: generatePublicToken(),
       tokenId: "aura",
       templateSlug: "kelana",
       message: "",

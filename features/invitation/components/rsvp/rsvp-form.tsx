@@ -10,13 +10,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 
 type Props = {
-  token: string;
+  publicToken: string;
   rsvpOptions: Record<string, string>;
+  guestSlug?: string;
+  guestName?: string;
 };
 
-export function RsvpForm({ token, rsvpOptions }: Props) {
+export function RsvpForm({ publicToken, rsvpOptions, guestSlug, guestName }: Props) {
   const [submitted, setSubmitted] = useState(false);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(guestName ?? "");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [response, setResponse] = useState<"ACCEPT" | "DECLINE" | "MAYBE">(
     "ACCEPT",
@@ -29,13 +31,17 @@ export function RsvpForm({ token, rsvpOptions }: Props) {
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
-    const result = await submitRsvp(token, {
-      name,
-      phoneNumber,
-      response,
-      guests,
-      hope,
-    });
+    const result = await submitRsvp(
+      publicToken,
+      {
+        name,
+        phoneNumber,
+        response,
+        guests,
+        hope,
+      },
+      guestSlug,
+    );
     setLoading(false);
     if (result.errors) {
       setErrors(result.errors as Record<string, string[]>);

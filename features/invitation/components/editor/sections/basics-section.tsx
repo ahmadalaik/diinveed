@@ -24,6 +24,7 @@ import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
 import { Button } from "@/components/ui/button";
 import { Upload, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { InvitationUrlSection } from "./invitation-url-section";
 
 function CoverImageField() {
   const coverImage = useInvitationStore((s) => s.coverImage);
@@ -239,6 +240,7 @@ export function BasicsSection() {
       <TimezoneField />
       <HostsField />
       <MessageField />
+      <InvitationUrlSection />
     </FieldGroup>
   );
 };

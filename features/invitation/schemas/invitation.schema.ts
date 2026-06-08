@@ -79,6 +79,10 @@ export const saveInvitationSchema = z.object({
   groomDescription: z.string().nullable(),
   groomImage: z.string().nullable(),
   groomImagePublicId: z.string().nullable(),
+  slug: z
+    .string()
+    .regex(/^[a-z0-9-]*$/, "Hanya huruf kecil, angka, dan tanda hubung")
+    .default(""),
   title: z.string(),
   subtitle: z.string(),
   date: z.string(),

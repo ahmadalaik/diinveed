@@ -41,11 +41,13 @@ const fadeUp = (delay: number) => ({
 });
 
 interface Props {
-  token: string;
+  publicToken: string;
   mode?: "preview" | "guest";
+  guestSlug?: string;
+  guestName?: string;
 }
 
-export function RSVPKelana({ token, mode }: Props) {
+export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -59,7 +61,7 @@ export function RSVPKelana({ token, mode }: Props) {
   } = useForm<RsvpFormType>({
     resolver: zodResolver(rsvpFormSchema),
     defaultValues: {
-      name: "",
+      name: guestName ?? "",
       phoneNumber: "",
       response: "ACCEPT",
       guests: "1",
@@ -77,7 +79,7 @@ export function RSVPKelana({ token, mode }: Props) {
   const onSubmit = async (data: RsvpFormType) => {
     console.log("data: ", data);
     try {
-      const result = await submitRsvp(token, data);
+      const result = await submitRsvp(publicToken, data, guestSlug);
       if (result.success) {
         toast.success("Rsvp berhasil dikirim");
         reset();

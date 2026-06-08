@@ -34,7 +34,8 @@ const mockUser = {
 const mockInvitation = {
   id: "inv-1",
   userId: "user-1",
-  token: "tok-123",
+  slug: "",
+  publicToken: "7gk2mq8p",
   title: "",
   subtitle: "are getting married",
   date: "",

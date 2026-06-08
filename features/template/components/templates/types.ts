@@ -6,6 +6,8 @@ export type TemplateMode = "preview" | "guest";
 export type TemplateProps = {
   invitation: InvitationState;
   mode?: TemplateMode;
+  guestSlug?: string;
+  guestName?: string;
 };
 
 export type TemplateComponent = ComponentType<TemplateProps>;

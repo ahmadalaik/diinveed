@@ -42,7 +42,8 @@ export type GiftItem = {
 export type InvitationState = {
   id: string;
   userId: string;
-  token: string;
+  slug: string;
+  publicToken: string;
 
   coverImage: string | null;
   coverImagePublicId: string | null;
