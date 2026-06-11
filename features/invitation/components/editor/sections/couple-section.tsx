@@ -11,10 +11,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
+import { useR2Upload } from "@/hooks/use-r2-upload";
 import type { InvitationState } from "@/features/invitation/types/invitation.type";
 import { ImageCropperDialog } from "../image-cropper-dialog";
 import {
+  EditorError,
   EditorField,
   EditorInput,
   EditorLabel,
@@ -43,6 +44,7 @@ function SwitchNameOrderField() {
 
 function BrideNameField() {
   const brideName = useInvitationStore((s) => s.brideName);
+  const errors = useInvitationStore((s) => s.publishErrors?.brideName);
   const set = useInvitationStore((s) => s.set);
   return (
     <EditorField>
@@ -54,12 +56,14 @@ function BrideNameField() {
         value={brideName}
         onChange={(e) => set({ brideName: e.target.value })}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
 
 function BrideNicknameField() {
   const brideNickname = useInvitationStore((s) => s.brideNickname);
+  const errors = useInvitationStore((s) => s.publishErrors?.brideNickname);
   const set = useInvitationStore((s) => s.set);
   return (
     <EditorField>
@@ -73,12 +77,14 @@ function BrideNicknameField() {
         value={brideNickname}
         onChange={(e) => set({ brideNickname: e.target.value })}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
 
 function BrideDescField() {
   const brideDesc = useInvitationStore((s) => s.brideDescription);
+  const errors = useInvitationStore((s) => s.publishErrors?.brideDescription);
   const set = useInvitationStore((s) => s.set);
   return (
     <EditorField>
@@ -89,12 +95,14 @@ function BrideDescField() {
         value={brideDesc ?? ""}
         onChange={(e) => set({ brideDescription: e.target.value })}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
 
 function GroomNameField() {
   const groomName = useInvitationStore((s) => s.groomName);
+  const errors = useInvitationStore((s) => s.publishErrors?.groomName);
   const set = useInvitationStore((s) => s.set);
   return (
     <EditorField>
@@ -106,12 +114,14 @@ function GroomNameField() {
         value={groomName}
         onChange={(e) => set({ groomName: e.target.value })}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
 
 function GroomNicknameField() {
   const groomNickname = useInvitationStore((s) => s.groomNickname);
+  const errors = useInvitationStore((s) => s.publishErrors?.groomNickname);
   const set = useInvitationStore((s) => s.set);
   return (
     <EditorField>
@@ -125,12 +135,14 @@ function GroomNicknameField() {
         value={groomNickname}
         onChange={(e) => set({ groomNickname: e.target.value })}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
 
 function GroomDescField() {
   const groomDesc = useInvitationStore((s) => s.groomDescription);
+  const errors = useInvitationStore((s) => s.publishErrors?.groomDescription);
   const set = useInvitationStore((s) => s.set);
   return (
     <EditorField>
@@ -141,6 +153,7 @@ function GroomDescField() {
         value={groomDesc ?? ""}
         onChange={(e) => set({ groomDescription: e.target.value })}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
@@ -148,16 +161,18 @@ function GroomDescField() {
 function PhotoField({
   label,
   imageKey,
-  publicIdKey,
+  keyProp,
 }: {
   label: string;
   imageKey: "brideImage" | "groomImage";
-  publicIdKey: "brideImagePublicId" | "groomImagePublicId";
+  keyProp: "brideImageKey" | "groomImageKey";
 }) {
   const image = useInvitationStore((s) => s[imageKey]);
-  const publicId = useInvitationStore((s) => s[publicIdKey]);
+  const storedKey = useInvitationStore((s) => s[keyProp]);
+  const errors = useInvitationStore((s) => s.publishErrors?.[imageKey]);
   const set = useInvitationStore((s) => s.set);
-  const { upload, remove, isUploading, uploadProgress } = useCloudinaryUpload();
+  const invitationId = useInvitationStore((s) => s.id);
+  const { upload, remove, isUploading, uploadProgress } = useR2Upload();
 
   const fileRef = useRef<HTMLInputElement>(null);
   const [src, setSrc] = useState<string | null>(null);
@@ -174,18 +189,18 @@ function PhotoField({
 
   const handleCropped = async (blob: Blob) => {
     const file = new File([blob], "photo.webp", { type: "image/webp" });
-    const { url, publicId: newId } = await upload(file);
-    if (publicId) await remove(publicId);
+    const { url, key: newKey } = await upload(file, { kind: "couple", invitationId });
+    if (storedKey) await remove(storedKey);
 
-    set({ [imageKey]: url, [publicIdKey]: newId } as Partial<InvitationState>);
+    set({ [imageKey]: url, [keyProp]: newKey } as Partial<InvitationState>);
     setOpen(false);
     if (src) URL.revokeObjectURL(src);
     setSrc(null);
   };
 
   const handleRemove = async () => {
-    if (publicId) await remove(publicId);
-    set({ [imageKey]: null, [publicIdKey]: null } as Partial<InvitationState>);
+    if (storedKey) await remove(storedKey);
+    set({ [imageKey]: null, [keyProp]: null } as Partial<InvitationState>);
   };
 
   return (
@@ -259,6 +274,7 @@ function PhotoField({
         uploadProgress={uploadProgress}
         title={`Sesuaikan ${label}`}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
@@ -273,7 +289,7 @@ export function CoupleSection() {
         <PhotoField
           label="Foto Mempelai Pria"
           imageKey="groomImage"
-          publicIdKey="groomImagePublicId"
+          keyProp="groomImageKey"
         />
         <GroomNameField />
         <GroomNicknameField />
@@ -281,7 +297,7 @@ export function CoupleSection() {
         <PhotoField
           label="Foto Mempelai Wanita"
           imageKey="brideImage"
-          publicIdKey="brideImagePublicId"
+          keyProp="brideImageKey"
         />
         <BrideNameField />
         <BrideNicknameField />
@@ -296,7 +312,7 @@ export function CoupleSection() {
       <PhotoField
         label="Foto Mempelai Wanita"
         imageKey="brideImage"
-        publicIdKey="brideImagePublicId"
+        keyProp="brideImageKey"
       />
       <BrideNameField />
       <BrideNicknameField />
@@ -304,7 +320,7 @@ export function CoupleSection() {
       <PhotoField
         label="Foto Mempelai Pria"
         imageKey="groomImage"
-        publicIdKey="groomImagePublicId"
+        keyProp="groomImageKey"
       />
       <GroomNameField />
       <GroomNicknameField />
