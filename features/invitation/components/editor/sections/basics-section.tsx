@@ -3,48 +3,41 @@
 
 import React, { ChangeEvent, useRef } from "react";
 import { FieldGroup } from "@/components/ui/field";
-import { DatePicker } from "@/components/ui/date-picker";
-import { TimePicker } from "@/components/ui/time-picker";
-import { TIMEZONES } from "@/components/ui/time-range-picker";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
 import {
+  EditorError,
   EditorField,
   EditorInput,
   EditorLabel,
-  EditorTextarea,
 } from "../editor-field";
-import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
+import { useR2Upload } from "@/hooks/use-r2-upload";
 import { Button } from "@/components/ui/button";
 import { Upload, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { InvitationUrlSection } from "./invitation-url-section";
+import { MusicField } from "./music-field";
 
 function CoverImageField() {
   const coverImage = useInvitationStore((s) => s.coverImage);
-  const coverImagePublicId = useInvitationStore((s) => s.coverImagePublicId);
+  const coverImageKey = useInvitationStore((s) => s.coverImageKey);
+  const errors = useInvitationStore((s) => s.publishErrors?.coverImage);
   const set = useInvitationStore((s) => s.set);
+  const invitationId = useInvitationStore((s) => s.id);
   const fileRef = useRef<HTMLInputElement>(null);
-  const { upload, remove, isUploading, uploadProgress } = useCloudinaryUpload();
+  const { upload, remove, isUploading, uploadProgress } = useR2Upload();
 
   const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const { url, publicId: newId } = await upload(file);
-    if (coverImagePublicId) await remove(coverImagePublicId);
-    set({ coverImage: url, coverImagePublicId: newId });
+    const { url, key: newKey } = await upload(file, { kind: "cover", invitationId });
+    if (coverImageKey) await remove(coverImageKey);
+    set({ coverImage: url, coverImageKey: newKey });
   };
 
   const handleRemove = async () => {
-    if (coverImagePublicId) await remove(coverImagePublicId);
-    set({ coverImage: null, coverImagePublicId: null });
+    if (coverImageKey) await remove(coverImageKey);
+    set({ coverImage: null, coverImageKey: null });
   };
 
   return (
@@ -89,95 +82,14 @@ function CoverImageField() {
         className="hidden"
         onChange={handleFile}
       />
-    </EditorField>
-  );
-}
-
-function DateField() {
-  const date = useInvitationStore((s) => s.date);
-  const set = useInvitationStore((s) => s.set);
-
-  return (
-    <EditorField className="min-w-0">
-      <EditorLabel htmlFor="basics-date">Date</EditorLabel>
-      <DatePicker
-        id="basics-date"
-        value={date}
-        onChange={(value) => set({ date: value })}
-        yearsBack={1}
-        yearsForward={5}
-        className="h-auto border-transparent bg-muted/60 px-2.5 py-2 text-[13px] shadow-none hover:bg-muted"
-      />
-    </EditorField>
-  );
-}
-
-function TimeField() {
-  const time = useInvitationStore((s) => s.time);
-  const set = useInvitationStore((s) => s.set);
-
-  return (
-    <EditorField className="min-w-0">
-      <EditorLabel htmlFor="basics-time">Time</EditorLabel>
-      <TimePicker
-        id="basics-time"
-        value={time}
-        onChange={(value) => set({ time: value })}
-        className="h-auto border-transparent bg-muted/60 px-2.5 py-2 text-[13px] shadow-none hover:bg-muted"
-      />
-    </EditorField>
-  );
-}
-
-function TimezoneField() {
-  const timezone = useInvitationStore((s) => s.timezone);
-  const set = useInvitationStore((s) => s.set);
-
-  return (
-    <EditorField>
-      <EditorLabel htmlFor="basics-timezone">Timezone</EditorLabel>
-      <Select
-        value={timezone || undefined}
-        onValueChange={(value) => set({ timezone: value })}
-      >
-        <SelectTrigger
-          id="basics-timezone"
-          className="h-auto border-transparent bg-muted/60 px-2.5 py-2 text-[13px] shadow-none hover:bg-muted"
-        >
-          <SelectValue placeholder="Zona waktu" />
-        </SelectTrigger>
-        <SelectContent>
-          {TIMEZONES.map((tz) => (
-            <SelectItem key={tz} value={tz}>
-              {tz}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </EditorField>
-  );
-}
-
-function MessageField() {
-  const message = useInvitationStore((s) => s.message);
-  const set = useInvitationStore((s) => s.set);
-
-  return (
-    <EditorField>
-      <EditorLabel htmlFor="basics-message">Message</EditorLabel>
-      <EditorTextarea
-        id="basics-message"
-        rows={3}
-        value={message}
-        onChange={(e) => set({ message: e.target.value })}
-        placeholder="A note for your guests…"
-      />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
 
 function CoupleField() {
   const title = useInvitationStore((s) => s.title);
+  const errors = useInvitationStore((s) => s.publishErrors?.title);
   const set = useInvitationStore((s) => s.set);
 
   return (
@@ -189,40 +101,7 @@ function CoupleField() {
         onChange={(e) => set({ title: e.target.value })}
         placeholder="e.g. Amelia & Theo"
       />
-    </EditorField>
-  );
-}
-
-function TaglineField() {
-  const subtitle = useInvitationStore((s) => s.subtitle);
-  const set = useInvitationStore((s) => s.set);
-
-  return (
-    <EditorField>
-      <EditorLabel htmlFor="basics-tagline">Tagline</EditorLabel>
-      <EditorInput
-        id="basics-tagline"
-        value={subtitle}
-        onChange={(e) => set({ subtitle: e.target.value })}
-        placeholder="are getting married"
-      />
-    </EditorField>
-  );
-}
-
-function HostsField() {
-  const hosts = useInvitationStore((s) => s.hosts);
-  const set = useInvitationStore((s) => s.set);
-
-  return (
-    <EditorField>
-      <EditorLabel htmlFor="basics-hosts">Hosts</EditorLabel>
-      <EditorInput
-        id="basics-hosts"
-        value={hosts}
-        onChange={(e) => set({ hosts: e.target.value })}
-        placeholder="Together with their families"
-      />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
@@ -231,15 +110,8 @@ export function BasicsSection() {
   return (
     <FieldGroup className="gap-3">
       <CoverImageField />
+      <MusicField />
       <CoupleField />
-      <TaglineField />
-      <FieldGroup className="grid grid-cols-2 gap-2">
-        <DateField />
-        <TimeField />
-      </FieldGroup>
-      <TimezoneField />
-      <HostsField />
-      <MessageField />
       <InvitationUrlSection />
     </FieldGroup>
   );
