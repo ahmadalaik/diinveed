@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
-import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
+import { useR2Upload } from "@/hooks/use-r2-upload";
 import { Upload, X } from "lucide-react";
 import { ChangeEvent, useRef } from "react";
 import { EditorField, EditorLabel } from "../editor-field";
@@ -12,23 +12,24 @@ import { FieldGroup } from "@/components/ui/field";
 
 function CoverImageField() {
   const coverImage = useInvitationStore((s) => s.coverImage);
-  const coverImagePublicId = useInvitationStore((s) => s.coverImagePublicId);
+  const coverImageKey = useInvitationStore((s) => s.coverImageKey);
   const set = useInvitationStore((s) => s.set);
+  const invitationId = useInvitationStore((s) => s.id);
   const fileRef = useRef<HTMLInputElement>(null);
-  const { upload, remove, isUploading, uploadProgress } = useCloudinaryUpload();
+  const { upload, remove, isUploading, uploadProgress } = useR2Upload();
 
   const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const { url, publicId: newId } = await upload(file);
-    if (coverImagePublicId) await remove(coverImagePublicId);
-    set({ coverImage: url, coverImagePublicId: newId });
+    const { url, key: newKey } = await upload(file, { kind: "cover", invitationId });
+    if (coverImageKey) await remove(coverImageKey);
+    set({ coverImage: url, coverImageKey: newKey });
   };
 
   const handleRemove = async () => {
-    if (coverImagePublicId) await remove(coverImagePublicId);
-    set({ coverImage: null, coverImagePublicId: null });
+    if (coverImageKey) await remove(coverImageKey);
+    set({ coverImage: null, coverImageKey: null });
   };
 
   return (
