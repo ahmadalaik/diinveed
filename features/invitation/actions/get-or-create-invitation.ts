@@ -5,6 +5,7 @@ import { Gallery, InvitationState } from "../types/invitation.type";
 import prisma from "@/lib/prisma";
 import { randomUUID } from "crypto";
 import { generatePublicToken } from "../lib/slug";
+import { DEFAULT_WISHES_OPTIONS } from "../schemas/wish.schema";
 
 type Result =
   | { errors: { _form: string[] }; invitation?: undefined }
@@ -14,13 +15,13 @@ function normalizeGallery(gallery: unknown): Gallery[] {
   if (!Array.isArray(gallery)) return [];
   return gallery.map((item) => {
     if (typeof item === "string") {
-      return { id: randomUUID(), url: item, publicId: "" };
+      return { id: randomUUID(), url: item, key: "" };
     }
     const obj = (item ?? {}) as Partial<Gallery>;
     return {
       id: obj.id ?? randomUUID(),
       url: obj.url ?? "",
-      publicId: obj.publicId ?? "",
+      key: obj.key ?? "",
     };
   });
 }
@@ -47,8 +48,8 @@ export async function getOrCreateInvitation(): Promise<Result> {
       publicToken: generatePublicToken(),
       tokenId: "aura",
       templateSlug: "kelana",
-      message: "",
       rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
+      wishesOptions: DEFAULT_WISHES_OPTIONS,
       events: [],
       stories: [],
       gallery: [],
