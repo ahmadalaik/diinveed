@@ -22,15 +22,15 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createTemplateAction } from "../actions/create-template";
 import {
-  useCloudinaryUpload,
+  useR2Upload,
   UploadedImage,
-} from "@/hooks/use-cloudinary-upload";
+} from "@/hooks/use-r2-upload";
 import Image from "next/image";
 import Link from "next/link";
 
 export function CreateTemplateForm() {
   const router = useRouter();
-  const { upload, remove, isUploading, uploadProgress } = useCloudinaryUpload();
+  const { upload, remove, isUploading, uploadProgress } = useR2Upload();
 
   const uploadedImageRef = useRef<UploadedImage | null>(null);
   const submittedRef = useRef(false);
@@ -50,7 +50,7 @@ export function CreateTemplateForm() {
   useEffect(() => {
     return () => {
       if (!submittedRef.current && uploadedImageRef.current) {
-        remove(uploadedImageRef.current.publicId);
+        remove(uploadedImageRef.current.key);
       }
     };
   }, [remove]);
@@ -66,12 +66,12 @@ export function CreateTemplateForm() {
     }
 
     if (uploadedImageRef.current) {
-      await remove(uploadedImageRef.current.publicId);
+      await remove(uploadedImageRef.current.key);
       uploadedImageRef.current = null;
     }
 
     try {
-      const uploaded = await upload(file);
+      const uploaded = await upload(file, { kind: "thumbnail" });
       uploadedImageRef.current = uploaded;
       setPreview(uploaded.url);
     } catch {
