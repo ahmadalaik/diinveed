@@ -4,7 +4,7 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
-import { useCloudinaryUpload } from "@/hooks/use-cloudinary-upload";
+import { useR2Upload } from "@/hooks/use-r2-upload";
 import { cldUrl } from "@/lib/cloudinary-url";
 import { cn } from "@/lib/utils";
 import {
@@ -24,6 +24,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Plus, X } from "lucide-react";
 import { useRef } from "react";
+import { EditorError } from "../editor-field";
 
 function SortablePhoto({
   id,
@@ -77,18 +78,20 @@ function SortablePhoto({
 
 export function GallerySection() {
   const gallery = useInvitationStore((s) => s.gallery);
+  const errors = useInvitationStore((s) => s.publishErrors?.gallery);
   const set = useInvitationStore((s) => s.set);
+  const invitationId = useInvitationStore((s) => s.id);
   const fileRef = useRef<HTMLInputElement>(null);
-  const { upload, isUploading, uploadProgress } = useCloudinaryUpload();
+  const { upload, isUploading, uploadProgress } = useR2Upload();
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    const { url, publicId } = await upload(file);
+    const { url, key } = await upload(file, { kind: "gallery", invitationId });
     set({
-      gallery: [...gallery, { id: crypto.randomUUID(), url, publicId }],
+      gallery: [...gallery, { id: crypto.randomUUID(), url, key }],
     });
   };
 
@@ -102,6 +105,7 @@ export function GallerySection() {
 
   return (
     <div className="space-y-2">
+      <EditorError errors={errors} />
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
