@@ -2,25 +2,17 @@ import { describe, it, expect } from "vitest";
 import { saveInvitationSchema } from "@/features/invitation/schemas/invitation.schema";
 
 const base = {
-  coverTitle: "",
-  coverSubtitle: "",
   music: "",
-  musicPublicId: "",
+  musicKey: "",
   quote: "",
   quoteReference: "",
   title: "",
-  subtitle: "",
-  date: "",
-  time: "",
-  hosts: "",
-  message: "",
   coverImage: null,
-  coverImagePublicId: null,
+  coverImageKey: null,
   tokenId: "aura",
   tokenOverrides: null,
   templateSlug: "kelana",
   backgroundType: "solid",
-  dressCode: "",
   rsvpDeadline: "",
   rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: true },
   events: [],
@@ -32,12 +24,12 @@ const base = {
   brideNickname: "Citra",
   brideDescription: "Putri kedua",
   brideImage: "https://res.cloudinary.com/demo/image/upload/bride.webp",
-  brideImagePublicId: "diinveed/bride",
+  brideImageKey: "diinveed/bride",
   groomName: "Deni",
   groomNickname: "Deni",
   groomDescription: null,
   groomImage: null,
-  groomImagePublicId: null,
+  groomImageKey: null,
 };
 
 describe("saveInvitationSchema couple fields", () => {
@@ -50,7 +42,7 @@ describe("saveInvitationSchema couple fields", () => {
     const result = saveInvitationSchema.safeParse({
       ...base,
       brideImage: null,
-      brideImagePublicId: null,
+      brideImageKey: null,
       brideDescription: null,
     });
     expect(result.success).toBe(true);
@@ -63,14 +55,14 @@ describe("saveInvitationSchema couple fields", () => {
 });
 
 describe("saveInvitationSchema gallery", () => {
-  it("accepts gallery items shaped as { id, url, publicId }", () => {
+  it("accepts gallery items shaped as { id, url, key }", () => {
     const result = saveInvitationSchema.safeParse({
       ...base,
       gallery: [
         {
           id: "photo-1",
           url: "https://res.cloudinary.com/demo/image/upload/photo.webp",
-          publicId: "diinveed/photo",
+          key: "diinveed/photo",
         },
       ],
     });
