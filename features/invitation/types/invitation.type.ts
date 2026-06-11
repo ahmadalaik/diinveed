@@ -1,4 +1,4 @@
-import { TokenOverrides } from "@/features/template/tokens";
+import { TemplateTokenOverrides } from "@/features/template/tokens";
 
 export type RsvpOptions = {
   accept: boolean;
@@ -6,6 +6,15 @@ export type RsvpOptions = {
   maybe: boolean;
   plusOne: boolean;
 };
+
+export type WishesOptions = {
+  enabled: boolean;
+  reviewMode: boolean;
+  allowPublic: boolean;
+  showCategory: boolean;
+};
+
+export type WishModerationStatus = "PENDING" | "APPROVED" | "HIDDEN";
 
 export type EventItem = {
   id: string;
@@ -29,7 +38,7 @@ export type StoryItem = {
 export type Gallery = {
   id: string;
   url: string;
-  publicId: string;
+  key: string;
 };
 
 export type GiftItem = {
@@ -46,11 +55,9 @@ export type InvitationState = {
   publicToken: string;
 
   coverImage: string | null;
-  coverImagePublicId: string | null;
-  coverTitle: string;
-  coverSubtitle: string;
+  coverImageKey: string | null;
   music: string;
-  musicPublicId: string;
+  musicKey: string;
   quote: string;
   quoteReference: string;
 
@@ -59,27 +66,21 @@ export type InvitationState = {
   brideNickname: string;
   brideDescription: string | null;
   brideImage: string | null;
-  brideImagePublicId: string | null;
+  brideImageKey: string | null;
   groomName: string;
   groomNickname: string;
   groomDescription: string | null;
   groomImage: string | null;
-  groomImagePublicId: string | null;
+  groomImageKey: string | null;
 
   title: string;
-  subtitle: string;
-  date: string;
-  time: string;
-  timezone: string;
-  hosts: string;
-  message: string;
   tokenId: string;
-  tokenOverrides: TokenOverrides | null;
+  tokenOverrides: TemplateTokenOverrides | null;
   templateSlug: string;
   backgroundType: string;
-  dressCode: string;
   rsvpDeadline: string;
   rsvpOptions: RsvpOptions;
+  wishesOptions: WishesOptions | null;
   events: EventItem[];
   stories: StoryItem[];
   gallery: Gallery[];
@@ -87,12 +88,21 @@ export type InvitationState = {
   isPublished: boolean;
 };
 
-export type GuestRsvpRow = {
+export type PublicWish = {
   id: string;
-  invitationId: string;
   name: string;
-  email: string | null;
+  wish: string;
+  category: string | null;
+  createdAt: Date;
+};
+
+export type WishRow = {
+  id: string;
+  name: string;
+  wish: string;
   response: "ACCEPT" | "DECLINE" | "MAYBE";
-  plusOne: boolean;
-  submittedAt: Date;
+  guests: number;
+  category: string | null;
+  moderationStatus: WishModerationStatus;
+  createdAt: Date;
 };
