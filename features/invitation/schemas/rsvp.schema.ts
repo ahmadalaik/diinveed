@@ -5,7 +5,7 @@ export const rsvpFormSchema = z.object({
   phoneNumber: z.string().optional().nullable(),
   response: z.enum(["ACCEPT", "DECLINE", "MAYBE"]),
   guests: z.string().optional(),
-  hope: z.string().optional(),
+  wish: z.string().optional(),
 });
 
 export type RsvpFormType = z.infer<typeof rsvpFormSchema>;
