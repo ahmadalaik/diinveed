@@ -31,7 +31,7 @@ function GiftCard({
   return (
     <motion.div
       ref={ref}
-      className="p-5 rounded-xl text-center hover:bg-white/5 hover:backdrop-blur-sm transition-[background-color,backdrop-filter] duration-300 group"
+      className="p-5 rounded-xl text-center hover:bg-white/40 hover:backdrop-blur-sm transition-[background-color,backdrop-filter] duration-300 group"
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={fadeUp(delay)}
@@ -45,12 +45,12 @@ interface Props {
   inv: InvitationState;
 }
 
-export function GiftsKelana({ inv }: Props) {
+export function GiftsRenjana({ inv }: Props) {
   const headingRef = useRef(null);
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
 
   return (
-    <section className="px-8 py-16 border-b border-[#e5e0d6]">
+    <section className="px-8 py-16 border-b border-[#f0d6d6]">
       <motion.div
         ref={headingRef}
         className="text-center mb-10"
@@ -58,10 +58,10 @@ export function GiftsKelana({ inv }: Props) {
         animate={headingInView ? "visible" : "hidden"}
         variants={fadeUp(0)}
       >
-        <h2 className="font-(family-name:--tpl-font-heading) font-medium text-3xl text-stone-50 tracking-tight">
+        <h2 className="font-(family-name:--font-serif) font-medium text-3xl text-[#a85d6b] tracking-tight">
           Gifts
         </h2>
-        <p className="mt-3 px-6 text-base text-stone-200 font-(family-name:--tpl-font-heading) font-light leading-relaxed">
+        <p className="mt-3 px-6 text-base text-[#9a7e7e] font-(family-name:--font-serif) font-light leading-relaxed">
           Your presence at our wedding is the greatest gift of all. However, if
           you wish to honor us with a gift, we would greatly appreciate it.
         </p>
@@ -70,22 +70,22 @@ export function GiftsKelana({ inv }: Props) {
       <div className="space-y-6">
         {inv.gifts.map((gift, index) => (
           <GiftCard key={gift.id} delay={index * 0.15}>
-            <h4 className="text-xl text-stone-50 mb-6 flex items-center gap-3 font-normal font-(family-name:--tpl-font-heading)">
-              <Wallet strokeWidth={1.5} className="text-stone-50/80" />
+            <h4 className="text-xl text-[#a85d6b] mb-6 flex items-center gap-3 font-normal font-(family-name:--font-serif)">
+              <Wallet strokeWidth={1.5} className="text-[#c98a96]" />
               {gift.provider}
             </h4>
-            <div className="space-y-3 text-sm text-stone-50 tracking-wide">
+            <div className="space-y-3 text-sm text-[#6b4a4a] tracking-wide">
               <div className="flex flex-col items-start">
                 <span className="font-light">Account Name</span>
                 <span className="font-medium">{gift.accountName}</span>
               </div>
-              <div className="h-px bg-stone-50/50" />
+              <div className="h-px bg-[#e8c9c9]" />
               <div className="flex flex-col items-start mb-2">
                 <span className="font-light">Account Number</span>
                 <div className="flex items-center justify-between w-full">
                   <span className="font-medium">{gift.accountNumber}</span>
                   <CopyButton
-                    className="bg-stone-50 hover:bg-(--tpl-tertiary) text-(--tpl-primary) hover:text-stone-50 transition-all duration-500 tracking-wider text-xs uppercase rounded-sm shadow-sm font-medium"
+                    className="bg-stone-50 hover:bg-[#c98a96] text-[#a85d6b] hover:text-stone-50 transition-all duration-500 tracking-wider text-xs uppercase rounded-sm shadow-sm font-medium"
                     value={gift.accountNumber}
                   />
                 </div>

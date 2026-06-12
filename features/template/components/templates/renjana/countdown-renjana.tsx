@@ -19,7 +19,7 @@ interface Props {
   inv: InvitationState;
 }
 
-export function CountdownKelana({ inv }: Props) {
+export function CountdownRenjana({ inv }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -101,7 +101,7 @@ export function CountdownKelana({ inv }: Props) {
   return (
     <section
       ref={ref}
-      className="relative px-8 py-24 bg-stone-900 text-center overflow-hidden"
+      className="relative px-8 py-24 bg-[#a85d6b] text-center overflow-hidden"
     >
       <div
         className={cn(
@@ -122,11 +122,11 @@ export function CountdownKelana({ inv }: Props) {
           />
         ))}
       </div>
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-[#6b4a4a]/55" />
 
       <div className="relative z-10">
         <motion.p
-          className="text-xs font-medium [text-transform:var(--tpl-transform-heading)] tracking-[0.2em] text-stone-50 mb-6"
+          className="text-xs font-medium [text-transform:uppercase] tracking-[0.2em] text-stone-50 mb-6"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0)}
@@ -135,7 +135,7 @@ export function CountdownKelana({ inv }: Props) {
         </motion.p>
 
         <motion.div
-          className="grid grid-cols-2 gap-4 font-(family-name:--tpl-font-heading) text-[#e5e0d6]"
+          className="grid grid-cols-2 gap-4 font-(family-name:--font-serif) text-[#e5e0d6]"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0.25)}

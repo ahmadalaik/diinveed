@@ -31,7 +31,7 @@ function EventCard({
   return (
     <motion.div
       ref={ref}
-      className="relative p-7 rounded-lg hover:bg-white/5 hover:backdrop-blur-sm transition-[background-color,backdrop-filter] duration-300 group"
+      className="relative p-7 rounded-lg hover:bg-white/40 hover:backdrop-blur-sm transition-[background-color,backdrop-filter] duration-300 group"
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={fadeUp(delay)}
@@ -45,12 +45,12 @@ interface Props {
   inv: InvitationState;
 }
 
-export function EventsKelana({ inv }: Props) {
+export function EventsRenjana({ inv }: Props) {
   const headingRef = useRef(null);
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
 
   return (
-    <section className="px-8 py-16 border-b border-[#e5e0d6] bg-stone-900/20">
+    <section className="px-8 py-16 border-b border-[#f0d6d6] bg-[#f6e3e2]">
       <motion.div
         ref={headingRef}
         className="text-center mb-10"
@@ -58,7 +58,7 @@ export function EventsKelana({ inv }: Props) {
         animate={headingInView ? "visible" : "hidden"}
         variants={fadeUp(0)}
       >
-        <h2 className="font-(family-name:--tpl-font-heading) font-medium text-3xl text-stone-50 tracking-tight">
+        <h2 className="font-(family-name:--font-serif) font-medium text-3xl text-[#a85d6b] tracking-tight">
           Wedding Event
         </h2>
       </motion.div>
@@ -66,17 +66,17 @@ export function EventsKelana({ inv }: Props) {
       <div className="space-y-8">
         {inv.events.map((event, index) => (
           <EventCard key={event.id} delay={index * 0.15}>
-            <div className="absolute top-8 right-8 text-stone-50/80">
+            <div className="absolute top-8 right-8 text-[#c98a96]">
               <CalendarHeart strokeWidth={1.5} />
             </div>
-            <span className="inline-block py-1 text-(--tpl-secondary) text-xs tracking-[0.2em] font-semibold [text-transform:var(--tpl-transform-heading)] mb-4 border-b border-stone-50/20">
+            <span className="inline-block py-1 text-[#c98a96] text-xs tracking-[0.2em] font-semibold [text-transform:uppercase] mb-4 border-b border-[#e8c9c9]">
               {formatDate(event.date, "PP")}
             </span>
-            <div className="text-stone-50 tracking-wide">
-              <h3 className="font-(family-name:--tpl-font-display) text-3xl font-medium tracking-wider">
+            <div className="text-[#6b4a4a] tracking-wide">
+              <h3 className="font-(family-name:--font-script) text-3xl font-medium tracking-wider">
                 {event.title}
               </h3>
-              <p className="text-lg font-(family-name:--tpl-font-heading) font-semibold italic mt-2 mb-2">
+              <p className="text-lg font-(family-name:--font-serif) font-semibold italic mt-2 mb-2">
                 {event.timeStart}
                 {event.timeEnd && ` - ${event.timeEnd}`}
                 {event.timezone && ` ${event.timezone}`}
@@ -97,7 +97,7 @@ export function EventsKelana({ inv }: Props) {
                   href={event.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-xs text-(--tpl-secondary) uppercase border-b/10 pb-0.5 hover:text-stone-50 transition-all duration-500"
+                  className="inline-flex items-center gap-2 text-xs text-[#c98a96] uppercase border-b border-[#e8c9c9] pb-0.5 hover:text-[#a85d6b] transition-all duration-500"
                 >
                   View Map
                   <ArrowUpRight strokeWidth={1.5} />

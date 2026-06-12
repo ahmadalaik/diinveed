@@ -27,14 +27,14 @@ interface Props {
   inv: InvitationState;
 }
 
-export function CoupleKelana({ inv }: Props) {
+export function CoupleRenjana({ inv }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
     <section
       ref={ref}
-      className="px-8 py-24 border-b border-[#e5e0d6] bg-[#fcfbf9]"
+      className="px-8 py-24 border-b border-[#f0d6d6] bg-[#fbf0ef]"
     >
       <motion.div
         className="text-center mb-18"
@@ -42,7 +42,7 @@ export function CoupleKelana({ inv }: Props) {
         animate={isInView ? "visible" : "hidden"}
         variants={fadeUp(0)}
       >
-        <h2 className="font-(family-name:--tpl-font-heading) font-medium text-3xl text-(--tpl-primary) tracking-tight">
+        <h2 className="font-(family-name:--font-serif) font-medium text-3xl text-[#a85d6b] tracking-tight">
           Meet the Couple
         </h2>
       </motion.div>
@@ -56,7 +56,7 @@ export function CoupleKelana({ inv }: Props) {
             animate={isInView ? "visible" : "hidden"}
             variants={fadeUp(0.2)}
           >
-            <div className="w-32 h-32 mb-4 rounded-full overflow-hidden border border-(--tpl-secondary) p-1">
+            <div className="w-32 h-32 mb-4 rounded-full overflow-hidden border border-[#c98a96] p-1">
               <Image
                 width={200}
                 height={200}
@@ -65,20 +65,20 @@ export function CoupleKelana({ inv }: Props) {
                 className="w-full h-full object-cover rounded-full lg:grayscale hover:grayscale-0 transition-all duration-700"
               />
             </div>
-            <h3 className="font-(family-name:--tpl-font-display) text-3xl text-(--tpl-primary)">
+            <h3 className="font-(family-name:--font-script) text-3xl text-[#a85d6b]">
               {inv.brideName}
             </h3>
-            <p className="text-xs font-(family-name:--tpl-font-heading) [text-transform:var(--tpl-transform-heading)] tracking-widest text-(--tpl-tertiary) mt-1 mb-2">
+            <p className="text-xs font-(family-name:--font-serif) [text-transform:uppercase] tracking-widest text-[#c98a96] mt-1 mb-2">
               Mempelai Wanita
             </p>
-            <p className="font-(family-name:--tpl-font-heading) font-medium text-balance text-sm text-stone-500 italic">
+            <p className="font-(family-name:--font-serif) font-medium text-balance text-sm text-[#9a7e7e] italic">
               {inv.brideDescription}
             </p>
           </motion.div>
 
           {/* Divider */}
           <motion.div
-            className="text-center text-(--tpl-secondary) font-(family-name:--tpl-font-heading) text-2xl italic"
+            className="text-center text-[#c98a96] font-(family-name:--font-serif) text-2xl italic"
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             variants={fadeIn(0.45)}
@@ -93,7 +93,7 @@ export function CoupleKelana({ inv }: Props) {
             animate={isInView ? "visible" : "hidden"}
             variants={fadeUp(0.55)}
           >
-            <div className="w-32 h-32 mb-4 rounded-full overflow-hidden border border-(--tpl-secondary) p-1">
+            <div className="w-32 h-32 mb-4 rounded-full overflow-hidden border border-[#c98a96] p-1">
               <Image
                 width={200}
                 height={200}
@@ -102,13 +102,13 @@ export function CoupleKelana({ inv }: Props) {
                 className="w-full h-full object-cover rounded-full lg:grayscale hover:grayscale-0 transition-all duration-700"
               />
             </div>
-            <h3 className="font-(family-name:--tpl-font-display) text-3xl text-(--tpl-primary)">
+            <h3 className="font-(family-name:--font-script) text-3xl text-[#a85d6b]">
               {inv.groomName}
             </h3>
-            <p className="text-xs font-(family-name:--tpl-font-heading) [text-transform:var(--tpl-transform-heading)] tracking-widest text-(--tpl-tertiary) mt-1 mb-2">
+            <p className="text-xs font-(family-name:--font-serif) [text-transform:uppercase] tracking-widest text-[#c98a96] mt-1 mb-2">
               Mempelai Pria
             </p>
-            <p className="font-(family-name:--tpl-font-heading) font-medium text-balance text-sm text-stone-500 italic">
+            <p className="font-(family-name:--font-serif) font-medium text-balance text-sm text-[#9a7e7e] italic">
               {inv.groomDescription}
             </p>
           </motion.div>
@@ -122,7 +122,7 @@ export function CoupleKelana({ inv }: Props) {
             animate={isInView ? "visible" : "hidden"}
             variants={fadeUp(0.55)}
           >
-            <div className="w-32 h-32 mb-4 rounded-full overflow-hidden border border-(--tpl-secondary) p-1">
+            <div className="w-32 h-32 mb-4 rounded-full overflow-hidden border border-[#c98a96] p-1">
               <Image
                 width={200}
                 height={200}
@@ -131,20 +131,20 @@ export function CoupleKelana({ inv }: Props) {
                 className="w-full h-full object-cover rounded-full lg:grayscale hover:grayscale-0 transition-all duration-700"
               />
             </div>
-            <h3 className="font-(family-name:--tpl-font-display) text-3xl text-(--tpl-primary)">
+            <h3 className="font-(family-name:--font-script) text-3xl text-[#a85d6b]">
               {inv.groomName}
             </h3>
-            <p className="text-xs font-(family-name:--tpl-font-heading) [text-transform:var(--tpl-transform-heading)] tracking-widest text-(--tpl-tertiary) mt-1 mb-2">
+            <p className="text-xs font-(family-name:--font-serif) [text-transform:uppercase] tracking-widest text-[#c98a96] mt-1 mb-2">
               Mempelai Pria
             </p>
-            <p className="font-(family-name:--tpl-font-heading) font-medium text-balance text-sm text-stone-500 italic">
+            <p className="font-(family-name:--font-serif) font-medium text-balance text-sm text-[#9a7e7e] italic">
               {inv.groomDescription}
             </p>
           </motion.div>
 
           {/* Divider */}
           <motion.div
-            className="text-center text-(--tpl-secondary) font-(family-name:--tpl-font-heading) text-2xl italic"
+            className="text-center text-[#c98a96] font-(family-name:--font-serif) text-2xl italic"
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             variants={fadeIn(0.45)}
@@ -159,7 +159,7 @@ export function CoupleKelana({ inv }: Props) {
             animate={isInView ? "visible" : "hidden"}
             variants={fadeUp(0.2)}
           >
-            <div className="w-32 h-32 mb-4 rounded-full overflow-hidden border border-(--tpl-secondary) p-1">
+            <div className="w-32 h-32 mb-4 rounded-full overflow-hidden border border-[#c98a96] p-1">
               <Image
                 width={200}
                 height={200}
@@ -168,13 +168,13 @@ export function CoupleKelana({ inv }: Props) {
                 className="w-full h-full object-cover rounded-full lg:grayscale hover:grayscale-0 transition-all duration-700"
               />
             </div>
-            <h3 className="font-(family-name:--tpl-font-display) text-3xl text-(--tpl-primary)">
+            <h3 className="font-(family-name:--font-script) text-3xl text-[#a85d6b]">
               {inv.brideName}
             </h3>
-            <p className="text-xs font-(family-name:--tpl-font-heading) [text-transform:var(--tpl-transform-heading)] tracking-widest text-(--tpl-tertiary) mt-1 mb-2">
+            <p className="text-xs font-(family-name:--font-serif) [text-transform:uppercase] tracking-widest text-[#c98a96] mt-1 mb-2">
               Mempelai Wanita
             </p>
-            <p className="font-(family-name:--tpl-font-heading) font-medium text-balance text-sm text-stone-500 italic">
+            <p className="font-(family-name:--font-serif) font-medium text-balance text-sm text-[#9a7e7e] italic">
               {inv.brideDescription}
             </p>
           </motion.div>

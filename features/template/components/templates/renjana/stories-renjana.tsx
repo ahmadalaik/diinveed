@@ -27,7 +27,7 @@ function StoryCard({
   return (
     <motion.div
       ref={ref}
-      className="flex flex-col justify-center text-center items-center gap-2 hover:border-(--tpl-tertiary)/30 group"
+      className="flex flex-col justify-center text-center items-center gap-2 hover:border-[#c98a96]/30 group"
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={fadeUp(delay)}
@@ -41,13 +41,13 @@ interface Props {
   inv: InvitationState;
 }
 
-export function StoriesKelana({ inv }: Props) {
+export function StoriesRenjana({ inv }: Props) {
   const headingRef = useRef(null);
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
 
   return (
     <section
-      className="relative px-8 py-16 bg-[#f4f1ea] border-b border-[#e5eed6]"
+      className="relative px-8 py-16 bg-[#fbf0ef] border-b border-[#f0d6d6]"
       style={{ clipPath: "inset(0)" }}
     >
       <div className="relative z-10">
@@ -58,7 +58,7 @@ export function StoriesKelana({ inv }: Props) {
           animate={headingInView ? "visible" : "hidden"}
           variants={fadeUp(0)}
         >
-          <h2 className="font-(family-name:--tpl-font-heading) font-medium text-3xl text-(--tpl-primary) tracking-tight">
+          <h2 className="font-(family-name:--font-serif) font-medium text-3xl text-[#a85d6b] tracking-tight">
             Love Story
           </h2>
         </motion.div>
@@ -66,17 +66,17 @@ export function StoriesKelana({ inv }: Props) {
         <div className="space-y-6">
           {inv.stories.map((story, i) => (
             <StoryCard key={story.id} delay={i * 0.15}>
-              <div className="text-(--tpl-tertiary) mb-3 flex justify-center items-center p-2 rounded-full border border-stone-300 bg-[#fcfbf9]/35">
+              <div className="text-[#c98a96] mb-3 flex justify-center items-center p-2 rounded-full border border-[#e8c9c9] bg-white/50">
                 <Milestone strokeWidth={1.5} />
               </div>
               <div className="pb-8">
-                <h3 className="font-(family-name:--tpl-font-display) font-medium tracking-wider text-2xl text-(--tpl-primary)">
+                <h3 className="font-(family-name:--font-script) font-medium tracking-wider text-2xl text-[#a85d6b]">
                   {story.title}
                 </h3>
-                <p className="text-xs font-semibold text-(--tpl-tertiary) [text-transform:var(--tpl-transform-heading)] tracking-widest mt-2 mb-4">
+                <p className="text-xs font-semibold text-[#c98a96] [text-transform:uppercase] tracking-widest mt-2 mb-4">
                   {story.year && format(new Date(story.year), "yyyy")}
                 </p>
-                <p className="text-balance text-sm text-stone-500 font-normal leading-relaxed">
+                <p className="text-balance text-sm text-[#6b4a4a] font-normal leading-relaxed">
                   {story.body}
                 </p>
               </div>

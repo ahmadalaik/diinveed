@@ -60,7 +60,7 @@ export function MusicPlayer({ open, autoPlay = true }: Props) {
       <button
         onClick={togglePlay}
         className={cn(
-          "bg-(--tpl-primary) hover:bg-(--tpl-tertiary) p-3 rounded-full transition-all text-stone-50/80 flex items-center justify-center pointer-events-auto",
+          "bg-espresso hover:bg-gold p-3 rounded-full transition-all text-ivory flex items-center justify-center pointer-events-auto",
           isPlaying && "animate-spin-slow",
         )}
       >

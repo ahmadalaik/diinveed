@@ -2,7 +2,6 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { cldUrl } from "@/lib/cloudinary-url";
 import { InvitationState } from "@/features/invitation/types/invitation.type";
 
 interface Props {
@@ -36,7 +35,7 @@ export function KelanaLayout({ children, inv }: Props) {
                 index === currentIndex ? "opacity-100" : "opacity-0",
               )}
               style={{
-                backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${cldUrl(gallery.url, "f_auto,q_auto,w_1080")})`,
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${gallery.url})`,
               }}
             />
           ))}

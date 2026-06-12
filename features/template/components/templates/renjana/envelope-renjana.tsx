@@ -13,7 +13,7 @@ interface Props {
   guestName?: string;
 }
 
-export function EnvelopeKelana({ inv, onOpen, guestName }: Props) {
+export function EnvelopeRenjana({ inv, onOpen, guestName }: Props) {
   const [isClosing, setIsClosing] = useState(false);
 
   const handleOpen = () => {
@@ -26,7 +26,7 @@ export function EnvelopeKelana({ inv, onOpen, guestName }: Props) {
   return (
     <section
       className={cn(
-        "fixed right-0 top-0 z-50 transition-transform duration-1000 ease-in-out w-full lg:w-[30%] h-dvh flex justify-center items-center px-8 py-14 text-center bg-stone-900",
+        "fixed inset-x-0 top-0 mx-auto z-50 transition-transform duration-1000 ease-in-out w-full max-w-md h-dvh flex justify-center items-center px-8 py-14 text-center bg-[#a85d6b]",
         isClosing ? "-translate-y-full" : "translate-y-0",
       )}
     >
@@ -39,7 +39,7 @@ export function EnvelopeKelana({ inv, onOpen, guestName }: Props) {
           alt="Thumbnail"
           fill
           preload
-          sizes="(max-width: 1024px) 100vw, 25vw"
+          sizes="(max-width: 480px) 100vw, 480px"
           className="object-cover"
         />
         <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/20 to-black/40" />
@@ -64,14 +64,14 @@ export function EnvelopeKelana({ inv, onOpen, guestName }: Props) {
             },
           }}
         >
-          <p className="text-xs [text-transform:var(--tpl-transform-heading)] tracking-[0.2em] text-(--tpl-secondary) mb-4 drop-shadow-md">
+          <p className="text-xs [text-transform:uppercase] tracking-[0.2em] text-[#c98a96] mb-4 drop-shadow-md">
             The Wedding of
           </p>
         </motion.div>
 
         {inv.isBrideFirst ? (
           <motion.h1
-            className="text-stone-50 leading-none text-5xl font-(family-name:--tpl-font-display) mb-5 drop-shadow-lg"
+            className="text-stone-50 leading-none text-5xl font-(family-name:--font-script) mb-5 drop-shadow-lg"
             variants={{
               hidden: { opacity: 0, y: 16 },
               visible: {
@@ -87,7 +87,7 @@ export function EnvelopeKelana({ inv, onOpen, guestName }: Props) {
           </motion.h1>
         ) : (
           <motion.h1
-            className="text-stone-50 leading-none text-5xl font-(family-name:--tpl-font-display) mb-5 drop-shadow-lg"
+            className="text-stone-50 leading-none text-5xl font-(family-name:--font-script) mb-5 drop-shadow-lg"
             variants={{
               hidden: { opacity: 0, y: 16 },
               visible: {
@@ -114,11 +114,11 @@ export function EnvelopeKelana({ inv, onOpen, guestName }: Props) {
           }}
         >
           <div className="flex items-baseline-last justify-center">
-            <span className="font-(family-name:--tpl-font-heading) font-medium text-2xl text-stone-50 mb-1 drop-shadow-md text-balance">
+            <span className="font-(family-name:--font-serif) font-medium text-2xl text-stone-50 mb-1 drop-shadow-md text-balance">
               Dear {guestName ?? "Guest"}
             </span>
           </div>
-          <p className="font-(family-name:--tpl-font-heading) text-sm text-stone-200 leading-relaxed text-balance drop-shadow-md">
+          <p className="font-(family-name:--font-serif) text-sm text-stone-200 leading-relaxed text-balance drop-shadow-md">
             Sorry if there are any mistakes in writing names or titles
           </p>
         </motion.div>

@@ -8,12 +8,12 @@ interface Props {
   inv: InvitationState;
 }
 
-export function FooterKelana({ inv }: Props) {
+export function FooterRenjana({ inv }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <footer className="bg-[#f4f1ea] px-8 py-16 text-center border-t border-(--tpl-secondary)">
+    <footer className="bg-[#fbf0ef] px-8 py-16 text-center border-t border-[#c98a96]">
       <motion.div
         ref={ref}
         initial={{ opacity: 0, y: 20 }}
@@ -21,13 +21,13 @@ export function FooterKelana({ inv }: Props) {
         transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
       >
         {inv.isBrideFirst ? (
-          <div className="flex justify-center gap-3 font-(family-name:--tpl-font-display) text-3xl text-(--tpl-tertiary) mb-4">
+          <div className="flex justify-center gap-3 font-(family-name:--font-script) text-3xl text-[#c98a96] mb-4">
             <p>{inv.brideNickname?.charAt(0) || "C"}</p>
             <span className="text-2xl">&amp;</span>
             <p>{inv.groomNickname?.charAt(0) || "G"}</p>
           </div>
         ) : (
-          <div className="flex justify-center gap-3 font-(family-name:--tpl-font-display) text-3xl text-(--tpl-tertiary) mb-4">
+          <div className="flex justify-center gap-3 font-(family-name:--font-script) text-3xl text-[#c98a96] mb-4">
             <p>{inv.groomNickname?.charAt(0) || "C"}</p>
             <span className="text-2xl">&amp;</span>
             <p>{inv.brideNickname?.charAt(0) || "G"}</p>

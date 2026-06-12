@@ -47,7 +47,7 @@ interface Props {
   guestName?: string;
 }
 
-export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
+export function RSVPRenjana({ publicToken, mode, guestSlug, guestName }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -95,10 +95,10 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
     <section
       ref={ref}
       id="rsvp"
-      className="px-8 py-24 bg-white relative overflow-hidden"
+      className="px-8 py-24 bg-[#fbf0ef] relative overflow-hidden"
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-(--tpl-tertiary)/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-32 h-32 bg-(--tpl-secondary)/10 rounded-full -ml-16 -mb-16 blur-3xl" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#c98a96]/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#c98a96]/10 rounded-full -ml-16 -mb-16 blur-3xl" />
 
       <motion.div
         className="text-center mb-12"
@@ -106,8 +106,8 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
         animate={isInView ? "visible" : "hidden"}
         variants={fadeUp(0)}
       >
-        <h2 className="font-(family-name:--tpl-font-heading) text-4xl text-(--tpl-primary) mb-3">R.S.V.P</h2>
-        <div className="w-12 h-px bg-(--tpl-tertiary) mx-auto mb-4" />
+        <h2 className="font-(family-name:--font-serif) text-4xl text-[#a85d6b] mb-3">R.S.V.P</h2>
+        <div className="w-12 h-px bg-[#c98a96] mx-auto mb-4" />
         <p className="text-[10px] text-stone-500 text-balance uppercase tracking-[0.2em]">
           Kindly RSVP at your earliest convenience.
         </p>
@@ -134,19 +134,19 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
             <div className="space-y-2 group">
               <Label
                 htmlFor="name"
-                className="text-[10px] uppercase tracking-widest text-stone-500 ml-1 transition-colors group-focus-within:text-(--tpl-tertiary)"
+                className="text-[10px] uppercase tracking-widest text-stone-500 ml-1 transition-colors group-focus-within:text-[#c98a96]"
               >
                 Guest Name
               </Label>
               <div className="relative">
                 <User
                   strokeWidth={1.5}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 group-focus-within:text-(--tpl-tertiary) transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 group-focus-within:text-[#c98a96] transition-colors"
                 />
                 <Input
                   id="name"
                   {...register("name")}
-                  className="w-full bg-[#f9f7f2] border-none text-sm py-6 pl-10 pr-4 rounded-md text-stone-700 placeholder:text-stone-300 focus-visible:ring-2 focus-visible:ring-(--tpl-tertiary)/20 transition-all duration-300 shadow-sm"
+                  className="w-full bg-white/70 border-none text-sm py-6 pl-10 pr-4 rounded-md text-stone-700 placeholder:text-stone-300 focus-visible:ring-2 focus-visible:ring-[#c98a96]/20 transition-all duration-300 shadow-sm"
                   placeholder="Full name as on invitation"
                 />
               </div>
@@ -158,7 +158,7 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
             </div>
 
             <div className="space-y-2 group">
-              <Label className="text-[10px] uppercase tracking-widest text-stone-500 ml-1 transition-colors group-focus-within:text-(--tpl-tertiary)">
+              <Label className="text-[10px] uppercase tracking-widest text-stone-500 ml-1 transition-colors group-focus-within:text-[#c98a96]">
                 Attendance
               </Label>
               <Select
@@ -169,7 +169,7 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
                 }
               >
                 <SelectTrigger
-                  className="w-full bg-[#f9f7f2] border-none text-sm py-6 px-3 rounded-md text-stone-700 data-placeholder:text-stone-300 focus:ring-2 focus:ring-(--tpl-tertiary)/20 transition-all duration-300 shadow-sm"
+                  className="w-full bg-white/70 border-none text-sm py-6 px-3 rounded-md text-stone-700 data-placeholder:text-stone-300 focus:ring-2 focus:ring-[#c98a96]/20 transition-all duration-300 shadow-sm"
                   disabled={isSubmitting || isPreview}
                 >
                   <div className="flex items-center gap-3">
@@ -182,23 +182,23 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
                 </SelectTrigger>
                 <SelectContent
                   position="popper"
-                  className="rounded-md bg-[#fcfbf9] border-[#f4f1ea] shadow-xl"
+                  className="rounded-md bg-white border-[#f0d6d6] shadow-xl"
                 >
                   <SelectItem
                     value="ACCEPT"
-                    className="py-3 px-3 focus:bg-(--tpl-tertiary)/10 rounded-sm"
+                    className="py-3 px-3 focus:bg-[#c98a96]/10 rounded-sm"
                   >
                     Joyfully Attend
                   </SelectItem>
                   <SelectItem
                     value="DECLINE"
-                    className="py-3 px-3 focus:bg-(--tpl-tertiary)/10 rounded-sm"
+                    className="py-3 px-3 focus:bg-[#c98a96]/10 rounded-sm"
                   >
                     Regretfully Decline
                   </SelectItem>
                   <SelectItem
                     value="MAYBE"
-                    className="py-3 px-3 focus:bg-(--tpl-tertiary)/10 rounded-sm"
+                    className="py-3 px-3 focus:bg-[#c98a96]/10 rounded-sm"
                   >
                     MAYBE
                   </SelectItem>
@@ -213,7 +213,7 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
 
             {attendance === "ACCEPT" && (
               <div className="space-y-2 group animate-in fade-in slide-in-from-top-2 duration-300">
-                <Label className="text-[10px] uppercase tracking-widest text-stone-500 ml-1 transition-colors group-focus-within:text-(--tpl-tertiary)">
+                <Label className="text-[10px] uppercase tracking-widest text-stone-500 ml-1 transition-colors group-focus-within:text-[#c98a96]">
                   Number of Guests
                 </Label>
                 <Select
@@ -223,7 +223,7 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
                   }
                 >
                   <SelectTrigger
-                    className="w-full bg-[#f9f7f2] border-none text-sm py-6 px-3 rounded-md text-stone-700 data-placeholder:text-stone-300 focus:ring-2 focus:ring-(--tpl-tertiary)/20 transition-all duration-300 shadow-sm"
+                    className="w-full bg-white/70 border-none text-sm py-6 px-3 rounded-md text-stone-700 data-placeholder:text-stone-300 focus:ring-2 focus:ring-[#c98a96]/20 transition-all duration-300 shadow-sm"
                     disabled={isSubmitting || isPreview}
                   >
                     <div className="flex items-center gap-3">
@@ -236,17 +236,17 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
                   </SelectTrigger>
                   <SelectContent
                     position="popper"
-                    className="rounded-md border-[#f4f1ea] shadow-xl"
+                    className="rounded-md border-[#f0d6d6] shadow-xl"
                   >
                     <SelectItem
                       value="1"
-                      className="py-3 px-3 focus:bg-(--tpl-tertiary)/10 rounded-sm"
+                      className="py-3 px-3 focus:bg-[#c98a96]/10 rounded-sm"
                     >
                       1 Person
                     </SelectItem>
                     <SelectItem
                       value="2"
-                      className="py-3 px-3 focus:bg-(--tpl-tertiary)/10 rounded-sm"
+                      className="py-3 px-3 focus:bg-[#c98a96]/10 rounded-sm"
                     >
                       2 Persons
                     </SelectItem>
@@ -258,20 +258,20 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
             <div className="space-y-2 group">
               <Label
                 htmlFor="wish"
-                className="text-[10px] uppercase tracking-widest text-stone-500 ml-1 transition-colors group-focus-within:text-(--tpl-tertiary)"
+                className="text-[10px] uppercase tracking-widest text-stone-500 ml-1 transition-colors group-focus-within:text-[#c98a96]"
               >
                 Wishes & Messages
               </Label>
               <div className="relative">
                 <MessageCircleHeart
                   strokeWidth={1.5}
-                  className="absolute left-3 top-4 size-4 text-stone-400 group-focus-within:text-(--tpl-tertiary) transition-colors"
+                  className="absolute left-3 top-4 size-4 text-stone-400 group-focus-within:text-[#c98a96] transition-colors"
                 />
                 <Textarea
                   id="wish"
                   {...register("wish")}
                   rows={4}
-                  className="w-full h-full bg-[#f9f7f2] border-none text-sm pt-3 pb-3 pl-10 pr-4 rounded-md text-stone-700 placeholder:text-stone-300 focus-visible:ring-2 focus-visible:ring-(--tpl-tertiary)/20 transition-all duration-300 shadow-sm resize-none"
+                  className="w-full h-full bg-white/70 border-none text-sm pt-3 pb-3 pl-10 pr-4 rounded-md text-stone-700 placeholder:text-stone-300 focus-visible:ring-2 focus-visible:ring-[#c98a96]/20 transition-all duration-300 shadow-sm resize-none"
                   placeholder="Send your warm wishes to the couple..."
                 />
               </div>
@@ -280,7 +280,7 @@ export function RSVPKelana({ publicToken, mode, guestSlug, guestName }: Props) {
             <Button
               type="submit"
               disabled={isSubmitting || isPreview}
-              className="w-full bg-(--tpl-primary) hover:bg-(--tpl-tertiary) text-white mt-2 py-6 rounded-md text-xs font-bold tracking-[0.2em] uppercase transition-all duration-500 shadow-lg hover:shadow-(--tpl-tertiary)/20 active:scale-[0.98] group disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-[#a85d6b] hover:bg-[#c98a96] text-white mt-2 py-6 rounded-md text-xs font-bold tracking-[0.2em] uppercase transition-all duration-500 shadow-lg hover:shadow-[#c98a96]/20 active:scale-[0.98] group disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <span className="flex items-center gap-2">
                 {isSubmitting ? (

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { EnvelopeKelana } from "./envelope-kelana";
+import { LoadingKelana } from "./loading-kelana";
 import type { TemplateProps } from "../types";
 import { Lightbox } from "./lightbox";
 import { KelanaLayout } from "./layout/kelana-layout";
@@ -15,8 +16,14 @@ import { StoriesKelana } from "./stories-kelana";
 import { GalleryKelana } from "./gallery-kelana";
 import { GiftsKelana } from "./gifts-kelana";
 import { RSVPKelana } from "./rsvp-kelana";
+import { WishesKelana } from "./wishes-kelana";
 import { FooterKelana } from "./footer-kelana";
 import { MusicPlayer } from "./music-player";
+import {
+  kelanaTokens,
+  templateCssVars,
+  mergeTemplateTokenOverrides,
+} from "@/features/template/tokens";
 
 export default function KelanaTemplate({
   invitation,
@@ -26,6 +33,7 @@ export default function KelanaTemplate({
 }: TemplateProps) {
   const isPreview = mode === "preview";
   const [opened, setOpened] = useState(isPreview);
+  const [loading, setLoading] = useState(!isPreview);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
 
@@ -48,7 +56,15 @@ export default function KelanaTemplate({
   }, [lightboxOpen]);
 
   return (
-    <>
+    <div
+      style={templateCssVars(
+        mergeTemplateTokenOverrides(kelanaTokens, invitation.tokenOverrides),
+      )}
+    >
+      {loading && (
+        <LoadingKelana inv={invitation} onDone={() => setLoading(false)} />
+      )}
+
       <div className="fixed inset-0 z-40 bg-[url('https://transparenttextures.com/patterns/cream-paper.png')] opacity-60 pointer-events-none mix-blend-multiply" />
 
       <Lightbox
@@ -58,7 +74,7 @@ export default function KelanaTemplate({
         mode={mode}
       />
 
-      <div className="relative w-full h-dvh overflow-hidden font-montserrat">
+      <div className="relative w-full h-dvh overflow-hidden font-(family-name:--tpl-font-body)">
         <div className="hidden lg:block fixed left-0 top-0 w-[70%] h-dvh">
           <BannerKelana inv={invitation} />
         </div>
@@ -87,9 +103,16 @@ export default function KelanaTemplate({
             guestSlug={guestSlug}
             guestName={guestName}
           />
+          {(invitation.wishesOptions?.enabled ?? true) && (
+            <WishesKelana
+              publicToken={invitation.publicToken}
+              showCategory={invitation.wishesOptions?.showCategory ?? false}
+              mode={mode}
+            />
+          )}
           <FooterKelana inv={invitation} />
         </KelanaLayout>
       </div>
-    </>
+    </div>
   );
 }

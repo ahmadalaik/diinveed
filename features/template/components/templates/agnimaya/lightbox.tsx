@@ -67,7 +67,6 @@ export function Lightbox({
 
       {lightboxOpen && lightboxImg && (
         <div className="relative flex items-center justify-center w-full h-full max-h-[85vh] max-w-full pointer-events-none">
-          {/* Low-res Placeholder (Loads instantly) */}
           <Image
             src={lightboxImg}
             alt="Loading..."
@@ -79,7 +78,6 @@ export function Lightbox({
             )}
           />
 
-          {/* High-res Image */}
           <Image
             fill
             src={lightboxImg}

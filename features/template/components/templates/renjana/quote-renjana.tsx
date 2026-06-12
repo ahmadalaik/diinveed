@@ -17,42 +17,42 @@ interface Props {
   inv: InvitationState;
 }
 
-export function Quote({ inv }: Props) {
+export function QuoteRenjana({ inv }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
     <section
       ref={ref}
-      className="px-8 py-12 bg-[#fcfbf9] border-b border-[#e5e0d6] text-center"
+      className="px-8 py-12 bg-[#fbf0ef] border-b border-[#f0d6d6] text-center"
     >
       {inv.isBrideFirst ? (
         <motion.div
-          className="flex justify-center items-center gap-4 font-(family-name:--tpl-font-display) mb-8"
+          className="flex justify-center items-center gap-4 font-(family-name:--font-script) mb-8"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0)}
         >
-          <p className="text-3xl tracking-[0.2em] text-(--tpl-primary)/80">
+          <p className="text-3xl tracking-[0.2em] text-[#a85d6b]/80">
             {inv.brideNickname && inv.brideNickname.charAt(0)}
           </p>
-          <div className="w-px h-16 bg-(--tpl-tertiary)/60"></div>
-          <p className="text-3xl tracking-[0.2em] text-(--tpl-primary)/80">
+          <div className="w-px h-16 bg-[#c98a96]/60"></div>
+          <p className="text-3xl tracking-[0.2em] text-[#a85d6b]/80">
             {inv.groomNickname && inv.groomNickname.charAt(0)}
           </p>
         </motion.div>
       ) : (
         <motion.div
-          className="flex justify-center items-center gap-4 font-(family-name:--tpl-font-display) mb-8"
+          className="flex justify-center items-center gap-4 font-(family-name:--font-script) mb-8"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0)}
         >
-          <p className="text-3xl tracking-[0.2em] text-(--tpl-primary)/80">
+          <p className="text-3xl tracking-[0.2em] text-[#a85d6b]/80">
             {inv.groomNickname && inv.groomNickname.charAt(0)}
           </p>
-          <div className="w-px h-16 bg-(--tpl-tertiary)/60"></div>
-          <p className="text-3xl tracking-[0.2em] text-(--tpl-primary)/80">
+          <div className="w-px h-16 bg-[#c98a96]/60"></div>
+          <p className="text-3xl tracking-[0.2em] text-[#a85d6b]/80">
             {inv.brideNickname && inv.brideNickname.charAt(0)}
           </p>
         </motion.div>
@@ -60,7 +60,7 @@ export function Quote({ inv }: Props) {
 
       {inv.quote && (
         <motion.p
-          className="font-(family-name:--tpl-font-heading) text-base text-stone-500 italic leading-relaxed"
+          className="font-(family-name:--font-serif) text-base text-[#9a7e7e] italic leading-relaxed"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0.25)}
@@ -71,7 +71,7 @@ export function Quote({ inv }: Props) {
 
       {inv.quoteReference && (
         <motion.h4
-          className="font-(family-name:--tpl-font-heading) text-lg font-medium mt-4 italic text-(--tpl-tertiary)"
+          className="font-(family-name:--font-serif) text-lg font-medium mt-4 italic text-[#c98a96]"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0.45)}

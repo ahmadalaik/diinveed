@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Disc3, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Disc3, PlayCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { DEMO_MUSIC } from "@/lib/demo-assets";
 
 interface Props {
@@ -60,7 +60,7 @@ export function MusicPlayer({ open, autoPlay = true }: Props) {
       <button
         onClick={togglePlay}
         className={cn(
-          "bg-(--tpl-primary) hover:bg-(--tpl-tertiary) p-3 rounded-full transition-all text-stone-50/80 flex items-center justify-center pointer-events-auto",
+          "bg-[#2c2c2c] hover:bg-[#6b7c62] p-3 rounded-full transition-all text-stone-50/80 flex items-center justify-center pointer-events-auto",
           isPlaying && "animate-spin-slow",
         )}
       >

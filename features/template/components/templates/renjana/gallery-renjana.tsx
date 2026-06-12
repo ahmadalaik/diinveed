@@ -35,7 +35,7 @@ interface Props {
   openLightbox: (src: string) => void;
 }
 
-export function GalleryKelana({ inv, openLightbox }: Props) {
+export function GalleryRenjana({ inv, openLightbox }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -45,17 +45,17 @@ export function GalleryKelana({ inv, openLightbox }: Props) {
   };
 
   return (
-    <section ref={ref} className="px-2 py-16 bg-stone-100">
+    <section ref={ref} className="px-2 py-16 bg-[#fbf0ef]">
       <motion.div
         className="text-center"
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
         variants={headingVariants}
       >
-        <h2 className="font-(family-name:--tpl-font-heading) font-medium text-3xl text-(--tpl-primary) tracking-tight mb-1">
+        <h2 className="font-(family-name:--font-serif) font-medium text-3xl text-[#a85d6b] tracking-tight mb-1">
           Gallery
         </h2>
-        <p className="text-base text-stone-500 font-(family-name:--tpl-font-heading) font-light italic leading-relaxed mb-6">
+        <p className="text-base text-[#9a7e7e] font-(family-name:--font-serif) font-light italic leading-relaxed mb-6">
           Our Moments
         </p>
       </motion.div>

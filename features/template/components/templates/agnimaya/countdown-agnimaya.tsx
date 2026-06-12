@@ -1,10 +1,10 @@
 "use client";
 
-import { InvitationState } from "@/features/invitation/types/invitation.type";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "motion/react";
 import { toDateTime } from "@/features/invitation/lib/datetime";
 import { cn } from "@/lib/utils";
-import { motion, useInView } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { InvitationState } from "@/features/invitation/types/invitation.type";
 
 const fadeUp = (delay: number) => ({
   hidden: { opacity: 0, y: 20 },
@@ -19,7 +19,7 @@ interface Props {
   inv: InvitationState;
 }
 
-export function CountdownKelana({ inv }: Props) {
+export function CountdownAgnimaya({ inv }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -36,17 +36,14 @@ export function CountdownKelana({ inv }: Props) {
   const gallery = inv.gallery.filter((g) => g.url);
   const extendedGallery = gallery.length > 0 ? [...gallery, gallery[0]] : [];
 
-  const handleNext = () => {
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + 1);
-  };
-
   useEffect(() => {
+    if (gallery.length === 0) return;
     const interval = setInterval(() => {
-      handleNext();
+      setIsTransitioning(true);
+      setCurrentIndex((prev) => prev + 1);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [gallery.length]);
 
   useEffect(() => {
     if (currentIndex === gallery.length) {
@@ -64,9 +61,7 @@ export function CountdownKelana({ inv }: Props) {
       mainEvent?.timeStart,
       mainEvent?.timezone,
     );
-    if (!target) {
-      return;
-    }
+    if (!target) return;
     const weddingDate = target.getTime();
 
     const timer = setInterval(() => {
@@ -98,10 +93,17 @@ export function CountdownKelana({ inv }: Props) {
     return () => clearInterval(timer);
   }, [mainEvent?.date, mainEvent?.timeStart, mainEvent?.timezone]);
 
+  const units = [
+    { label: "Days", value: timeLeft.days },
+    { label: "Hours", value: timeLeft.hours },
+    { label: "Mins", value: timeLeft.minutes },
+    { label: "Secs", value: timeLeft.seconds },
+  ];
+
   return (
     <section
       ref={ref}
-      className="relative px-8 py-24 bg-stone-900 text-center overflow-hidden"
+      className="relative px-8 py-24 bg-espresso text-center overflow-hidden"
     >
       <div
         className={cn(
@@ -112,58 +114,44 @@ export function CountdownKelana({ inv }: Props) {
         )}
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {extendedGallery.map((gallery, index) => (
+        {extendedGallery.map((item, index) => (
           <div
             key={index}
             className="w-full h-full shrink-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url(${gallery.url})`,
+              backgroundImage: `url(${item.url})`,
             }}
           />
         ))}
       </div>
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-espresso/80" />
 
       <div className="relative z-10">
         <motion.p
-          className="text-xs font-medium [text-transform:var(--tpl-transform-heading)] tracking-[0.2em] text-stone-50 mb-6"
+          className="text-gold text-xs font-sans uppercase tracking-[0.3em] mb-8"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0)}
         >
-          Save the Date
+          Counting Down
         </motion.p>
 
         <motion.div
-          className="grid grid-cols-2 gap-4 font-(family-name:--tpl-font-heading) text-[#e5e0d6]"
+          className="grid grid-cols-4 gap-4 text-ivory"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0.25)}
         >
-          <div>
-            <span className="text-2xl font-semibold">{timeLeft.days}</span>
-            <span className="text-[9px] uppercase text-stone-200 block mt-1">
-              Hari
-            </span>
-          </div>
-          <div>
-            <span className="text-2xl font-semibold">{timeLeft.hours}</span>
-            <span className="text-[9px] uppercase text-stone-200 block mt-1">
-              Jam
-            </span>
-          </div>
-          <div>
-            <span className="text-2xl font-semibold">{timeLeft.minutes}</span>
-            <span className="text-[9px] uppercase text-stone-200 block mt-1">
-              Menit
-            </span>
-          </div>
-          <div>
-            <span className="text-2xl font-semibold">{timeLeft.seconds}</span>
-            <span className="text-[9px] uppercase text-stone-200 block mt-1">
-              Detik
-            </span>
-          </div>
+          {units.map((unit) => (
+            <div key={unit.label} className="flex flex-col items-center">
+              <span className="text-3xl font-serif font-light tabular-nums">
+                {unit.value}
+              </span>
+              <span className="text-[9px] uppercase tracking-[0.2em] text-champagne font-sans mt-2">
+                {unit.label}
+              </span>
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>
