@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
 import { RsvpOptions } from "@/features/invitation/types/invitation.type";
+import { EditorError } from "../editor-field";
 
 const OPTIONS: { key: keyof RsvpOptions; label: string }[] = [
   { key: "accept", label: "Accept" },
@@ -16,6 +17,8 @@ const OPTIONS: { key: keyof RsvpOptions; label: string }[] = [
 export function RsvpSection() {
   const rsvpDeadline = useInvitationStore((s) => s.rsvpDeadline);
   const opts = useInvitationStore((s) => s.rsvpOptions);
+  const deadlineErrors = useInvitationStore((s) => s.publishErrors?.rsvpDeadline);
+  const optionsErrors = useInvitationStore((s) => s.publishErrors?.rsvpOptions);
   const set = useInvitationStore((s) => s.set);
 
   const toggleOpt = (key: keyof RsvpOptions) => {
@@ -32,6 +35,7 @@ export function RsvpSection() {
           yearsBack={1}
           yearsForward={2}
         />
+        <EditorError errors={deadlineErrors} className="mt-1" />
       </div>
       <div className="space-y-2">
         <Label className="text-xs">Response Options</Label>
@@ -44,6 +48,7 @@ export function RsvpSection() {
             />
           </div>
         ))}
+        <EditorError errors={optionsErrors} />
       </div>
     </div>
   );

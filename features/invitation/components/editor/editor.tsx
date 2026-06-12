@@ -7,7 +7,7 @@ import {
   publishInvitation,
   unpublishInvitation,
 } from "../../actions/publish-invitation";
-import { buildInvitationSlug } from "../../lib/slug";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -78,36 +78,43 @@ function Brand() {
 
 function PublishFooter() {
   const isPublished = useInvitationStore((s) => s.isPublished);
-  const slug = useInvitationStore((s) => s.slug);
-  const publicToken = useInvitationStore((s) => s.publicToken);
   const set = useInvitationStore((s) => s.set);
+  const setPublishErrors = useInvitationStore((s) => s.setPublishErrors);
+  const liveSlug = useInvitationStore((s) => s.liveSlug);
+  const setLiveSlug = useInvitationStore((s) => s.setLiveSlug);
+  const hasUnpublishedChanges = useInvitationStore(
+    (s) => s.hasUnpublishedChanges,
+  );
+  const setHasUnpublishedChanges = useInvitationStore(
+    (s) => s.setHasUnpublishedChanges,
+  );
 
   const [loading, setLoading] = useState(false);
-  const [liveSlug, setLiveSlug] = useState(() =>
-    isPublished && publicToken ? buildInvitationSlug(slug, publicToken) : "",
-  );
 
   async function handlePublish() {
     setLoading(true);
     const result = await publishInvitation();
     setLoading(false);
 
-    if (result.errors) {
-      const messages = Object.values(result.errors)
+    if (!result.success) {
+      setPublishErrors(result.errors ?? null);
+      const firstFieldMsg = Object.values(result.errors ?? {})
         .flat()
-        .filter(Boolean) as string[];
-      toast.error(messages[0] ?? "Gagal mempublikasikan undangan.");
+        .filter(Boolean)[0] as string | undefined;
+      toast.error(firstFieldMsg ?? result.message);
       return;
     }
 
-    setLiveSlug(result.invitationSlug);
-    set({ isPublished: true });
-    toast.success("Undangan dipublikasikan.", {
+    setPublishErrors(null);
+    setHasUnpublishedChanges(false);
+    setLiveSlug(result.data!.invitationSlug);
+    set({ isPublished: true, slug: result.data!.invitationSlug });
+    toast.success(result.message, {
       action: {
         label: "Salin tautan",
         onClick: () =>
           navigator.clipboard.writeText(
-            `${window.location.origin}/invitation/${result.invitationSlug}`,
+            `${window.location.origin}/invitation/${result.data!.invitationSlug}`,
           ),
       },
     });
@@ -118,12 +125,12 @@ function PublishFooter() {
     const result = await unpublishInvitation();
     setLoading(false);
 
-    if (result.errors) {
-      toast.error(result.errors._form[0] ?? "Gagal menyembunyikan undangan.");
+    if (!result.success) {
+      toast.error(result.message);
       return;
     }
     set({ isPublished: false });
-    toast.success("Undangan disembunyikan.");
+    toast.success(result.message);
   }
 
   async function handleCopy() {
@@ -145,14 +152,33 @@ function PublishFooter() {
   }
 
   return (
-    <div className="flex items-center gap-2 border-t p-2">
-      <Button variant="outline" className="flex-1" onClick={handleCopy}>
-        <Copy className="size-4" />
-        Salin tautan
-      </Button>
-      <Button variant="ghost" onClick={handleUnpublish} disabled={loading}>
-        {loading ? <Loader2 className="size-4 animate-spin" /> : "Unpublish"}
-      </Button>
+    <div className="flex flex-col gap-2 border-t p-2">
+      {hasUnpublishedChanges && (
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary">Ada perubahan belum dipublikasikan</Badge>
+          <Button
+            size="sm"
+            className="ml-auto"
+            onClick={handlePublish}
+            disabled={loading}
+          >
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              "Publikasikan perubahan"
+            )}
+          </Button>
+        </div>
+      )}
+      <div className="flex items-center gap-2">
+        <Button variant="outline" className="flex-1" onClick={handleCopy}>
+          <Copy className="size-4" />
+          Salin tautan
+        </Button>
+        <Button variant="ghost" onClick={handleUnpublish} disabled={loading}>
+          {loading ? <Loader2 className="size-4 animate-spin" /> : "Unpublish"}
+        </Button>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,10 @@ import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/re
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/invitation/actions/submit-rsvp", () => ({
-  submitRsvp: vi.fn(async () => ({ success: true })),
+  submitRsvp: vi.fn(async () => ({
+    success: true,
+    message: "Terima kasih, konfirmasi Anda terkirim",
+  })),
 }));
 
 import { RsvpForm } from "../rsvp-form";
@@ -39,7 +42,7 @@ describe("RsvpForm", () => {
         phoneNumber: "",
         response: "ACCEPT",
         guests: "1",
-        hope: "",
+        wish: "",
       },
       undefined,
     );

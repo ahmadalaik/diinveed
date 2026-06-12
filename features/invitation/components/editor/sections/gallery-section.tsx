@@ -1,11 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
 import { useR2Upload } from "@/hooks/use-r2-upload";
-import { cldUrl } from "@/lib/cloudinary-url";
 import { cn } from "@/lib/utils";
 import {
   closestCenter,
@@ -23,6 +21,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Plus, X } from "lucide-react";
+import Image from "next/image";
 import { useRef } from "react";
 import { EditorError } from "../editor-field";
 
@@ -56,10 +55,12 @@ function SortablePhoto({
         {...attributes}
         {...listeners}
       >
-        <img
-          src={cldUrl(url, "f_auto,q_auto,w_400")}
+        <Image
+          fill
+          src={url}
           alt=""
-          className="h-full w-full cursor-grab object-cover"
+          sizes="200px"
+          className="cursor-grab object-cover"
         />
       </AspectRatio>
       <Button

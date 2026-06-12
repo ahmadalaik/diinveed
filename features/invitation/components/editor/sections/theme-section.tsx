@@ -2,19 +2,29 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
-import { getToken, TokenOverrides } from "@/features/template/tokens";
+import {
+  getTemplateTokens,
+  type TemplateTokenOverrides,
+} from "@/features/template/tokens";
+
+type ColorKey = "primary" | "secondary" | "tertiary";
+
+const COLOR_LABELS: Record<ColorKey, string> = {
+  primary: "Primary",
+  secondary: "Secondary",
+  tertiary: "Tertiary",
+};
 
 export function ThemeSection() {
-  const tokenId = useInvitationStore((s) => s.tokenId);
+  const templateSlug = useInvitationStore((s) => s.templateSlug);
   const tokenOverrides = useInvitationStore((s) => s.tokenOverrides);
   const set = useInvitationStore((s) => s.set);
-  const base = getToken(tokenId);
 
-  const updateColor = (
-    key: "primary" | "accent" | "background",
-    value: string,
-  ) => {
+  const base = getTemplateTokens(templateSlug);
+
+  const updateColor = (key: ColorKey, value: string) => {
     set({
       tokenOverrides: {
         ...tokenOverrides,
@@ -24,38 +34,38 @@ export function ThemeSection() {
   };
 
   const resetColors = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { colors: _removed, ...rest } = tokenOverrides ?? {};
     const cleaned =
-      Object.keys(rest).length > 0 ? (rest as TokenOverrides) : null;
-
+      Object.keys(rest).length > 0 ? (rest as TemplateTokenOverrides) : null;
     set({ tokenOverrides: cleaned });
   };
 
-  if (!base) return null;
-
-  const colors = {
+  const colors: Record<ColorKey, string> = {
     primary: tokenOverrides?.colors?.primary ?? base.colors.primary,
-    accent: tokenOverrides?.colors?.accent ?? base.colors.accent,
-    background: tokenOverrides?.colors?.background ?? base.colors.background,
+    secondary: tokenOverrides?.colors?.secondary ?? base.colors.secondary,
+    tertiary: tokenOverrides?.colors?.tertiary ?? base.colors.tertiary,
   };
 
   return (
     <div className="space-y-3">
-      {(["primary", "accent", "background"] as const).map((key) => (
+      {(["primary", "secondary", "tertiary"] as const).map((key) => (
         <div key={key}>
-          <Label className="text-xs capitalize">{key} Color</Label>
+          <Label className="text-xs">{COLOR_LABELS[key]}</Label>
           <div className="flex gap-2 items-center mt-1">
             <input
               type="color"
               value={colors[key]}
               onChange={(e) => updateColor(key, e.target.value)}
-              className="h-8 w-8 rounded cursor-pointer border p-0.5 bg-transparent"
+              className="h-8 w-8 rounded cursor-pointer border p-0.5 bg-transparent shrink-0"
             />
-            <span className="text-xs text-muted-foreground font-mono">
-              {colors[key]}
-            </span>
+            <Input
+              value={colors[key]}
+              onChange={(e) => updateColor(key, e.target.value)}
+              className="h-8 text-xs font-mono"
+            />
             {tokenOverrides?.colors?.[key] && (
-              <span className="text-xs text-amber-500 ml-auto">custom</span>
+              <span className="text-xs text-amber-500 shrink-0">custom</span>
             )}
           </div>
         </div>
@@ -67,7 +77,7 @@ export function ThemeSection() {
           className="w-full text-xs"
           onClick={resetColors}
         >
-          Reset to template defaults
+          Reset ke default template
         </Button>
       )}
     </div>

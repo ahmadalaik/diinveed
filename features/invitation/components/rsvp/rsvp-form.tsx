@@ -24,7 +24,7 @@ export function RsvpForm({ publicToken, rsvpOptions, guestSlug, guestName }: Pro
     "ACCEPT",
   );
   const [guests, setGuests] = useState("1");
-  const [hope, setHope] = useState("");
+  const [wish, setWish] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
 
@@ -38,13 +38,18 @@ export function RsvpForm({ publicToken, rsvpOptions, guestSlug, guestName }: Pro
         phoneNumber,
         response,
         guests,
-        hope,
+        wish,
       },
       guestSlug,
     );
     setLoading(false);
-    if (result.errors) {
-      setErrors(result.errors as Record<string, string[]>);
+    if (!result.success) {
+      const fieldErrors = result.errors ?? {};
+      setErrors(
+        Object.keys(fieldErrors).length > 0
+          ? fieldErrors
+          : { _form: [result.message] },
+      );
       return;
     }
     setSubmitted(true);
@@ -143,11 +148,11 @@ export function RsvpForm({ publicToken, rsvpOptions, guestSlug, guestName }: Pro
           )}
 
           <div>
-            <Label htmlFor="rsvp-hope">Wishes (optional)</Label>
+            <Label htmlFor="rsvp-wish">Wishes (optional)</Label>
             <Textarea
-              id="rsvp-hope"
-              value={hope}
-              onChange={(e) => setHope(e.target.value)}
+              id="rsvp-wish"
+              value={wish}
+              onChange={(e) => setWish(e.target.value)}
               placeholder="Your wishes for the couple"
             />
           </div>

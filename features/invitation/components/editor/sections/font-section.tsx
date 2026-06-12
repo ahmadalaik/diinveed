@@ -1,92 +1,129 @@
-"usec client";
+"use client";
 
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
-import { getToken, TokenOverrides } from "@/features/template/tokens";
+import {
+  getTemplateTokens,
+  type FontSpec,
+  type TemplateTokenOverrides,
+  type TextTransform,
+} from "@/features/template/tokens";
 
-const HEADING_FONTS = [
-  {
-    id: "Georgia",
-    label: "Serif Display",
-    stack: "Georgia, 'Times New Roman', serif",
-  },
-  { id: "Inter", label: "Sans Modern", stack: "Inter, system-ui, sans-serif" },
-  {
-    id: "Dancing Script",
-    label: "Script Elegant",
-    stack: "'Dancing Script', cursive",
-  },
-  {
-    id: "Courier New",
-    label: "Mono Clean",
-    stack: "'Courier New', Courier, monospace",
-  },
+type FontGroup = "display" | "heading" | "body";
+
+const FONT_OPTIONS = [
+  { label: "Script — Great Vibes", value: "var(--font-script)" },
+  { label: "Serif — Cormorant", value: "var(--font-serif)" },
+  { label: "Sans — Montserrat", value: "var(--font-montserrat)" },
+  { label: "Sans — Inter", value: "var(--font-sans)" },
 ];
 
+const TRANSFORM_OPTIONS: { label: string; value: TextTransform }[] = [
+  { label: "Normal", value: "none" },
+  { label: "UPPERCASE", value: "uppercase" },
+  { label: "Capitalize", value: "capitalize" },
+  { label: "lowercase", value: "lowercase" },
+];
+
+const GROUP_LABELS: Record<FontGroup, string> = {
+  display: "Display (nama mempelai)",
+  heading: "Heading",
+  body: "Body",
+};
+
 export function FontSection() {
-  const tokenId = useInvitationStore((s) => s.tokenId);
+  const templateSlug = useInvitationStore((s) => s.templateSlug);
   const tokenOverrides = useInvitationStore((s) => s.tokenOverrides);
   const set = useInvitationStore((s) => s.set);
-  const base = getToken(tokenId);
 
-  const currentHeading =
-    tokenOverrides?.typography?.heading ??
-    base?.typography.heading ??
-    "Georgia";
+  const base = getTemplateTokens(templateSlug);
 
-  const setHeadingFont = (font: string) => {
+  const updateFont = (group: FontGroup, patch: Partial<FontSpec>) => {
     set({
       tokenOverrides: {
         ...tokenOverrides,
-        typography: { ...tokenOverrides?.typography, heading: font },
+        typography: {
+          ...tokenOverrides?.typography,
+          [group]: { ...tokenOverrides?.typography?.[group], ...patch },
+        },
       },
     });
-  }
+  };
 
-  const resetFont = () => {
+  const resetTypography = () => {
     const { typography: _removed, ...rest } = tokenOverrides ?? {};
     const cleaned =
-      Object.keys(rest).length > 0 ? (rest as TokenOverrides) : null;
+      Object.keys(rest).length > 0 ? (rest as TemplateTokenOverrides) : null;
     set({ tokenOverrides: cleaned });
-  }
+  };
+
+  const familyOf = (group: FontGroup) =>
+    tokenOverrides?.typography?.[group]?.family ?? base.typography[group].family;
+
+  const headingTransform =
+    tokenOverrides?.typography?.heading?.transform ??
+    base.typography.heading.transform;
 
   return (
-    <div className="space-y-2">
-      <ToggleGroup
-        type="single"
-        value={currentHeading}
-        onValueChange={(v) => {
-          if (v) setHeadingFont(v);
-        }}
-        className="flex flex-col gap-1"
-      >
-        {HEADING_FONTS.map((font) => (
-          <ToggleGroupItem
-            key={font.id}
-            value={font.id}
-            className="w-full flex items-center justify-between px-3 py-2 h-auto rounded-lg border-2 data-[state=on]:border-primary"
+    <div className="space-y-4">
+      {(["display", "heading", "body"] as const).map((group) => (
+        <div key={group} className="space-y-1.5">
+          <Label className="text-xs">{GROUP_LABELS[group]}</Label>
+          <Select
+            value={familyOf(group)}
+            onValueChange={(v) => updateFont(group, { family: v })}
           >
-            <span style={{ fontFamily: font.stack }} className="text-base">
-              {font.label}
-            </span>
-            <span
-              className="text-xs text-muted-foreground"
-              style={{ fontFamily: font.stack }}
-            >
-              Aa
-            </span>
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue placeholder="Pilih font" />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_OPTIONS.map((f) => (
+                <SelectItem key={f.value} value={f.value} className="text-xs">
+                  {f.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      ))}
+
+      <div className="space-y-1.5">
+        <Label className="text-xs">Kapitalisasi Heading</Label>
+        <Select
+          value={headingTransform}
+          onValueChange={(v) =>
+            updateFont("heading", { transform: v as TextTransform })
+          }
+        >
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue placeholder="Kapitalisasi" />
+          </SelectTrigger>
+          <SelectContent>
+            {TRANSFORM_OPTIONS.map((t) => (
+              <SelectItem key={t.value} value={t.value} className="text-xs">
+                {t.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       {tokenOverrides?.typography && (
         <Button
           variant="ghost"
           size="sm"
           className="w-full text-xs"
-          onClick={resetFont}
+          onClick={resetTypography}
         >
-          Reset to template default
+          Reset ke default template
         </Button>
       )}
     </div>

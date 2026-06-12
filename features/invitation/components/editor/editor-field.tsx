@@ -1,7 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -71,4 +76,29 @@ function EditorHint({
   );
 }
 
-export { EditorField, EditorLabel, EditorInput, EditorTextarea, EditorHint };
+/** Inline publish-validation error built on top of shadcn `FieldError`. */
+function EditorError({
+  errors,
+  className,
+  ...props
+}: Omit<React.ComponentProps<typeof FieldError>, "errors"> & {
+  errors?: string[];
+}) {
+  if (!errors?.length) return null;
+  return (
+    <FieldError
+      className={cn("text-[10.5px]", className)}
+      errors={errors.map((message) => ({ message }))}
+      {...props}
+    />
+  );
+}
+
+export {
+  EditorField,
+  EditorLabel,
+  EditorInput,
+  EditorTextarea,
+  EditorHint,
+  EditorError,
+};

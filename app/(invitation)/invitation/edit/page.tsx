@@ -7,7 +7,7 @@ export default async function InvitationEditPage() {
   await authIsRequired();
 
   const result = await getOrCreateInvitation();
-  if (result.errors) redirect("/dashboard");
+  if (!result.success || !result.data) redirect("/dashboard");
 
-  return <InvitationEditor initialData={result.invitation} />;
+  return <InvitationEditor initialData={result.data} />;
 }

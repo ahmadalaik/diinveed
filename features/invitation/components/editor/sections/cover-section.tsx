@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
 import { useR2Upload } from "@/hooks/use-r2-upload";
 import { Upload, X } from "lucide-react";
-import { ChangeEvent, useRef } from "react";
-import { EditorField, EditorLabel } from "../editor-field";
+import { ChangeEvent, useRef, useState } from "react";
+import { EditorError, EditorField, EditorLabel } from "../editor-field";
 import { Input } from "@/components/ui/input";
 import { FieldGroup } from "@/components/ui/field";
 
@@ -18,10 +18,21 @@ function CoverImageField() {
   const fileRef = useRef<HTMLInputElement>(null);
   const { upload, remove, isUploading, uploadProgress } = useR2Upload();
 
+  const MAX_SIZE_MB = 5;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  const [sizeError, setSizeError] = useState<string | null>(null);
+
   const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > MAX_SIZE_BYTES) {
+      setSizeError(`Ukuran gambar maksimal ${MAX_SIZE_MB}MB. File ini ${(file.size / 1024 / 1024).toFixed(1)}MB.`);
+      e.target.value = "";
+      return;
+    }
+
+    setSizeError(null);
     const { url, key: newKey } = await upload(file, { kind: "cover", invitationId });
     if (coverImageKey) await remove(coverImageKey);
     set({ coverImage: url, coverImageKey: newKey });
@@ -66,6 +77,9 @@ function CoverImageField() {
               : "Klik untuk unggah"}
           </span>
         </Button>
+      )}
+      {sizeError && (
+        <EditorError className="text-xs text-destructive">{sizeError}</EditorError>
       )}
       <Input
         ref={fileRef}

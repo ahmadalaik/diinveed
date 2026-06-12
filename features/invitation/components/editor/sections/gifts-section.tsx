@@ -6,7 +6,12 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { useShallow } from "zustand/shallow";
-import { EditorField, EditorInput, EditorLabel } from "../editor-field";
+import {
+  EditorError,
+  EditorField,
+  EditorInput,
+  EditorLabel,
+} from "../editor-field";
 import { useGiftUpdate } from "@/features/invitation/hooks/editor-sections/use-gift-update";
 import { FieldGroup } from "@/components/ui/field";
 
@@ -140,6 +145,7 @@ function GiftCard({ id, index, total, onMoveUp, onMoveDown }: GiftCardProps) {
 
 export function GiftsSection() {
   const ids = useInvitationStore(useShallow((s) => s.gifts.map((g) => g.id)));
+  const errors = useInvitationStore((s) => s.publishErrors?.gifts);
   const set = useInvitationStore((s) => s.set);
 
   const add = () => {
@@ -166,6 +172,7 @@ export function GiftsSection() {
 
   return (
     <div className="space-y-3">
+      <EditorError errors={errors} />
       {ids.map((id, index) => (
         <GiftCard
           key={id}

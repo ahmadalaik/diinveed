@@ -40,6 +40,7 @@ import {
   type PlaceResult,
 } from "@/features/invitation/lib/geocoding";
 import {
+  EditorError,
   EditorField,
   EditorInput,
   EditorLabel,
@@ -400,6 +401,7 @@ function EventCard({ id, index, total, onMoveUp, onMoveDown }: EventCardProps) {
 
 export function EventsSection() {
   const ids = useInvitationStore(useShallow((s) => s.events.map((e) => e.id)));
+  const errors = useInvitationStore((s) => s.publishErrors?.events);
   const set = useInvitationStore((s) => s.set);
 
   const add = () => {
@@ -431,6 +433,7 @@ export function EventsSection() {
 
   return (
     <div className="space-y-3">
+      <EditorError errors={errors} />
       {ids.map((id, index) => (
         <EventCard
           key={id}

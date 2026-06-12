@@ -3,6 +3,7 @@
 import { FieldGroup } from "@/components/ui/field";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
 import {
+  EditorError,
   EditorField,
   EditorInput,
   EditorLabel,
@@ -11,6 +12,7 @@ import {
 
 function QuoteField() {
   const quote = useInvitationStore((s) => s.quote);
+  const errors = useInvitationStore((s) => s.publishErrors?.quote);
   const set = useInvitationStore((s) => s.set);
 
   return (
@@ -23,12 +25,14 @@ function QuoteField() {
         value={quote}
         onChange={(e) => set({ quote: e.target.value })}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }
 
 function QuoteReferenceField() {
   const quoteReference = useInvitationStore((s) => s.quoteReference);
+  const errors = useInvitationStore((s) => s.publishErrors?.quoteReference);
   const set = useInvitationStore((s) => s.set);
 
   return (
@@ -41,6 +45,7 @@ function QuoteReferenceField() {
         value={quoteReference}
         onChange={(e) => set({ quoteReference: e.target.value })}
       />
+      <EditorError errors={errors} />
     </EditorField>
   );
 }

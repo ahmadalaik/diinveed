@@ -1,5 +1,12 @@
-import { RefObject, useEffect, useRef, useState } from "react";
+import {
+  RefObject,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { InvitationState } from "@/features/invitation/types/invitation.type";
+import { cn } from "@/lib/utils";
 
 const DESKTOP_WIDTH = 1440;
 const DESKTOP_HEIGHT = 900;
@@ -10,6 +17,9 @@ const MOBILE_MAX_SCALE = 0.80;
 const PADDING = 48;
 
 export type DeviceType = "desktop" | "tablet" | "mobile";
+
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 interface Props {
   iframeRef: RefObject<HTMLIFrameElement | null>;
@@ -26,7 +36,7 @@ function useFitScale(
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(maxScale);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
@@ -58,12 +68,22 @@ function PreviewIframe({
   iframeRef,
   snapshot,
 }: Omit<Props, "device">) {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoaded(true), 800);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <iframe
       ref={iframeRef}
-      key={snapshot.templateSlug}
       src={`/preview?template=${snapshot.templateSlug}`}
-      className="w-full h-full border-0"
+      onLoad={() => setLoaded(true)}
+      className={cn(
+        "w-full h-full border-0 transition-opacity duration-300 ease-out",
+        loaded ? "opacity-100" : "opacity-0",
+      )}
     />
   );
 }
@@ -80,15 +100,21 @@ function DesktopDevice({ iframeRef, snapshot }: Omit<Props, "device">) {
       ref={containerRef}
       className="flex items-center justify-center w-full h-full overflow-hidden"
     >
-      <div
-        style={{ transform: `scale(${scale})` }}
-        className="relative bg-black shadow-2xl p-2.5 rounded-[20px] transition-transform duration-200 ease-out"
-      >
-        <div
-          style={{ width: DESKTOP_WIDTH, height: DESKTOP_HEIGHT }}
-          className="rounded-[12px] bg-black overflow-hidden"
-        >
-          <PreviewIframe iframeRef={iframeRef} snapshot={snapshot} />
+      {/* Skala-fit diterapkan instan (tanpa transisi) agar tidak ada efek
+          zoom-maju saat mount/ganti device. */}
+      <div style={{ transform: `scale(${scale})` }} className="will-change-transform">
+        {/* Animasi perpindahan device: melebar kiri-kanan, bukan zoom uniform. */}
+        <div className="relative bg-black shadow-2xl p-2.5 rounded-[20px] animate-[device-switch-x_0.28s_ease-out]">
+          <div
+            style={{ width: DESKTOP_WIDTH, height: DESKTOP_HEIGHT }}
+            className="rounded-[12px] bg-black overflow-hidden"
+          >
+            <PreviewIframe
+              key={snapshot.templateSlug}
+              iframeRef={iframeRef}
+              snapshot={snapshot}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -108,18 +134,24 @@ function MobileDevice({ iframeRef, snapshot }: Omit<Props, "device">) {
       ref={containerRef}
       className="flex items-center justify-center w-full h-full overflow-hidden"
     >
-      <div
-        style={{ transform: `scale(${scale})` }}
-        className="relative bg-black shadow-2xl p-2.5 rounded-[45px] transition-transform duration-200 ease-out"
-      >
-        {/* Notch */}
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-30 h-7 bg-black rounded-b-2xl z-10" />
+      {/* Skala-fit diterapkan instan (tanpa transisi) agar tidak ada efek
+          zoom-maju saat mount/ganti device. */}
+      <div style={{ transform: `scale(${scale})` }} className="will-change-transform">
+        {/* Animasi perpindahan device: melebar kiri-kanan, bukan zoom uniform. */}
+        <div className="relative bg-black shadow-2xl p-2.5 rounded-[45px] animate-[device-switch-x_0.28s_ease-out]">
+          {/* Notch */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-30 h-7 bg-black rounded-b-2xl z-10" />
 
-        <div
-          style={{ width: MOBILE_WIDTH, height: MOBILE_HEIGHT }}
-          className="rounded-[35px] bg-black overflow-hidden"
-        >
-          <PreviewIframe iframeRef={iframeRef} snapshot={snapshot} />
+          <div
+            style={{ width: MOBILE_WIDTH, height: MOBILE_HEIGHT }}
+            className="rounded-[35px] bg-black overflow-hidden"
+          >
+            <PreviewIframe
+              key={snapshot.templateSlug}
+              iframeRef={iframeRef}
+              snapshot={snapshot}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { useStoryUpdate } from "@/features/invitation/hooks/editor-sections/use-story-update";
 import {
+  EditorError,
   EditorField,
   EditorInput,
   EditorLabel,
@@ -140,6 +141,7 @@ function StoryCard({ id, index, total, onMoveUp, onMoveDown }: StoryCardProps) {
 
 export function StoriesSection() {
   const ids = useInvitationStore(useShallow((s) => s.stories.map((e) => e.id)));
+  const errors = useInvitationStore((s) => s.publishErrors?.stories);
   const set = useInvitationStore((s) => s.set);
 
   const add = () => {
@@ -161,6 +163,7 @@ export function StoriesSection() {
 
   return (
     <div className="space-y-3">
+      <EditorError errors={errors} />
       {ids.map((id, index) => (
         <StoryCard
           key={id}
