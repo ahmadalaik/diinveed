@@ -106,3 +106,11 @@ export type WishRow = {
   moderationStatus: WishModerationStatus;
   createdAt: Date;
 };
+
+/** Shape returned to the editor: full state + live/publish metadata. */
+export type EditorInitialData = InvitationState & {
+  /** Slug currently live to the public (Invitation.slug). May differ from the draft slug. */
+  liveSlug: string;
+  /** True when the draft has edits not yet published. */
+  hasUnpublishedChanges: boolean;
+};

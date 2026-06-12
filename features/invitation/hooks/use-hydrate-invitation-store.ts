@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useInvitationStore } from "../store/invitation-store";
-import { InvitationState } from "../types/invitation.type";
+import { EditorInitialData } from "../types/invitation.type";
 
 // Hydrate the store synchronously during the first render (before children
 // read it), so the preview snapshot captures real data immediately instead of
@@ -10,7 +10,7 @@ import { InvitationState } from "../types/invitation.type";
 // gets swallowed by StrictMode's double-invoked effects, leaving the preview
 // blank. The useState initializer runs once on mount, during render; the
 // setState is idempotent so StrictMode's double invocation is harmless.
-export function useHydrateInvitationStore(initialData: InvitationState) {
+export function useHydrateInvitationStore(initialData: EditorInitialData) {
   useState(() => {
     useInvitationStore.setState({ ...initialData });
     return null;

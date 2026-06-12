@@ -15,6 +15,10 @@ type InvitationStore = InvitationState & {
   setLastSaved: (data: Date) => void;
   publishErrors: PublishFieldErrors | null;
   setPublishErrors: (errors: PublishFieldErrors | null) => void;
+  liveSlug: string;
+  setLiveSlug: (value: string) => void;
+  hasUnpublishedChanges: boolean;
+  setHasUnpublishedChanges: (value: boolean) => void;
 };
 
 export const useInvitationStore = create<InvitationStore>()(
@@ -60,6 +64,8 @@ export const useInvitationStore = create<InvitationStore>()(
     saveStatus: "saved",
     lastSaved: null,
     publishErrors: null,
+    liveSlug: "",
+    hasUnpublishedChanges: false,
 
     set: (patch) =>
       set((state) => {
@@ -83,5 +89,7 @@ export const useInvitationStore = create<InvitationStore>()(
     setSaveStatus: (status) => set({ saveStatus: status }),
     setLastSaved: (date) => set({ lastSaved: date }),
     setPublishErrors: (errors) => set({ publishErrors: errors }),
+    setLiveSlug: (value) => set({ liveSlug: value }),
+    setHasUnpublishedChanges: (value) => set({ hasUnpublishedChanges: value }),
   })),
 );

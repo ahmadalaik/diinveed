@@ -13,11 +13,9 @@ export function useInvitationAutoSave() {
     const unsub = useInvitationStore.subscribe(
       (s) => ({
         coverImage: s.coverImage,
-        coverImagePublicId: s.coverImagePublicId,
-        coverTitle: s.coverTitle,
-        coverSubtitle: s.coverSubtitle,
+        coverImageKey: s.coverImageKey,
         music: s.music,
-        musicPublicId: s.musicPublicId,
+        musicKey: s.musicKey,
         quote: s.quote,
         quoteReference: s.quoteReference,
         isBrideFirst: s.isBrideFirst,
@@ -25,25 +23,18 @@ export function useInvitationAutoSave() {
         brideNickname: s.brideNickname,
         brideDescription: s.brideDescription,
         brideImage: s.brideImage,
-        brideImagePublicId: s.brideImagePublicId,
+        brideImageKey: s.brideImageKey,
         groomName: s.groomName,
         groomNickname: s.groomNickname,
         groomDescription: s.groomDescription,
         groomImage: s.groomImage,
-        groomImagePublicId: s.groomImagePublicId,
+        groomImageKey: s.groomImageKey,
         slug: s.slug,
         title: s.title,
-        subtitle: s.subtitle,
-        date: s.date,
-        time: s.time,
-        timezone: s.timezone,
-        hosts: s.hosts,
-        message: s.message,
         tokenId: s.tokenId,
         tokenOverrides: s.tokenOverrides,
         templateSlug: s.templateSlug,
         backgroundType: s.backgroundType,
-        dressCode: s.dressCode,
         rsvpDeadline: s.rsvpDeadline,
         rsvpOptions: s.rsvpOptions,
         events: s.events,
@@ -58,9 +49,15 @@ export function useInvitationAutoSave() {
         timer = setTimeout(async () => {
           setSaveStatus("saving");
           try {
-            await saveInvitation(data);
+            const result = await saveInvitation(data);
+            if (result.success) {
             setSaveStatus("saved");
             setLastSaved(new Date());
+              useInvitationStore.getState().setHasUnpublishedChanges(true);
+            } else {
+              setSaveStatus("unsaved");
+              toast.error(result.message);
+            }
           } catch {
             setSaveStatus("unsaved");
             toast.error("Auto-save failed - check your connection");

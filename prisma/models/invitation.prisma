@@ -53,6 +53,19 @@ model Invitation {
     @@map("invitations")
 }
 
+model InvitationDraft {
+    id                    String   @id @default(cuid())
+    invitationId          String   @unique @map("invitation_id")
+    data                  Json
+    hasUnpublishedChanges Boolean  @default(false) @map("has_unpublished_changes")
+    createdAt             DateTime @default(now()) @map("created_at")
+    updatedAt             DateTime @updatedAt @map("updated_at")
+
+    invitation Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+    @@map("invitation_drafts")
+}
+
 model GuestRsvp {
     id           String       @id @default(cuid())
     invitationId String       @map("invitation_id")

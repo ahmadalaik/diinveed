@@ -2,10 +2,13 @@ import { getCurrentUser } from "@/features/auth/utils/session";
 import prisma from "@/lib/prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { saveInvitation } from "../save-invitation";
+import { ACTION_MESSAGES } from "@/lib/action-response";
+import { logAudit } from "@/lib/audit";
 
 vi.mock("@/lib/prisma", () => ({
   default: {
-    invitation: { update: vi.fn() },
+    invitation: { findUnique: vi.fn() },
+    invitationDraft: { update: vi.fn() },
   },
 }));
 
@@ -13,8 +16,11 @@ vi.mock("@/features/auth/utils/session", () => ({
   getCurrentUser: vi.fn(),
 }));
 
+vi.mock("@/lib/audit", () => ({ logAudit: vi.fn() }));
+
 const prismaMock = prisma as unknown as {
-  invitation: { update: ReturnType<typeof vi.fn> };
+  invitation: { findUnique: ReturnType<typeof vi.fn> };
+  invitationDraft: { update: ReturnType<typeof vi.fn> };
 };
 const getCurrentUserMock = getCurrentUser as ReturnType<typeof vi.fn>;
 
@@ -71,17 +77,38 @@ describe("saveInvitation", () => {
   it("returns Unauthorized when not logged in", async () => {
     getCurrentUserMock.mockResolvedValue(null);
     const result = await saveInvitation(validInput);
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
   });
 
-  it("updates invitation and returns success", async () => {
+  it("writes the draft and flags unpublished changes", async () => {
     getCurrentUserMock.mockResolvedValue(mockUser);
-    prismaMock.invitation.update.mockResolvedValue({ id: "inv-1" });
+    prismaMock.invitation.findUnique.mockResolvedValue({ id: "inv-1" });
+    prismaMock.invitationDraft.update.mockResolvedValue({ id: "draft-1" });
     const result = await saveInvitation(validInput);
     expect(result.success).toBe(true);
-    expect(prismaMock.invitation.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { userId: "user-1" } }),
+    expect(prismaMock.invitationDraft.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { invitationId: "inv-1" },
+        data: expect.objectContaining({ hasUnpublishedChanges: true }),
+      }),
     );
+    expect(logAudit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actorId: "user-1",
+        action: "invitation.saved",
+        targetType: "invitation",
+        targetId: "inv-1",
+      }),
+    );
+  });
+
+  it("returns failure when no invitation exists", async () => {
+    getCurrentUserMock.mockResolvedValue(mockUser);
+    prismaMock.invitation.findUnique.mockResolvedValue(null);
+    const result = await saveInvitation(validInput);
+    expect(result.success).toBe(false);
+    expect(prismaMock.invitationDraft.update).not.toHaveBeenCalled();
   });
 
   it("returns validation error for invalid input", async () => {

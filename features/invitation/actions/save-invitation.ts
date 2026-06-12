@@ -6,52 +6,47 @@ import {
   SaveInvitationType,
 } from "../schemas/invitation.schema";
 import prisma from "@/lib/prisma";
-import { Prisma } from "@/generated/prisma/client";
-
-type FieldErrors = Partial<
-  Record<keyof SaveInvitationType | "_form", string[]>
->;
-
-type Result =
-  | { errors: FieldErrors; success?: undefined }
-  | { errors?: undefined; success: true };
+import { logAudit } from "@/lib/audit";
+import {
+  ok,
+  fail,
+  validationError,
+  ACTION_MESSAGES,
+  type ActionResponse,
+} from "@/lib/action-response";
 
 export async function saveInvitation(
   input: SaveInvitationType,
-): Promise<Result> {
+): Promise<ActionResponse> {
   const user = await getCurrentUser();
-  if (!user) return { errors: { _form: ["Unauthorized"] } };
+  if (!user) return fail(ACTION_MESSAGES.UNAUTHORIZED);
 
   const parsed = saveInvitationSchema.safeParse(input);
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors as FieldErrors };
+    return validationError(parsed.error);
   }
 
-  const {
-    rsvpOptions,
-    events,
-    stories,
-    gallery,
-    gifts,
-    tokenOverrides,
-    ...rest
-  } = parsed.data;
-
-  await prisma.invitation.update({
+  const invitation = await prisma.invitation.findUnique({
     where: { userId: user.id },
+    select: { id: true },
+  });
+  if (!invitation) return fail("Undangan tidak ditemukan");
+
+  await prisma.invitationDraft.update({
+    where: { invitationId: invitation.id },
     data: {
-      ...rest,
-      tokenOverrides:
-        tokenOverrides === null
-          ? Prisma.DbNull
-          : (tokenOverrides as Prisma.InputJsonValue),
-      rsvpOptions: rsvpOptions as object,
-      events: events as object[],
-      stories: stories as object[],
-      gallery: gallery as object[],
-      gifts: gifts as object[],
+      data: parsed.data as object,
+      hasUnpublishedChanges: true,
     },
   });
 
-  return { success: true };
+  await logAudit({
+    actorId: user.id,
+    actorLabel: user.name ?? user.id,
+    action: "invitation.saved",
+    targetType: "invitation",
+    targetId: invitation.id,
+  });
+
+  return ok("Perubahan tersimpan");
 }

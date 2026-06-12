@@ -177,3 +177,36 @@ export const publishReadySchema = z.object({
 });
 
 export type PublishReadyType = z.infer<typeof publishReadySchema>;
+
+/** Default editable content for a brand-new draft (matches saveInvitationSchema). */
+export const DEFAULT_INVITATION_CONTENT: SaveInvitationType = {
+  coverImage: null,
+  coverImageKey: null,
+  music: "",
+  musicKey: "",
+  quote: "",
+  quoteReference: "",
+  isBrideFirst: true,
+  brideName: "",
+  brideNickname: "",
+  brideDescription: null,
+  brideImage: null,
+  brideImageKey: null,
+  groomName: "",
+  groomNickname: "",
+  groomDescription: null,
+  groomImage: null,
+  groomImageKey: null,
+  slug: "",
+  title: "",
+  tokenId: "aura",
+  tokenOverrides: null,
+  templateSlug: "kelana",
+  backgroundType: "solid",
+  rsvpDeadline: "",
+  rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
+  events: [],
+  stories: [],
+  gallery: [],
+  gifts: [],
+};
