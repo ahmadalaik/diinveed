@@ -5,14 +5,11 @@ enum RsvpResponse {
 }
 
 model Invitation {
-    id     String @id @default(cuid())
-    userId String @unique @map("user_id")
-
+    id          String @id @default(cuid())
+    userId      String @unique @map("user_id")
     slug        String @default("") @map("slug")
-    publicToken String @unique      @map("public_token")
+    publicToken String @unique @map("public_token")
 
-    coverTitle     String @default("") @map("cover_title")
-    coverSubtitle  String @default("") @map("cover_subtitle")
     music          String @default("")
     musicPublicId  String @default("") @map("music_public_id")
     quote          String @default("")
@@ -31,12 +28,7 @@ model Invitation {
     groomImagePublicId String? @map("groom_image_public_id")
 
     title              String  @default("")
-    subtitle           String  @default("")
-    date               String  @default("")
-    time               String  @default("")
-    timezone           String  @default("WIB")
-    hosts              String  @default("")
-    message            String  @db.Text
+    broadcastMessage   String? @map("broadcast_message") @db.Text // DEPRECATED: superseded by MessageTemplate; do not write
     coverImage         String? @map("cover_image")
     coverImagePublicId String? @map("cover_image_public_id")
 
@@ -44,7 +36,6 @@ model Invitation {
     tokenOverrides Json?    @map("token_overrides")
     templateSlug   String   @default("kelana") @map("template_slug")
     backgroundType String   @default("solid") @map("background_type")
-    dressCode      String   @default("") @map("dress_code")
     rsvpDeadline   String   @default("") @map("rsvp_deadline")
     rsvpOptions    Json     @map("rsvp_options")
     events         Json
