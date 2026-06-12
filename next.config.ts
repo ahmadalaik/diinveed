@@ -1,14 +1,19 @@
 import type { NextConfig } from "next";
 
+const r2Url = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-        pathname: "/drcvunlct/**",
-      },
+      ...(r2Url
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: new URL(r2Url).hostname,
+            },
+          ]
+        : []),
       {
         protocol: "https",
         hostname: "images.pexels.com",

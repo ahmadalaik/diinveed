@@ -7,22 +7,38 @@ export interface UploadedImage {
   publicId: string;
 }
 
+export interface UploadOptions {
+  kind?: "image" | "audio";
+}
+
 export function useCloudinaryUpload() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  async function upload(file: File): Promise<UploadedImage> {
+  async function upload(
+    file: File,
+    opts: UploadOptions = {},
+  ): Promise<UploadedImage> {
     setIsUploading(true);
     setUploadProgress(0);
 
-    const sigRes = await fetch("/api/cloudinary/signature");
+    const query = opts.kind === "audio" ? "?kind=audio" : "";
+    const sigRes = await fetch(`/api/cloudinary/signature${query}`);
     if (!sigRes.ok) {
       setIsUploading(false);
       throw new Error("Failed to get upload signature");
     }
 
-    const { signature, timestamp, folder, transformation, format, apiKey, cloudName } =
-      await sigRes.json();
+    const {
+      signature,
+      timestamp,
+      folder,
+      transformation,
+      format,
+      resourceType,
+      apiKey,
+      cloudName,
+    } = await sigRes.json();
 
     const formData = new FormData();
     formData.append("file", file);
@@ -30,10 +46,11 @@ export function useCloudinaryUpload() {
     formData.append("timestamp", String(timestamp));
     formData.append("signature", signature);
     formData.append("folder", folder);
-    // Compress + resize before storing, and store as WebP. Values must match
-    // exactly what the signature route signed, or the upload is rejected.
-    formData.append("transformation", transformation);
-    formData.append("format", format);
+    // Only present for image uploads (compress + resize, store as WebP). Values
+    // must match exactly what the signature route signed; audio is stored
+    // untransformed, so these are omitted there.
+    if (transformation) formData.append("transformation", transformation);
+    if (format) formData.append("format", format);
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -61,7 +78,7 @@ export function useCloudinaryUpload() {
 
       xhr.open(
         "POST",
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType ?? "image"}/upload`,
       );
       xhr.send(formData);
     });

@@ -87,15 +87,27 @@ export function useR2Upload() {
     });
   }
 
-  const remove = useCallback(async (key: string): Promise<void> => {
+  // Best-effort cleanup: a failed delete must not break the surrounding upload
+  // flow, so this never throws. It returns whether the object was deleted so a
+  // caller may react (e.g. surface a toast), and detects rejected responses
+  // (403/500) — not just network errors — so failures aren't silently lost.
+  const remove = useCallback(async (key: string): Promise<boolean> => {
     try {
-      await fetch("/api/storage/object", {
+      const res = await fetch("/api/storage/object", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key }),
       });
-    } catch {
-      console.warn("Failed to delete object from R2:", key);
+      if (!res.ok) {
+        console.warn(
+          `R2 delete failed for "${key}": ${res.status} ${res.statusText}`,
+        );
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.warn(`R2 delete request errored for "${key}":`, error);
+      return false;
     }
   }, []);
 

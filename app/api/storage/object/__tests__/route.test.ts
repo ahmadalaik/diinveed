@@ -23,16 +23,28 @@ describe("DELETE /api/storage/object", () => {
     expect(res.status).toBe(401);
   });
 
-  it("403 for non-admin", async () => {
-    vi.mocked(getCurrentUser).mockResolvedValue({ id: "u", role: "user" } as never);
-    const res = await DELETE(req({ key: "music/x.mp3" }));
+  it("403 when a non-admin deletes a key outside their own prefix", async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: "u1", role: "user" } as never);
+    const res = await DELETE(
+      req({ key: "users/other/invitations/inv1/gallery/a.webp" }),
+    );
     expect(res.status).toBe(403);
+    expect(deleteObject).not.toHaveBeenCalled();
   });
 
-  it("deletes for admin", async () => {
-    vi.mocked(getCurrentUser).mockResolvedValue({ id: "u", role: "admin" } as never);
-    const res = await DELETE(req({ key: "music/x.mp3" }));
+  it("lets an owner delete an object under their own user prefix", async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: "u1", role: "user" } as never);
+    const key = "users/u1/invitations/inv1/gallery/a.webp";
+    const res = await DELETE(req({ key }));
     expect(res.status).toBe(200);
-    expect(deleteObject).toHaveBeenCalledWith("music/x.mp3");
+    expect(deleteObject).toHaveBeenCalledWith(key);
+  });
+
+  it("lets an admin delete any key (e.g. a template thumbnail)", async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({ id: "admin1", role: "admin" } as never);
+    const key = "templates/thumbnail/x.webp";
+    const res = await DELETE(req({ key }));
+    expect(res.status).toBe(200);
+    expect(deleteObject).toHaveBeenCalledWith(key);
   });
 });
