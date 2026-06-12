@@ -4,34 +4,36 @@ import prisma from "@/lib/prisma";
 import { hashPassword } from "@/features/auth/utils/password";
 import { getCurrentUser } from "@/features/auth/utils/session";
 import { getAllowedRoles } from "@/lib/permissions";
+import { logAudit } from "@/lib/audit";
 import {
   createUserSchema,
   type CreateUserType,
 } from "../schemas/create-user.schema";
-
-type FieldErrors = Partial<Record<keyof CreateUserType | "_form", string[]>>;
-
-export type CreateUserActionResult =
-  | { errors: FieldErrors; success?: undefined; userId?: undefined }
-  | { errors?: undefined; success: true; userId: string };
+import {
+  ok,
+  fail,
+  validationError,
+  ACTION_MESSAGES,
+  type ActionResponse,
+} from "@/lib/action-response";
 
 export async function createUserAction(
   input: CreateUserType,
-): Promise<CreateUserActionResult> {
+): Promise<ActionResponse<{ userId: string }>> {
   const actor = await getCurrentUser();
   if (!actor) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const parsed = createUserSchema.safeParse(input);
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors as FieldErrors };
+    return validationError(parsed.error);
   }
 
   const { name, username, email, password, role, phone } = parsed.data;
 
   if (!getAllowedRoles(actor.role).includes(role)) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   try {
@@ -45,9 +47,11 @@ export async function createUserAction(
 
     if (existing) {
       if (existing.email === email) {
-        return { errors: { email: ["Email already in use"] } };
+        return fail("Email sudah digunakan", { email: ["Email sudah digunakan"] });
       }
-      return { errors: { username: ["Username already in use"] } };
+      return fail("Username sudah digunakan", {
+        username: ["Username sudah digunakan"],
+      });
     }
 
     const hashedPassword = await hashPassword(password);
@@ -63,8 +67,17 @@ export async function createUserAction(
       select: { id: true },
     });
 
-    return { success: true, userId: user.id };
+    await logAudit({
+      actorId: actor.id,
+      actorLabel: actor.name ?? actor.id,
+      action: "user.created",
+      targetType: "user",
+      targetId: user.id,
+      targetLabel: name,
+    });
+
+    return ok("Pengguna berhasil dibuat", { userId: user.id });
   } catch {
-    return { errors: { _form: ["Failed to create user, please try again"] } };
+    return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

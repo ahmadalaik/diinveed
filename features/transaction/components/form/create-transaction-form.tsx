@@ -11,6 +11,7 @@ import {
   CreateTransactionType,
 } from "@/features/transaction/schemas/create-transaction.schema";
 import { createTransactionAction } from "@/features/transaction/actions/create-transaction.action";
+import { applyServerErrors } from "@/lib/apply-server-errors";
 import type { UserSelectItem } from "@/features/transaction/types/transaction.type";
 import { formatIDR } from "@/features/transaction/utils/format";
 import {
@@ -83,20 +84,12 @@ export function CreateTransactionForm({ users }: CreateTransactionFormProps) {
 
   const onSubmit = async (data: CreateTransactionType) => {
     const result = await createTransactionAction(data);
-    if (result.errors) {
-      if (result.errors._form) {
-        toast.error(result.errors._form[0]);
-      }
-      Object.entries(result.errors).forEach(([field, messages]) => {
-        if (field !== "_form" && messages) {
-          form.setError(field as keyof CreateTransactionType, {
-            message: messages[0],
-          });
-        }
-      });
+    if (!result.success) {
+      toast.error(result.message);
+      applyServerErrors(form.setError, result.errors);
       return;
     }
-    toast.success("Transaksi berhasil dibuat");
+    toast.success(result.message);
     router.push("/admin/transactions");
   };
 

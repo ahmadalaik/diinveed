@@ -13,9 +13,15 @@ vi.mock("@/features/auth/utils/session", () => ({
   getCurrentUser: vi.fn(),
 }));
 
+vi.mock("@/lib/audit", () => ({
+  logAudit: vi.fn(),
+}));
+
 import { updateRoleAction } from "../update-role.action";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/features/auth/utils/session";
+import { logAudit } from "@/lib/audit";
+import { ACTION_MESSAGES } from "@/lib/action-response";
 
 const prismaMock = prisma as unknown as {
   user: {
@@ -33,7 +39,8 @@ describe("updateRoleAction", () => {
   it("returns Unauthorized when not logged in", async () => {
     getCurrentUserMock.mockResolvedValue(null);
     const result = await updateRoleAction("target-1", "user");
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -41,14 +48,16 @@ describe("updateRoleAction", () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "super_admin" });
     prismaMock.user.findUnique.mockResolvedValue(null);
     const result = await updateRoleAction("target-1", "user");
-    expect(result.errors?._form).toContain("User not found");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe("Pengguna tidak ditemukan");
   });
 
   it("returns Unauthorized when admin tries to change a super_admin role", async () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
     prismaMock.user.findUnique.mockResolvedValue({ id: "target-1", role: "super_admin" });
     const result = await updateRoleAction("target-1", "user");
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -56,7 +65,8 @@ describe("updateRoleAction", () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
     prismaMock.user.findUnique.mockResolvedValue({ id: "target-1", role: "user" });
     const result = await updateRoleAction("target-1", "admin");
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -64,7 +74,8 @@ describe("updateRoleAction", () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "super_admin" });
     prismaMock.user.findUnique.mockResolvedValue({ id: "actor-1", role: "super_admin" });
     const result = await updateRoleAction("actor-1", "user");
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -86,5 +97,11 @@ describe("updateRoleAction", () => {
       where: { id: "target-1" },
       data: { role: "admin" },
     });
+    expect(logAudit).toHaveBeenCalledWith(expect.objectContaining({
+      action: "user.role_updated",
+      targetType: "user",
+      targetId: "target-1",
+      metadata: { from: "user", to: "admin" },
+    }));
   });
 });

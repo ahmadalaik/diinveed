@@ -23,17 +23,17 @@ interface DeleteUserDialogProps {
   userName: string;
 }
 
-export function DeleteUserDialog({ userId, userName }: DeleteUserDialogProps) {
+export function DeleteUserDialog({ userId }: DeleteUserDialogProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   function handleDelete() {
     startTransition(async () => {
       const result = await deleteUserAction(userId);
-      if (result.errors) {
-        toast.error(result.errors._form[0]);
+      if (!result.success) {
+        toast.error(result.message);
       } else {
-        toast.success(`${userName} has been deleted.`);
+        toast.success(result.message);
         router.refresh();
       }
     });

@@ -2,6 +2,8 @@ import { getCurrentUser } from "@/features/auth/utils/session";
 import prisma from "@/lib/prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTransactionAction } from "../create-transaction.action";
+import { ACTION_MESSAGES } from "@/lib/action-response";
+import { logAudit } from "@/lib/audit";
 
 vi.mock("@/lib/prisma", () => ({
   default: {
@@ -11,6 +13,10 @@ vi.mock("@/lib/prisma", () => ({
 
 vi.mock("@/features/auth/utils/session", () => ({
   getCurrentUser: vi.fn(),
+}));
+
+vi.mock("@/lib/audit", () => ({
+  logAudit: vi.fn(),
 }));
 
 const prismaMock = prisma as unknown as {
@@ -41,14 +47,16 @@ describe("createTransactionAction", () => {
   it("returns Unauthorized when not logged in", async () => {
     getCurrentUserMock.mockResolvedValue(null);
     const result = await createTransactionAction(validInput);
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
 
   it("returns Unauthorized when actor is a regular user", async () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "user" });
     const result = await createTransactionAction(validInput);
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
 
@@ -86,7 +94,7 @@ describe("createTransactionAction", () => {
     const result = await createTransactionAction(validInput);
 
     expect(result.success).toBe(true);
-    expect(result.transactionId).toBe("tx-1");
+    expect(result.data?.transactionId).toBe("tx-1");
     expect(txMock.transaction.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -107,6 +115,13 @@ describe("createTransactionAction", () => {
           status: "confirmed",
           confirmedBy: "actor-1",
         }),
+      }),
+    );
+    expect(logAudit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "transaction.created",
+        targetType: "transaction",
+        targetId: "tx-1",
       }),
     );
   });
@@ -169,6 +184,7 @@ describe("createTransactionAction", () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
     prismaMock.$transaction.mockRejectedValue(new Error("DB error"));
     const result = await createTransactionAction(validInput);
-    expect(result.errors?._form).toBeDefined();
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.SERVER_ERROR);
   });
 });

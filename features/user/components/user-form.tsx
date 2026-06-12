@@ -25,6 +25,7 @@ import { createUserAction } from "../actions/create-user.action";
 import { updateUserAction } from "../actions/update-user.action";
 import { UserRole } from "@/types/role.type";
 import { getAllowedRoles } from "@/lib/permissions";
+import { applyServerErrors } from "@/lib/apply-server-errors";
 
 const ALL_ROLES: { value: UserRole; label: string }[] = [
   { value: "user", label: "User" },
@@ -106,23 +107,13 @@ function CreateUserForm({
   const onSubmit = async (data: CreateUserType) => {
     const result = await createUserAction(data);
 
-    if (result.errors) {
-      if (result.errors._form) {
-        toast.error(result.errors._form[0]);
-      }
-      Object.keys(result.errors).forEach((key) => {
-        const field = key as keyof CreateUserType;
-        if (result.errors?.[field]) {
-          form.setError(field, {
-            type: "server",
-            message: result.errors[field]?.[0],
-          });
-        }
-      });
+    if (!result.success) {
+      toast.error(result.message);
+      applyServerErrors(form.setError, result.errors);
       return;
     }
 
-    toast.success("User created successfully.");
+    toast.success(result.message);
     if (onSuccess) {
       onSuccess();
     } else {
@@ -289,23 +280,13 @@ function EditUserForm({
   const onSubmit = async (data: UpdateUserType) => {
     const result = await updateUserAction(userId, data);
 
-    if (result.errors) {
-      if (result.errors._form) {
-        toast.error(result.errors._form[0]);
-      }
-      Object.keys(result.errors).forEach((key) => {
-        const field = key as keyof UpdateUserType;
-        if (result.errors?.[field]) {
-          form.setError(field, {
-            type: "server",
-            message: result.errors[field]?.[0],
-          });
-        }
-      });
+    if (!result.success) {
+      toast.error(result.message);
+      applyServerErrors(form.setError, result.errors);
       return;
     }
 
-    toast.success("User updated successfully.");
+    toast.success(result.message);
     if (onSuccess) {
       onSuccess();
     } else {

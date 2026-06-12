@@ -1,8 +1,10 @@
 "use client";
 
-import { Eye, Link, Table } from "lucide-react";
+import Link from "next/link";
+import { Eye, Receipt } from "lucide-react";
 import { TransactionListItem } from "../types/transaction.type";
 import {
+  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -15,26 +17,51 @@ import {
   TransactionStatusBadge,
 } from "./transaction-status-badge";
 import { Button } from "@/components/ui/button";
+import { DataTableCard } from "@/components/data-table-card";
+import { TableEmptyState } from "@/components/table-empty-state";
+import type { PageSearchParams } from "@/lib/pagination";
 
 interface TransactionTableProps {
   transactions: TransactionListItem[];
+  total: number;
+  perPage: number;
+  page: number;
+  totalPages: number;
+  searchParams: PageSearchParams;
 }
 
-export function TransactionTable({ transactions }: TransactionTableProps) {
-  if (transactions.length === 0) {
+export function TransactionTable({
+  transactions,
+  total,
+  perPage,
+  page,
+  totalPages,
+  searchParams,
+}: TransactionTableProps) {
+  if (total === 0) {
     return (
-      <div className="flex h-32 items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
-        Belum ada transaksi
-      </div>
+      <TableEmptyState
+        icon={Receipt}
+        title="Belum ada transaksi"
+        description="Transaksi akan muncul di sini setelah pengguna melakukan pembelian."
+      />
     );
   }
 
   return (
-    <div className="w-full overflow-hidden rounded-md border">
+    <DataTableCard
+      total={total}
+      shownCount={transactions.length}
+      noun="transaksi"
+      perPage={perPage}
+      page={page}
+      totalPages={totalPages}
+      searchParams={searchParams}
+    >
       <Table>
         <TableHeader>
-          <TableRow className="bg-primary/5">
-            <TableHead className="px-4 py-3">User</TableHead>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="px-4 py-3">Pengguna</TableHead>
             <TableHead className="px-4 py-3">Harga Asli</TableHead>
             <TableHead className="px-4 py-3">Diskon</TableHead>
             <TableHead className="px-4 py-3">Total</TableHead>
@@ -46,18 +73,14 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
         </TableHeader>
         <TableBody>
           {transactions.map((tx) => (
-            <TableRow key={tx.id}>
+            <TableRow key={tx.id} className="group">
               <TableCell className="px-4 py-3">
                 <div>
                   <p className="font-medium">{tx.user.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {tx.user.email}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{tx.user.email}</p>
                 </div>
               </TableCell>
-              <TableCell className="px-4 py-3">
-                {formatIDR(tx.originalPrice)}
-              </TableCell>
+              <TableCell className="px-4 py-3">{formatIDR(tx.originalPrice)}</TableCell>
               <TableCell className="px-4 py-3">
                 {tx.discountAmount > 0 ? (
                   <span className="text-green-600 dark:text-green-400">
@@ -71,11 +94,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
                 {formatIDR(tx.finalAmount)}
               </TableCell>
               <TableCell className="px-4 py-3">
-                {tx.payment ? (
-                  <PaymentMethodBadge method={tx.payment.method} />
-                ) : (
-                  "-"
-                )}
+                {tx.payment ? <PaymentMethodBadge method={tx.payment.method} /> : "-"}
               </TableCell>
               <TableCell className="px-4 py-3">
                 <TransactionStatusBadge status={tx.status} />
@@ -95,6 +114,6 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </DataTableCard>
   );
 }

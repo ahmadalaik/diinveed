@@ -6,27 +6,27 @@ import {
   CreateTemplateActionType,
 } from "../schemas/create-template";
 import prisma from "@/lib/prisma";
+import { logAudit } from "@/lib/audit";
 import { slugify } from "../utils/slug";
-
-type FieldErrors = Partial<
-  Record<keyof CreateTemplateActionType | "_form", string[]>
->;
-
-export type CreateTemplateResult =
-  | { errors: FieldErrors; success?: undefined; templateId?: undefined }
-  | { errors?: undefined; success: true; templateId: string };
+import {
+  ok,
+  fail,
+  validationError,
+  ACTION_MESSAGES,
+  type ActionResponse,
+} from "@/lib/action-response";
 
 export async function createTemplateAction(
   input: CreateTemplateActionType,
-): Promise<CreateTemplateResult> {
+): Promise<ActionResponse<{ templateId: string }>> {
   const actor = await getCurrentUser();
   if (!actor) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const parsed = createTemplateActionSchema.safeParse(input);
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
+    return validationError(parsed.error);
   }
 
   const { name, category, description, thumbnailUrl, status } = parsed.data;
@@ -42,7 +42,7 @@ export async function createTemplateAction(
 
     if (existing) {
       if (existing.name === name) {
-        return { errors: { name: ["Name already in use"] } };
+        return fail("Nama sudah digunakan", { name: ["Nama sudah digunakan"] });
       }
     }
 
@@ -58,12 +58,19 @@ export async function createTemplateAction(
       },
     });
 
-    return { success: true, templateId: template.id };
+    await logAudit({
+      actorId: actor.id,
+      actorLabel: actor.name ?? actor.id,
+      action: "template.created",
+      targetType: "template",
+      targetId: template.id,
+      targetLabel: parsed.data.name ?? template.id,
+    });
+
+    return ok("Template berhasil dibuat", { templateId: template.id });
   } catch (err) {
     console.log("Create template error: ", err);
 
-    return {
-      errors: { _form: ["Failed to create template, please try again"] },
-    };
+    return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

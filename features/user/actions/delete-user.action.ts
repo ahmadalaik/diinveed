@@ -3,17 +3,20 @@
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/features/auth/utils/session";
 import { canManageUser } from "@/lib/permissions";
-
-export type DeleteUserActionResult =
-  | { errors: { _form: string[] }; success?: undefined }
-  | { errors?: undefined; success: true };
+import { logAudit } from "@/lib/audit";
+import {
+  ok,
+  fail,
+  ACTION_MESSAGES,
+  type ActionResponse,
+} from "@/lib/action-response";
 
 export async function deleteUserAction(
   userId: string,
-): Promise<DeleteUserActionResult> {
+): Promise<ActionResponse> {
   const actor = await getCurrentUser();
   if (!actor) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const target = await prisma.user.findUnique({
@@ -22,11 +25,11 @@ export async function deleteUserAction(
   });
 
   if (!target) {
-    return { errors: { _form: ["User not found"] } };
+    return fail("Pengguna tidak ditemukan");
   }
 
   if (!canManageUser(actor, target)) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   try {
@@ -34,8 +37,18 @@ export async function deleteUserAction(
       where: { id: userId },
       data: { deletedAt: new Date() },
     });
-    return { success: true };
+
+    await logAudit({
+      actorId: actor.id,
+      actorLabel: actor.name ?? actor.id,
+      action: "user.deleted",
+      targetType: "user",
+      targetId: userId,
+      targetLabel: userId,
+    });
+
+    return ok("Pengguna berhasil dihapus");
   } catch {
-    return { errors: { _form: ["Failed to delete user, please try again"] } };
+    return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

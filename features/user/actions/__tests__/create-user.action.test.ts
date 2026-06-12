@@ -17,10 +17,16 @@ vi.mock("@/features/auth/utils/password", () => ({
   hashPassword: vi.fn(),
 }));
 
+vi.mock("@/lib/audit", () => ({
+  logAudit: vi.fn(),
+}));
+
 import { createUserAction } from "../create-user.action";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/features/auth/utils/session";
 import { hashPassword } from "@/features/auth/utils/password";
+import { logAudit } from "@/lib/audit";
+import { ACTION_MESSAGES } from "@/lib/action-response";
 
 const prismaMock = prisma as unknown as {
   user: {
@@ -47,21 +53,24 @@ describe("createUserAction", () => {
   it("returns Unauthorized when not logged in", async () => {
     getCurrentUserMock.mockResolvedValue(null);
     const result = await createUserAction(validInput);
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.create).not.toHaveBeenCalled();
   });
 
   it("returns Unauthorized when admin tries to create an admin-role user", async () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
     const result = await createUserAction({ ...validInput, role: "admin" });
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.create).not.toHaveBeenCalled();
   });
 
   it("returns Unauthorized when admin tries to create a super_admin-role user", async () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
     const result = await createUserAction({ ...validInput, role: "super_admin" });
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.create).not.toHaveBeenCalled();
   });
 
@@ -72,7 +81,11 @@ describe("createUserAction", () => {
     prismaMock.user.create.mockResolvedValue({ id: "new-user-1" });
     const result = await createUserAction(validInput);
     expect(result.success).toBe(true);
-    expect(result.userId).toBe("new-user-1");
+    expect(result.data?.userId).toBe("new-user-1");
+    expect(logAudit).toHaveBeenCalledWith(expect.objectContaining({
+      action: "user.created",
+      targetType: "user",
+    }));
   });
 
   it("allows super_admin to create an admin-role account", async () => {
@@ -89,5 +102,31 @@ describe("createUserAction", () => {
     const result = await createUserAction({ ...validInput, email: "not-an-email" });
     expect(result.errors?.email).toBeDefined();
     expect(prismaMock.user.create).not.toHaveBeenCalled();
+  });
+
+  it("returns error when email is already in use", async () => {
+    getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
+    prismaMock.user.findFirst.mockResolvedValue({ email: "test@example.com", username: "otherusername" });
+    const result = await createUserAction(validInput);
+    expect(result.errors?.email).toContain("Email sudah digunakan");
+    expect(prismaMock.user.create).not.toHaveBeenCalled();
+  });
+
+  it("returns error when username is already in use", async () => {
+    getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
+    prismaMock.user.findFirst.mockResolvedValue({ email: "other@example.com", username: "testuser" });
+    const result = await createUserAction(validInput);
+    expect(result.errors?.username).toContain("Username sudah digunakan");
+    expect(prismaMock.user.create).not.toHaveBeenCalled();
+  });
+
+  it("returns form error when database creation fails", async () => {
+    getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
+    prismaMock.user.findFirst.mockResolvedValue(null);
+    hashPasswordMock.mockResolvedValue("hashed");
+    prismaMock.user.create.mockRejectedValue(new Error("Database error"));
+    const result = await createUserAction(validInput);
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.SERVER_ERROR);
   });
 });

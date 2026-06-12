@@ -4,22 +4,25 @@ import z from "zod";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/features/auth/utils/session";
 import { canManageUser, getAllowedRoles } from "@/lib/permissions";
+import { logAudit } from "@/lib/audit";
+import {
+  ok,
+  fail,
+  ACTION_MESSAGES,
+  type ActionResponse,
+} from "@/lib/action-response";
 
 const updateRoleSchema = z.object({
   role: z.enum(["user", "admin", "super_admin"]),
 });
 
-export type UpdateRoleActionResult =
-  | { errors: { _form: string[] }; success?: undefined }
-  | { errors?: undefined; success: true };
-
 export async function updateRoleAction(
   userId: string,
   role: "user" | "admin" | "super_admin",
-): Promise<UpdateRoleActionResult> {
+): Promise<ActionResponse> {
   const actor = await getCurrentUser();
   if (!actor) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const target = await prisma.user.findUnique({
@@ -28,20 +31,20 @@ export async function updateRoleAction(
   });
 
   if (!target) {
-    return { errors: { _form: ["User not found"] } };
+    return fail("Pengguna tidak ditemukan");
   }
 
   if (!canManageUser(actor, target)) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const parsed = updateRoleSchema.safeParse({ role });
   if (!parsed.success) {
-    return { errors: { _form: ["Invalid role"] } };
+    return fail("Peran tidak valid");
   }
 
   if (!getAllowedRoles(actor.role).includes(parsed.data.role)) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   try {
@@ -49,8 +52,18 @@ export async function updateRoleAction(
       where: { id: userId },
       data: { role: parsed.data.role },
     });
-    return { success: true };
+
+    await logAudit({
+      actorId: actor.id,
+      actorLabel: actor.name ?? actor.id,
+      action: "user.role_updated",
+      targetType: "user",
+      targetId: userId,
+      metadata: { from: target.role, to: parsed.data.role },
+    });
+
+    return ok("Peran berhasil diperbarui");
   } catch {
-    return { errors: { _form: ["Failed to update role, please try again"] } };
+    return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

@@ -33,10 +33,10 @@ export function RoleSelector({
     if (selected === currentRole) return;
     startTransition(async () => {
       const result = await updateRoleAction(userId, selected);
-      if (result.errors) {
-        toast.error(result.errors._form[0]);
+      if (!result.success) {
+        toast.error(result.message);
       } else {
-        toast.success("Role updated successfully.");
+        toast.success(result.message);
         router.refresh();
       }
     });

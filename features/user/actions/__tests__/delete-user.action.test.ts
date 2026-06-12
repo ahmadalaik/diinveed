@@ -13,9 +13,15 @@ vi.mock("@/features/auth/utils/session", () => ({
   getCurrentUser: vi.fn(),
 }));
 
+vi.mock("@/lib/audit", () => ({
+  logAudit: vi.fn(),
+}));
+
 import { deleteUserAction } from "../delete-user.action";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/features/auth/utils/session";
+import { logAudit } from "@/lib/audit";
+import { ACTION_MESSAGES } from "@/lib/action-response";
 
 const prismaMock = prisma as unknown as {
   user: {
@@ -33,7 +39,8 @@ describe("deleteUserAction", () => {
   it("returns Unauthorized when not logged in", async () => {
     getCurrentUserMock.mockResolvedValue(null);
     const result = await deleteUserAction("target-1");
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -41,7 +48,8 @@ describe("deleteUserAction", () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "super_admin" });
     prismaMock.user.findUnique.mockResolvedValue(null);
     const result = await deleteUserAction("target-1");
-    expect(result.errors?._form).toContain("User not found");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe("Pengguna tidak ditemukan");
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -49,7 +57,8 @@ describe("deleteUserAction", () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
     prismaMock.user.findUnique.mockResolvedValue({ id: "target-1", role: "super_admin" });
     const result = await deleteUserAction("target-1");
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -57,7 +66,8 @@ describe("deleteUserAction", () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "admin" });
     prismaMock.user.findUnique.mockResolvedValue({ id: "target-1", role: "admin" });
     const result = await deleteUserAction("target-1");
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -65,7 +75,8 @@ describe("deleteUserAction", () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "super_admin" });
     prismaMock.user.findUnique.mockResolvedValue({ id: "actor-1", role: "super_admin" });
     const result = await deleteUserAction("actor-1");
-    expect(result.errors?._form).toContain("Unauthorized");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
     expect(prismaMock.user.update).not.toHaveBeenCalled();
   });
 
@@ -79,6 +90,10 @@ describe("deleteUserAction", () => {
       where: { id: "target-1" },
       data: { deletedAt: expect.any(Date) },
     });
+    expect(logAudit).toHaveBeenCalledWith(expect.objectContaining({
+      action: "user.deleted",
+      targetType: "user",
+    }));
   });
 
   it("soft-deletes when super_admin deletes an admin", async () => {
@@ -94,6 +109,7 @@ describe("deleteUserAction", () => {
     prismaMock.user.findUnique.mockResolvedValue({ id: "target-1", role: "user" });
     prismaMock.user.update.mockRejectedValue(new Error("DB error"));
     const result = await deleteUserAction("target-1");
-    expect(result.errors?._form).toContain("Failed to delete user, please try again");
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(ACTION_MESSAGES.SERVER_ERROR);
   });
 });

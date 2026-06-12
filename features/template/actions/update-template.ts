@@ -6,29 +6,29 @@ import {
   EditTemplateActionType,
 } from "../schemas/edit-template";
 import prisma from "@/lib/prisma";
+import { logAudit } from "@/lib/audit";
 import { slugify } from "../utils/slug";
-
-type FieldErrors = Partial<
-  Record<keyof EditTemplateActionType | "_form", string[]>
->;
-
-export type UpdateTemplateResult =
-  | { errors: FieldErrors; success?: undefined }
-  | { errors?: undefined; success: true };
+import {
+  ok,
+  fail,
+  validationError,
+  ACTION_MESSAGES,
+  type ActionResponse,
+} from "@/lib/action-response";
 
 export async function updateTemplateAction(
   input: EditTemplateActionType & { id: string },
-): Promise<UpdateTemplateResult> {
+): Promise<ActionResponse> {
   const actor = await getCurrentUser();
   if (!actor) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const { id, ...rest } = input;
 
   const parsed = editTemplateActionSchema.safeParse(rest);
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
+    return validationError(parsed.error);
   }
 
   const { name, category, description, thumbnailUrl, status } = parsed.data;
@@ -40,7 +40,7 @@ export async function updateTemplateAction(
     });
 
     if (existing) {
-      return { errors: { name: ["Name already in use"] } };
+      return fail("Nama sudah digunakan", { name: ["Nama sudah digunakan"] });
     }
 
     await prisma.template.update({
@@ -55,9 +55,18 @@ export async function updateTemplateAction(
       },
     });
 
-    return { success: true };
+    await logAudit({
+      actorId: actor.id,
+      actorLabel: actor.name ?? actor.id,
+      action: "template.updated",
+      targetType: "template",
+      targetId: id,
+      targetLabel: parsed.data.name ?? id,
+    });
+
+    return ok("Template berhasil diperbarui");
   } catch (err) {
     console.log("Update template error: ", err);
-    return { errors: { _form: ["Failed to update template, please try again"] } };
+    return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

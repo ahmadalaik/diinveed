@@ -98,12 +98,10 @@ export function CreateTemplateForm() {
 
     const result = await createTemplateAction(actionData);
 
-    if (result.errors) {
-      if (result.errors._form) {
-        toast.error(result.errors._form[0]);
-      }
-      Object.entries(result.errors).forEach(([field, messages]) => {
-        if (field !== "_form" && messages) {
+    if (!result.success) {
+      toast.error(result.message);
+      Object.entries(result.errors ?? {}).forEach(([field, messages]) => {
+        if (messages?.[0]) {
           const formField =
             field === "thumbnailUrl"
               ? "thumbnail"
@@ -115,7 +113,7 @@ export function CreateTemplateForm() {
     }
 
     submittedRef.current = true;
-    toast.success("Template berhasil dibuat.");
+    toast.success(result.message);
     router.push("/admin/templates");
   };
 

@@ -6,14 +6,14 @@ import {
   CreateTransactionType,
 } from "../schemas/create-transaction.schema";
 import prisma from "@/lib/prisma";
-
-type FieldErrors = Partial<
-  Record<keyof CreateTransactionType | "_form", string[]>
->;
-
-export type CreateTransactionActionResult =
-  | { errors: FieldErrors; success?: undefined; transactionId?: undefined }
-  | { errors?: undefined; success: true; transactionId: string };
+import { logAudit } from "@/lib/audit";
+import {
+  ok,
+  fail,
+  validationError,
+  ACTION_MESSAGES,
+  type ActionResponse,
+} from "@/lib/action-response";
 
 function computeDiscount(
   originalPrice: number,
@@ -37,19 +37,19 @@ function computeDiscount(
 
 export async function createTransactionAction(
   input: CreateTransactionType,
-): Promise<CreateTransactionActionResult> {
+): Promise<ActionResponse<{ transactionId: string }>> {
   const actor = await getCurrentUser();
   if (!actor) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   if (actor.role === "user") {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const parsed = createTransactionSchema.safeParse(input);
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors as FieldErrors };
+    return validationError(parsed.error);
   }
 
   const {
@@ -111,10 +111,19 @@ export async function createTransactionAction(
       return created;
     });
 
-    return { success: true, transactionId: transaction.id };
+    await logAudit({
+      actorId: actor.id,
+      actorLabel: actor.name ?? actor.id,
+      action: "transaction.created",
+      targetType: "transaction",
+      targetId: transaction.id,
+      targetLabel: transaction.id,
+    });
+
+    return ok("Transaksi berhasil dibuat", { transactionId: transaction.id });
   } catch (error) {
     console.log("Create transaction error: ", error);
 
-    return { errors: { _form: ["Gagal membuat transaksi, coba lagi"] } };
+    return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

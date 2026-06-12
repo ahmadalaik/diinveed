@@ -1,26 +1,30 @@
 "use server";
 
+import type { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/features/auth/utils/session";
+import { hashPassword } from "@/features/auth/utils/password";
 import { canManageUser } from "@/lib/permissions";
+import { logAudit } from "@/lib/audit";
 import {
   updateUserSchema,
   type UpdateUserType,
 } from "../schemas/update-user.schema";
-
-type FieldErrors = Partial<Record<keyof UpdateUserType | "_form", string[]>>;
-
-export type UpdateUserActionResult =
-  | { errors: FieldErrors; success?: undefined }
-  | { errors?: undefined; success: true };
+import {
+  ok,
+  fail,
+  validationError,
+  ACTION_MESSAGES,
+  type ActionResponse,
+} from "@/lib/action-response";
 
 export async function updateUserAction(
   userId: string,
   input: UpdateUserType,
-): Promise<UpdateUserActionResult> {
+): Promise<ActionResponse> {
   const actor = await getCurrentUser();
   if (!actor) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const target = await prisma.user.findUnique({
@@ -29,44 +33,63 @@ export async function updateUserAction(
   });
 
   if (!target) {
-    return { errors: { _form: ["User not found"] } };
+    return fail("Pengguna tidak ditemukan");
   }
 
   if (!canManageUser(actor, target)) {
-    return { errors: { _form: ["Unauthorized"] } };
+    return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   const parsed = updateUserSchema.safeParse(input);
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors as FieldErrors };
+    return validationError(parsed.error);
   }
 
-  const { name, username, email, phone } = parsed.data;
+  const { name, username, email, password, phone } = parsed.data;
 
   try {
-    const existing = await prisma.user.findFirst({
-      where: {
-        deletedAt: null,
-        NOT: { id: userId },
-        OR: [{ email }, { username }],
-      },
-      select: { email: true, username: true },
-    });
+    // Only check uniqueness against the fields actually being changed.
+    const orConds: Prisma.UserWhereInput[] = [];
+    if (email !== undefined) orConds.push({ email });
+    if (username !== undefined) orConds.push({ username });
 
-    if (existing) {
-      if (existing.email === email) {
-        return { errors: { email: ["Email already in use"] } };
+    if (orConds.length > 0) {
+      const existing = await prisma.user.findFirst({
+        where: { deletedAt: null, NOT: { id: userId }, OR: orConds },
+        select: { email: true, username: true },
+      });
+
+      if (existing) {
+        if (email !== undefined && existing.email === email) {
+          return fail("Email sudah digunakan", { email: ["Email sudah digunakan"] });
+        }
+        return fail("Username sudah digunakan", {
+          username: ["Username sudah digunakan"],
+        });
       }
-      return { errors: { username: ["Username already in use"] } };
     }
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { name, username, email, phone: phone ?? null },
+    // Build a PATCH payload from only the provided fields.
+    const data: Prisma.UserUpdateInput = {};
+    if (name !== undefined) data.name = name;
+    if (username !== undefined) data.username = username;
+    if (email !== undefined) data.email = email;
+    if (phone !== undefined) data.phone = phone;
+    if (password !== undefined) data.password = await hashPassword(password);
+
+    await prisma.user.update({ where: { id: userId }, data });
+
+    await logAudit({
+      actorId: actor.id,
+      actorLabel: actor.name ?? actor.id,
+      action: "user.updated",
+      targetType: "user",
+      targetId: userId,
+      targetLabel: name ?? userId,
     });
 
-    return { success: true };
+    return ok("Pengguna berhasil diperbarui");
   } catch {
-    return { errors: { _form: ["Failed to update user, please try again"] } };
+    return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

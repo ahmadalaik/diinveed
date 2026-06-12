@@ -4,7 +4,7 @@ vi.mock("@/lib/prisma", () => ({
   default: {
     template: {
       findFirst: vi.fn(),
-      update: vi.fn(),
+      create: vi.fn(),
     },
   },
 }));
@@ -21,7 +21,7 @@ vi.mock("@/lib/audit", () => ({
   logAudit: vi.fn(),
 }));
 
-import { updateTemplateAction } from "../update-template";
+import { createTemplateAction } from "../create-template";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/features/auth/utils/session";
 import { logAudit } from "@/lib/audit";
@@ -30,13 +30,12 @@ import { ACTION_MESSAGES } from "@/lib/action-response";
 const prismaMock = prisma as unknown as {
   template: {
     findFirst: ReturnType<typeof vi.fn>;
-    update: ReturnType<typeof vi.fn>;
+    create: ReturnType<typeof vi.fn>;
   };
 };
 const getCurrentUserMock = getCurrentUser as ReturnType<typeof vi.fn>;
 
 const validInput = {
-  id: "tpl-1",
   name: "Coastal",
   category: "Elegant",
   description: "A nice template",
@@ -48,36 +47,36 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("updateTemplateAction", () => {
+describe("createTemplateAction", () => {
   it("returns Unauthorized when not logged in", async () => {
     getCurrentUserMock.mockResolvedValue(null);
-    const result = await updateTemplateAction(validInput);
+    const result = await createTemplateAction(validInput);
     expect(result.success).toBe(false);
     expect(result.message).toBe(ACTION_MESSAGES.UNAUTHORIZED);
-    expect(prismaMock.template.update).not.toHaveBeenCalled();
+    expect(prismaMock.template.create).not.toHaveBeenCalled();
   });
 
-  it("returns name error when another template uses the same name", async () => {
+  it("returns name error when template name already used", async () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "superadmin" });
-    prismaMock.template.findFirst.mockResolvedValue({ id: "tpl-2" });
-    const result = await updateTemplateAction(validInput);
+    prismaMock.template.findFirst.mockResolvedValue({ name: "Coastal" });
+    const result = await createTemplateAction(validInput);
     expect(result.errors?.name).toContain("Nama sudah digunakan");
-    expect(prismaMock.template.update).not.toHaveBeenCalled();
+    expect(prismaMock.template.create).not.toHaveBeenCalled();
   });
 
-  it("updates template and returns success", async () => {
+  it("creates template and returns success", async () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "superadmin" });
     prismaMock.template.findFirst.mockResolvedValue(null);
-    prismaMock.template.update.mockResolvedValue({ id: "tpl-1" });
-    const result = await updateTemplateAction(validInput);
+    prismaMock.template.create.mockResolvedValue({ id: "tpl-1" });
+    const result = await createTemplateAction(validInput);
     expect(result.success).toBe(true);
-    expect(prismaMock.template.update).toHaveBeenCalledWith({
-      where: { id: "tpl-1" },
+    expect(result.data?.templateId).toBe("tpl-1");
+    expect(prismaMock.template.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ name: "Coastal", category: "Elegant" }),
     });
     expect(logAudit).toHaveBeenCalledWith(
       expect.objectContaining({
-        action: "template.updated",
+        action: "template.created",
         targetType: "template",
         targetId: "tpl-1",
       }),
@@ -87,8 +86,8 @@ describe("updateTemplateAction", () => {
   it("returns _form error on prisma exception", async () => {
     getCurrentUserMock.mockResolvedValue({ id: "actor-1", role: "superadmin" });
     prismaMock.template.findFirst.mockResolvedValue(null);
-    prismaMock.template.update.mockRejectedValue(new Error("db error"));
-    const result = await updateTemplateAction(validInput);
+    prismaMock.template.create.mockRejectedValue(new Error("db error"));
+    const result = await createTemplateAction(validInput);
     expect(result.success).toBe(false);
     expect(result.message).toBe(ACTION_MESSAGES.SERVER_ERROR);
   });
