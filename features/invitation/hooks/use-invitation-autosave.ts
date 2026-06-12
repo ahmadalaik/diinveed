@@ -51,8 +51,8 @@ export function useInvitationAutoSave() {
           try {
             const result = await saveInvitation(data);
             if (result.success) {
-            setSaveStatus("saved");
-            setLastSaved(new Date());
+              setSaveStatus("saved");
+              setLastSaved(new Date());
               useInvitationStore.getState().setHasUnpublishedChanges(true);
             } else {
               setSaveStatus("unsaved");

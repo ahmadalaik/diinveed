@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { id } from "date-fns/locale";
 
 /** Fixed UTC offsets for Indonesian time zones (no DST). */
 export const TZ_OFFSETS: Record<string, string> = {
@@ -44,5 +45,5 @@ export function toDateTime(
  */
 export function formatDate(date: string | undefined, pattern: string): string {
   const parsed = toDateTime(date);
-  return parsed ? format(parsed, pattern) : "";
+  return parsed ? format(parsed, pattern, { locale: id }) : "";
 }

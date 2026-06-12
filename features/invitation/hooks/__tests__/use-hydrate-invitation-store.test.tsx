@@ -6,7 +6,10 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { useInvitationStore } from "../../store/invitation-store";
 import { usePreviewState } from "../use-preview-state";
 import { useHydrateInvitationStore } from "../use-hydrate-invitation-store";
-import type { InvitationState } from "../../types/invitation.type";
+import type {
+  EditorInitialData,
+  InvitationState,
+} from "../../types/invitation.type";
 
 const EMPTY: Pick<InvitationState, "title" | "brideName" | "groomName"> = {
   title: "",
@@ -18,7 +21,9 @@ const INITIAL_DATA = {
   title: "Real Title",
   brideName: "Alice",
   groomName: "Bob",
-} as unknown as InvitationState;
+  liveSlug: "",
+  hasUnpublishedChanges: false,
+} as unknown as EditorInitialData;
 
 // Child that reads the preview snapshot and reports it back, mirroring how
 // <Preview/> consumes usePreviewState as a child of <InvitationEditor/>.
@@ -38,7 +43,7 @@ function Harness({
   initialData,
   report,
 }: {
-  initialData: InvitationState;
+  initialData: EditorInitialData;
   report: (snap: InvitationState) => void;
 }) {
   useHydrateInvitationStore(initialData);
