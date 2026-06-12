@@ -3,8 +3,6 @@ import {
   slugifyName,
   buildCoupleSlug,
   generatePublicToken,
-  buildInvitationSlug,
-  parsePublicToken,
 } from "../slug";
 
 describe("slugifyName", () => {
@@ -17,9 +15,9 @@ describe("slugifyName", () => {
 });
 
 describe("buildCoupleSlug", () => {
-  it("joins names with 'dan', bride first when isBrideFirst", () => {
-    expect(buildCoupleSlug("Citra", "Rama", true)).toBe("citra-dan-rama");
-    expect(buildCoupleSlug("Citra", "Rama", false)).toBe("rama-dan-citra");
+  it("joins names with a hyphen, bride first when isBrideFirst", () => {
+    expect(buildCoupleSlug("Citra", "Rama", true)).toBe("citra-rama");
+    expect(buildCoupleSlug("Citra", "Rama", false)).toBe("rama-citra");
   });
   it("returns empty string when both names are blank", () => {
     expect(buildCoupleSlug("", "", true)).toBe("");
@@ -40,22 +38,3 @@ describe("generatePublicToken", () => {
   });
 });
 
-describe("buildInvitationSlug", () => {
-  it("joins slug and token with a hyphen", () => {
-    expect(buildInvitationSlug("citra-dan-rama", "7gk2mq8p")).toBe(
-      "citra-dan-rama-7gk2mq8p",
-    );
-  });
-  it("returns just the token when slug is empty", () => {
-    expect(buildInvitationSlug("", "7gk2mq8p")).toBe("7gk2mq8p");
-  });
-});
-
-describe("parsePublicToken", () => {
-  it("extracts the substring after the last hyphen", () => {
-    expect(parsePublicToken("citra-dan-rama-7gk2mq8p")).toBe("7gk2mq8p");
-  });
-  it("returns the whole segment when there is no hyphen", () => {
-    expect(parsePublicToken("7gk2mq8p")).toBe("7gk2mq8p");
-  });
-});

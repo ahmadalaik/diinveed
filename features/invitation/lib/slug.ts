@@ -13,7 +13,7 @@ export function slugifyName(input: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-/** "citra-dan-rama" from bride/groom nicknames, ordered by isBrideFirst. */
+/** "citra-rama" from bride/groom nicknames, ordered by isBrideFirst. */
 export function buildCoupleSlug(
   brideNickname: string,
   groomNickname: string,
@@ -24,7 +24,7 @@ export function buildCoupleSlug(
   const joined = [first, second]
     .map((n) => n.trim())
     .filter(Boolean)
-    .join(" dan ");
+    .join(" ");
   return slugifyName(joined);
 }
 
@@ -33,13 +33,3 @@ export function generatePublicToken(length = 8): string {
   return nanoidToken(length);
 }
 
-/** Compose the public URL path segment. */
-export function buildInvitationSlug(slug: string, publicToken: string): string {
-  return slug ? `${slug}-${publicToken}` : publicToken;
-}
-
-/** Extract the publicToken (substring after the final hyphen) for lookup. */
-export function parsePublicToken(invitationSlug: string): string {
-  const idx = invitationSlug.lastIndexOf("-");
-  return idx === -1 ? invitationSlug : invitationSlug.slice(idx + 1);
-}
