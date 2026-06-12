@@ -4,6 +4,12 @@ enum RsvpResponse {
     MAYBE
 }
 
+enum WishModerationStatus {
+    PENDING
+    APPROVED
+    HIDDEN
+}
+
 model Invitation {
     id          String @id @default(cuid())
     userId      String @unique @map("user_id")
@@ -38,6 +44,7 @@ model Invitation {
     backgroundType String   @default("solid") @map("background_type")
     rsvpDeadline   String   @default("") @map("rsvp_deadline")
     rsvpOptions    Json     @map("rsvp_options")
+    wishesOptions  Json?    @map("wishes_options")
     events         Json
     stories        Json
     gallery        Json
@@ -73,8 +80,10 @@ model GuestRsvp {
     phoneNumber  String?
     response     RsvpResponse
     guests       Int          @default(1)
-    hope         String?      @db.Text
-    submittedAt  DateTime     @default(now()) @map("submitted_at")
+    wish         String?      @db.Text
+    moderationStatus WishModerationStatus @default(APPROVED) @map("moderation_status")
+    createdAt    DateTime     @default(now()) @map("created_at")
+    updatedAt    DateTime     @updatedAt @map("updated_at")
     guestId      String?      @map("guest_id")
 
     invitation Invitation @relation(fields: [invitationId], references: [id])
