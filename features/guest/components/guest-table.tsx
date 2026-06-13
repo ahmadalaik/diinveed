@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Send, Users, X } from "lucide-react";
+import { Edit, Plus, Send, Trash2, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -216,7 +216,7 @@ export function GuestTable({
                             trigger={
                               <Button size="icon" variant="ghost" className="size-7">
                                 <span className="sr-only">Edit</span>
-                                <Plus className="size-3.5 rotate-45" />
+                                <Edit className="size-3.5" />
                               </Button>
                             }
                           />
@@ -226,10 +226,10 @@ export function GuestTable({
                             trigger={
                               <Button
                                 size="icon"
-                                variant="ghost"
-                                className="text-muted-foreground hover:text-destructive size-7"
+                                variant="destructive"
+                                className="bg-transparent size-7"
                               >
-                                <X className="size-3.5" />
+                                <Trash2 className="size-3.5" />
                               </Button>
                             }
                           />

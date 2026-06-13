@@ -91,7 +91,7 @@ export function SendInvitationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-3xl! overflow-y-auto grid grid-cols-2">
         <DialogHeader>
           <DialogTitle>Kirim Undangan WhatsApp</DialogTitle>
           <DialogDescription>
