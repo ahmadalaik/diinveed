@@ -17,6 +17,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
+import { id as idLocale } from "date-fns/locale";
+
+export function relativeTime(date: Date) {
+  return formatDistanceToNow(date, { addSuffix: true, locale: idLocale });
+}
 
 function SaveDot() {
   const saveStatus = useInvitationStore((s) => s.saveStatus);
@@ -25,7 +31,7 @@ function SaveDot() {
   const getLabel = () => {
     if (saveStatus === "saving") return "Saving...";
     if (saveStatus === "unsaved") return "Unsaved changes";
-    if (lastSaved) return "Auto-saved · just now";
+    if (lastSaved) return `Saved · ${relativeTime(lastSaved)}`;
     return null;
   };
 

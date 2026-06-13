@@ -12,7 +12,11 @@ import { EditorInitialData } from "../types/invitation.type";
 // setState is idempotent so StrictMode's double invocation is harmless.
 export function useHydrateInvitationStore(initialData: EditorInitialData) {
   useState(() => {
-    useInvitationStore.setState({ ...initialData });
+    useInvitationStore.setState({ 
+      ...initialData,
+      lastSaved: initialData.updatedAt,
+      saveStatus: "saved",
+    });
     return null;
   });
 }

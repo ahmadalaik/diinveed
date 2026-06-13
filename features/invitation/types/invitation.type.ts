@@ -113,4 +113,6 @@ export type EditorInitialData = InvitationState & {
   liveSlug: string;
   /** True when the draft has edits not yet published. */
   hasUnpublishedChanges: boolean;
+  /** Last updated time for auto-save status. */
+  updatedAt: Date | null;
 };
