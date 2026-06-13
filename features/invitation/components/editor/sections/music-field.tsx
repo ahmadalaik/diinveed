@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useRef } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { Music, Pause, Play, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,8 +13,6 @@ import { useAudioPreview } from "@/features/invitation/hooks/use-audio-preview";
 import { MUSIC_PRESETS } from "@/features/invitation/lib/music-presets";
 import { EditorError, EditorField, EditorLabel } from "../editor-field";
 
-const MAX_AUDIO_BYTES = 5 * 1024 * 1024;
-
 export function MusicField() {
   const music = useInvitationStore((s) => s.music);
   const musicKey = useInvitationStore((s) => s.musicKey);
@@ -24,6 +22,10 @@ export function MusicField() {
   const fileRef = useRef<HTMLInputElement>(null);
   const { upload, remove, isUploading, uploadProgress } = useR2Upload();
   const preview = useAudioPreview();
+
+  const MAX_SIZE_MB = 5;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  const [sizeError, setSizeError] = useState<string | null>(null);
 
   const selectedPreset = MUSIC_PRESETS.find((p) => p.url === music);
   const selectedLabel = selectedPreset
@@ -44,11 +46,14 @@ export function MusicField() {
   const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > MAX_AUDIO_BYTES) {
-      toast.error("File musik maksimal 5 MB");
+
+    if (file.size > MAX_SIZE_BYTES) {
+      setSizeError(`File musik maksimal 5MB.`);
       e.target.value = "";
       return;
     }
+
+    setSizeError(null);
     const { url, key } = await upload(file, { kind: "music", invitationId });
     await clearPreviousUpload();
     set({ music: url, musicKey: key });
@@ -137,21 +142,26 @@ export function MusicField() {
           })}
         </TabsContent>
 
-        <TabsContent value="upload" forceMount className="mt-2 data-[state=inactive]:hidden">
+        <TabsContent
+          value="upload"
+          forceMount
+          className="mt-2 data-[state=inactive]:hidden"
+        >
           <Button
             variant="outline"
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={isUploading}
-            className="h-24 w-full flex-col gap-1 rounded-lg border-2 border-dashed shadow-none transition-colors hover:bg-muted/50"
+            className="h-24 w-full flex-col gap-1 rounded-lg border-2 border-dashed shadow-none transition-colors hover:bg-muted/50 hover:cursor-pointer"
           >
             <Upload className="h-5 w-5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">
+            <span className="text-[10px] text-muted-foreground">
               {isUploading
                 ? `Mengunggah ${uploadProgress}%`
-                : "Klik untuk unggah MP3 (maks. 5 MB)"}
+                : "Klik untuk mengunggah MP3"}
             </span>
           </Button>
+          {sizeError && <EditorError errors={[sizeError]} />}
           <Input
             ref={fileRef}
             type="file"

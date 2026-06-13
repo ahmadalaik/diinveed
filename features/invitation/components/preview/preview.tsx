@@ -37,7 +37,7 @@ export function Preview() {
   }, []);
 
   return (
-    <div className="flex-1 bg-muted/30 relative h-full overflow-hidden">
+    <div className="flex-1 bg-neutral-200 relative h-full overflow-hidden">
       <ToggleGroup
         className="absolute top-4 right-4 z-10"
         type="single"

@@ -351,8 +351,8 @@ function EventCard({ id, index, total, onMoveUp, onMoveDown }: EventCardProps) {
   return (
     <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
-          Event {index + 1}
+        <span className="text-xs font-medium text-muted-foreground uppercase">
+          Sesi {index + 1}
         </span>
         <div className="flex items-center gap-1">
           <div>
@@ -388,7 +388,7 @@ function EventCard({ id, index, total, onMoveUp, onMoveDown }: EventCardProps) {
           </Button>
         </div>
       </div>
-      <FieldGroup>
+      <FieldGroup className="gap-3">
         <EventTitleField id={id} />
         <EventDateField id={id} />
         <EventTimeField id={id} />
@@ -404,8 +404,12 @@ export function EventsSection() {
   const errors = useInvitationStore((s) => s.publishErrors?.events);
   const set = useInvitationStore((s) => s.set);
 
+  const MAX_EVENT = 3;
+
   const add = () => {
     const events = useInvitationStore.getState().events;
+    if (events.length >= MAX_EVENT) return;
+
     set({
       events: [
         ...events,
@@ -446,11 +450,12 @@ export function EventsSection() {
       ))}
       <Button
         variant="outline"
-        size="sm"
-        className="w-full hover:cursor-pointer"
+        className="w-full flex items-center justify-center gap-1 border-2 border-dashed text-muted-foreground shadow-none hover:cursor-pointer"
+        disabled={ids.length >= MAX_EVENT}
         onClick={add}
       >
-        <Plus className="h-4 w-4 mr-1" /> Tambah Event
+        <Plus className="size-4" />
+        <span className="text-[12px]">Tambah Sesi</span>
       </Button>
     </div>
   );

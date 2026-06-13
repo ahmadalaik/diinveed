@@ -22,8 +22,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Plus, X } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { EditorError } from "../editor-field";
+import { Input } from "@/components/ui/input";
 
 function SortablePhoto({
   id,
@@ -60,7 +61,10 @@ function SortablePhoto({
           src={url}
           alt=""
           sizes="200px"
-          className="cursor-grab object-cover"
+          className={cn(
+            "object-cover",
+            isDragging ? "cursor-grabbing" : "cursor-grab",
+          )}
         />
       </AspectRatio>
       <Button
@@ -69,7 +73,7 @@ function SortablePhoto({
         variant="secondary"
         onClick={onRemove}
         onPointerDown={(e) => e.stopPropagation()}
-        className="absolute right-1 top-1 size-5 rounded-full bg-background/70 text-muted-foreground shadow-sm backdrop-blur-sm hover:bg-background hover:text-foreground"
+        className="absolute right-1 top-1 size-5 rounded-full bg-background/70 text-muted-foreground shadow-sm backdrop-blur-sm hover:bg-background hover:text-destructive hover:cursor-pointer"
       >
         <X className="size-3" />
       </Button>
@@ -86,10 +90,22 @@ export function GallerySection() {
   const { upload, isUploading, uploadProgress } = useR2Upload();
   const sensors = useSensors(useSensor(PointerSensor));
 
+  const MAX_SIZE_MB = 8;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  const MAX_GALLERY_IMAGE = 3;
+  const [sizeError, setSizeError] = useState<string | null>(null);
+
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
+    if (file.size > MAX_SIZE_BYTES) {
+      setSizeError(`Ukuran gambar maksimal ${MAX_SIZE_MB}MB.`);
+      e.target.value = "";
+      return;
+    }
+
+    setSizeError(null);
     const { url, key } = await upload(file, { kind: "gallery", invitationId });
     set({
       gallery: [...gallery, { id: crypto.randomUUID(), url, key }],
@@ -131,8 +147,8 @@ export function GallerySection() {
               type="button"
               variant="outline"
               onClick={() => fileRef.current?.click()}
-              disabled={isUploading}
-              className="aspect-3/4 h-auto w-full border-2 border-dashed text-muted-foreground"
+              disabled={gallery.length >= MAX_GALLERY_IMAGE || isUploading}
+              className="aspect-3/4 h-auto w-full border-2 border-dashed text-muted-foreground hover:cursor-pointer"
             >
               {isUploading ? (
                 <span className="text-xs">{uploadProgress}%</span>
@@ -143,7 +159,8 @@ export function GallerySection() {
           </div>
         </SortableContext>
       </DndContext>
-      <input
+      {sizeError && <EditorError errors={[sizeError]} />}
+      <Input
         ref={fileRef}
         type="file"
         accept="image/*"

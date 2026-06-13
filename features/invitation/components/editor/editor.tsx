@@ -29,9 +29,9 @@ function SaveDot() {
   const lastSaved = useInvitationStore((s) => s.lastSaved);
 
   const getLabel = () => {
-    if (saveStatus === "saving") return "Saving...";
-    if (saveStatus === "unsaved") return "Unsaved changes";
-    if (lastSaved) return `Saved · ${relativeTime(lastSaved)}`;
+    if (saveStatus === "saving") return "Menyimpan...";
+    if (saveStatus === "unsaved") return "Perubahan belum disimpan";
+    if (lastSaved) return `Tersimpan · ${relativeTime(lastSaved)}`;
     return null;
   };
 
@@ -191,7 +191,7 @@ function PublishFooter() {
 
 export function Editor() {
   return (
-    <aside className="flex h-full w-full flex-col border-r bg-background md:w-[30%]">
+    <aside className="flex h-full w-full flex-col border-r bg-sidebar md:w-[30%]">
       <div className="border-b p-2">
         <div className="flex items-center gap-2">
           <Brand />

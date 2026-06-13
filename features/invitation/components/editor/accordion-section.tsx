@@ -1,16 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Accordion as AccordionPrimitive } from "radix-ui";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useInvitationStore } from "../../store/invitation-store";
 import {
   BookHeart,
   CalendarDays,
+  ChevronRight,
   Gift,
   Heart,
   Images,
@@ -19,7 +20,6 @@ import {
   Palette,
   Quote,
   Type,
-  Wallpaper,
   type LucideIcon,
 } from "lucide-react";
 import { TemplateSelectorSection } from "./sections/template-selector-section";
@@ -33,12 +33,6 @@ import { GiftsSection } from "./sections/gifts-section";
 import { RsvpSection } from "./sections/rsvp-selection";
 import { ThemeSection } from "./sections/theme-section";
 import { FontSection } from "./sections/font-section";
-import { BackgroundSection } from "./sections/background-section";
-
-const triggerClassName =
-  "items-center justify-start gap-4 px-4 py-3 **:data-[slot=accordion-trigger-icon]:order-first **:data-[slot=accordion-trigger-icon]:ml-0 hover:bg-muted";
-
-const itemClassName = "border-none";
 
 type Section = {
   value: string;
@@ -118,13 +112,13 @@ const sections: Section[] = [
   },
   { value: "theme", label: "Tema Warna", Icon: Palette, Content: ThemeSection },
   { value: "font", label: "Tipografi", Icon: Type, Content: FontSection },
-  {
-    value: "background",
-    label: "Latar Belakang",
-    Icon: Wallpaper,
-    Content: BackgroundSection,
-    fields: ["backgroundType"],
-  },
+  // {
+  //   value: "background",
+  //   label: "Latar Belakang",
+  //   Icon: Wallpaper,
+  //   Content: BackgroundSection,
+  //   fields: ["backgroundType"],
+  // },
 ];
 
 export function AccordionSection() {
@@ -154,22 +148,34 @@ export function AccordionSection() {
   return (
     <>
       <TemplateSelectorSection />
-      <Accordion type="multiple" value={value} onValueChange={setValue}>
+      <Accordion type="multiple" className="gap-2.5" value={value} onValueChange={setValue}>
         {sections.map(({ value, label, Icon, Content, contentClassName }) => (
-          <AccordionItem key={value} value={value} className={itemClassName}>
-            <AccordionTrigger className={triggerClassName}>
-              <span className="flex items-center gap-2">
-                <Icon className="size-4 shrink-0 text-muted-foreground" />
-                {label}
-                {errorSections.has(value) && (
-                  <span
-                    aria-label="Ada isian yang belum lengkap"
-                    className="size-1.5 shrink-0 rounded-full bg-destructive"
-                  />
-                )}
-              </span>
-            </AccordionTrigger>
-            <AccordionContent className={contentClassName ?? "px-4 pb-4 h-auto!"}>
+          <AccordionItem
+            key={value}
+            value={value}
+            className="rounded-lg border bg-card py-1 mx-4 first:mt-3 last:mb-3"
+          >
+            <AccordionPrimitive.Header className="flex">
+              <AccordionPrimitive.Trigger
+                data-slot="accordion-trigger"
+                className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-center justify-start gap-4 rounded-lg border border-transparent px-4 py-2.5 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-3 disabled:pointer-events-none disabled:opacity-50"
+              >
+                <ChevronRight className="text-muted-foreground pointer-events-none size-4 shrink-0 transition-transform duration-200 in-data-open:rotate-90" />
+                <span className="flex items-center gap-2 *:[svg]:text-muted-foreground">
+                  <Icon className="size-4 shrink-0 text-muted-foreground" />
+                  {label}
+                  {errorSections.has(value) && (
+                    <span
+                      aria-label="Ada isian yang belum lengkap"
+                      className="size-1.5 shrink-0 rounded-full bg-destructive"
+                    />
+                  )}
+                </span>
+              </AccordionPrimitive.Trigger>
+            </AccordionPrimitive.Header>
+            <AccordionContent
+              className={contentClassName ?? "px-6 pb-4 h-auto!"}
+            >
               <Content />
             </AccordionContent>
           </AccordionItem>

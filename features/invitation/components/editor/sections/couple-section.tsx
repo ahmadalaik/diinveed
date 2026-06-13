@@ -149,7 +149,7 @@ function GroomDescField() {
       <EditorLabel htmlFor="groomDesc">Deskripsi</EditorLabel>
       <EditorTextarea
         id="groomDesc"
-        placeholder="Putra pertama dari Bapak Teguh dan Ibu Wahyuni"
+        placeholder="Putra pertama dari Bapak Teguh dan Ibu Sri"
         value={groomDesc ?? ""}
         onChange={(e) => set({ groomDescription: e.target.value })}
       />
@@ -178,10 +178,21 @@ function PhotoField({
   const [src, setSrc] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
+  const MAX_SIZE_MB = 8;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  const [sizeError, setSizeError] = useState<string | null>(null);
+
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > MAX_SIZE_BYTES) {
+      setSizeError(`Ukuran gambar maksimal ${MAX_SIZE_MB}MB.`);
+      e.target.value = "";
+      return;
+    }
+
+    setSizeError(null);
     setSrc(URL.createObjectURL(file));
     setOpen(true);
     e.target.value = "";
@@ -189,7 +200,10 @@ function PhotoField({
 
   const handleCropped = async (blob: Blob) => {
     const file = new File([blob], "photo.webp", { type: "image/webp" });
-    const { url, key: newKey } = await upload(file, { kind: "couple", invitationId });
+    const { url, key: newKey } = await upload(file, {
+      kind: "couple",
+      invitationId,
+    });
     if (storedKey) await remove(storedKey);
 
     set({ [imageKey]: url, [keyProp]: newKey } as Partial<InvitationState>);
@@ -215,7 +229,7 @@ function PhotoField({
                 type="button"
                 disabled={isUploading}
                 aria-label={`Ubah ${label}`}
-                className="relative h-24 w-24 rounded-full p-0  outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60"
+                className="relative h-24 w-24 rounded-full p-0  outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60 hover:cursor-pointer"
               >
                 <img
                   src={image}
@@ -228,11 +242,18 @@ function PhotoField({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem onClick={() => fileRef.current?.click()}>
+              <DropdownMenuItem
+                className="hover:cursor-pointer"
+                onClick={() => fileRef.current?.click()}
+              >
                 <Upload className="h-4 w-4" />
                 Ganti foto
               </DropdownMenuItem>
-              <DropdownMenuItem variant="destructive" onClick={handleRemove}>
+              <DropdownMenuItem
+                variant="destructive"
+                className="hover:cursor-pointer"
+                onClick={handleRemove}
+              >
                 <Trash2 className="h-4 w-4" />
                 Hapus foto
               </DropdownMenuItem>
@@ -246,12 +267,15 @@ function PhotoField({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={isUploading}
-          className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed transition-colors hover:bg-muted/50 shadow-none"
+          className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed transition-colors hover:bg-muted/50 shadow-none hover:cursor-pointer"
         >
           <Upload className="h-5 w-5 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">Unggah</span>
+          <span className="text-[10px] text-muted-foreground">
+            Klik untuk menggungah foto
+          </span>
         </Button>
       )}
+      {sizeError && <EditorError errors={[sizeError]} />}
       <Input
         ref={fileRef}
         type="file"
@@ -284,7 +308,7 @@ export function CoupleSection() {
 
   if (!isBrideFirst) {
     return (
-      <FieldGroup>
+      <FieldGroup className="gap-3">
         <SwitchNameOrderField />
         <PhotoField
           label="Foto Mempelai Pria"
@@ -307,7 +331,7 @@ export function CoupleSection() {
   }
 
   return (
-    <FieldGroup>
+    <FieldGroup className="gap-3">
       <SwitchNameOrderField />
       <PhotoField
         label="Foto Mempelai Wanita"

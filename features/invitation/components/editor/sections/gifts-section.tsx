@@ -23,7 +23,7 @@ function GiftProviderField({ id }: { id: string }) {
 
   return (
     <EditorField>
-      <EditorLabel htmlFor={`gift-provider-${id}`}>Provider</EditorLabel>
+      <EditorLabel htmlFor={`gift-provider-${id}`}>Bank</EditorLabel>
       <EditorInput
         id={`gift-provider-${id}`}
         autoComplete="off"
@@ -97,8 +97,8 @@ function GiftCard({ id, index, total, onMoveUp, onMoveDown }: GiftCardProps) {
   return (
     <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
-          Hadiah {index + 1}
+        <span className="text-xs font-medium text-muted-foreground uppercase">
+          Rekening {index + 1}
         </span>
         <div className="flex items-center gap-1">
           <div>
@@ -134,7 +134,7 @@ function GiftCard({ id, index, total, onMoveUp, onMoveDown }: GiftCardProps) {
           </Button>
         </div>
       </div>
-      <FieldGroup>
+      <FieldGroup className="gap-3">
         <GiftProviderField id={id} />
         <GiftAccountNameField id={id} />
         <GiftAccountNumberField id={id} />
@@ -148,8 +148,12 @@ export function GiftsSection() {
   const errors = useInvitationStore((s) => s.publishErrors?.gifts);
   const set = useInvitationStore((s) => s.set);
 
+  const MAX_ACCOUNT = 2;
+
   const add = () => {
     const gifts = useInvitationStore.getState().gifts;
+    if (gifts.length >= MAX_ACCOUNT) return;
+
     set({
       gifts: [
         ...gifts,
@@ -185,11 +189,12 @@ export function GiftsSection() {
       ))}
       <Button
         variant="outline"
-        size="sm"
-        className="w-full border-2 border-dashed shadow-none hover:cursor-pointer"
+        className="w-full flex items-center justify-center gap-1 border-2 border-dashed text-muted-foreground shadow-none hover:cursor-pointer"
+        disabled={ids.length >= MAX_ACCOUNT}
         onClick={add}
       >
-        <Plus className="h-4 w-4 mr-1" /> Add Gift
+        <Plus className="size-4" />
+        <span className="text-[12px]">Tambah Rekening</span>
       </Button>
     </div>
   );

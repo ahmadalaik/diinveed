@@ -37,7 +37,7 @@ function QuoteReferenceField() {
 
   return (
     <EditorField>
-      <EditorLabel htmlFor="quoteReference">Referensi Kutipan</EditorLabel>
+      <EditorLabel htmlFor="quoteReference">Referensi</EditorLabel>
       <EditorInput
         id="quoteReference"
         autoComplete="off"
@@ -52,7 +52,7 @@ function QuoteReferenceField() {
 
 export function QuoteSection() {
   return (
-    <FieldGroup>
+    <FieldGroup className="gap-3">
       <QuoteField />
       <QuoteReferenceField />
     </FieldGroup>

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { ChangeEvent, useRef } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import { FieldGroup } from "@/components/ui/field";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
 import {
@@ -26,11 +26,25 @@ function CoverImageField() {
   const fileRef = useRef<HTMLInputElement>(null);
   const { upload, remove, isUploading, uploadProgress } = useR2Upload();
 
+  const MAX_SIZE_MB = 8;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+  const [sizeError, setSizeError] = useState<string | null>(null);
+
   const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const { url, key: newKey } = await upload(file, { kind: "cover", invitationId });
+    if (file.size > MAX_SIZE_BYTES) {
+      setSizeError(`Ukuran gambar maksimal ${MAX_SIZE_MB}MB.`);
+      e.target.value = "";
+      return;
+    }
+
+    setSizeError(null);
+    const { url, key: newKey } = await upload(file, {
+      kind: "cover",
+      invitationId,
+    });
     if (coverImageKey) await remove(coverImageKey);
     set({ coverImage: url, coverImageKey: newKey });
   };
@@ -42,7 +56,7 @@ function CoverImageField() {
 
   return (
     <EditorField>
-      <EditorLabel htmlFor="basics-cover-image">Cover Image</EditorLabel>
+      <EditorLabel htmlFor="basics-cover-image">Cover</EditorLabel>
       {coverImage ? (
         <div className="relative">
           <img
@@ -65,16 +79,17 @@ function CoverImageField() {
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={isUploading}
-          className="w-full h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 hover:bg-muted/50 transition-colors shadow-none"
+          className="w-full h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 hover:bg-muted/50 transition-colors shadow-none hover:cursor-pointer"
         >
           <Upload className="h-5 w-5 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground">
             {isUploading
               ? `Mengunggah ${uploadProgress}%`
-              : "Klik untuk unggah"}
+              : "Klik untuk mengunggah gambar"}
           </span>
         </Button>
       )}
+      {sizeError && <EditorError errors={[sizeError]} />}
       <Input
         ref={fileRef}
         type="file"
@@ -115,4 +130,4 @@ export function BasicsSection() {
       <InvitationUrlSection />
     </FieldGroup>
   );
-};
+}

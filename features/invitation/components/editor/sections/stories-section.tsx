@@ -14,6 +14,7 @@ import {
 } from "../editor-field";
 import { FieldGroup } from "@/components/ui/field";
 import { useShallow } from "zustand/shallow";
+import { DatePicker } from "@/components/ui/date-picker";
 
 function StoryYearField({ id }: { id: string }) {
   const value = useInvitationStore(
@@ -23,13 +24,14 @@ function StoryYearField({ id }: { id: string }) {
 
   return (
     <EditorField>
-      <EditorLabel htmlFor={`story-year-${id}`}>Tahun</EditorLabel>
-      <EditorInput
+      <EditorLabel htmlFor={`story-year-${id}`}>Tanggal</EditorLabel>
+      <DatePicker
         id={`story-year-${id}`}
-        autoComplete="off"
-        placeholder="2024"
         value={value}
-        onChange={(e) => update({ year: e.target.value })}
+        onChange={(year) => update({ year })}
+        yearsBack={10}
+        yearsForward={1}
+        className="h-auto border-transparent bg-muted/60 px-2.5 py-2 text-[13px] shadow-none hover:bg-muted"
       />
     </EditorField>
   );
@@ -93,7 +95,7 @@ function StoryCard({ id, index, total, onMoveUp, onMoveDown }: StoryCardProps) {
   return (
     <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">
+        <span className="text-xs font-medium text-muted-foreground uppercase">
           Chapter {index + 1}
         </span>
         <div className="flex items-center gap-1">
@@ -130,7 +132,7 @@ function StoryCard({ id, index, total, onMoveUp, onMoveDown }: StoryCardProps) {
           </Button>
         </div>
       </div>
-      <FieldGroup>
+      <FieldGroup className="gap-3">
         <StoryYearField id={id} />
         <StoryTitleField id={id} />
         <StoryDescriptionField id={id} />
@@ -144,8 +146,12 @@ export function StoriesSection() {
   const errors = useInvitationStore((s) => s.publishErrors?.stories);
   const set = useInvitationStore((s) => s.set);
 
+  const MAX_CHAPTER = 3;
+
   const add = () => {
     const stories = useInvitationStore.getState().stories;
+    if (stories.length >= MAX_CHAPTER) return;
+
     set({
       stories: [
         ...stories,
@@ -176,11 +182,12 @@ export function StoriesSection() {
       ))}
       <Button
         variant="outline"
-        size="sm"
-        className="w-full hover:cursor-pointer"
+        className="w-full flex items-center justify-center gap-1 border-2 border-dashed text-muted-foreground shadow-none hover:cursor-pointer"
+        disabled={ids.length >= MAX_CHAPTER}
         onClick={add}
       >
-        <Plus className="h-4 w-4 mr-1" /> Add Chapter
+        <Plus className="size-4" />
+        <span className="text-[12px]">Tambah Chapter</span>
       </Button>
     </div>
   );
