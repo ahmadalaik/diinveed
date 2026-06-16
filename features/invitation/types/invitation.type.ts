@@ -41,11 +41,18 @@ export type Gallery = {
   key: string;
 };
 
-export type GiftItem = {
+export type GiftTransfer = {
   id: string;
   provider: string;
   accountName: string;
   accountNumber: string;
+};
+
+export type GiftPackage = {
+  id: string;
+  recipientName: string;
+  recipientPhoneNumber: string;
+  address: string;
 };
 
 export type InvitationState = {
@@ -54,10 +61,14 @@ export type InvitationState = {
   slug: string;
   publicToken: string;
 
-  coverImage: string | null;
-  coverImageKey: string | null;
+  title: string;
+  coverDesktopImage: string | null;
+  coverDesktopImageKey: string | null;
+  coverMobileImage: string | null;
+  coverMobileImageKey: string | null;
   music: string;
   musicKey: string;
+
   quote: string;
   quoteReference: string;
 
@@ -73,18 +84,23 @@ export type InvitationState = {
   groomImage: string | null;
   groomImageKey: string | null;
 
-  title: string;
-  tokenId: string;
-  tokenOverrides: TemplateTokenOverrides | null;
-  templateSlug: string;
-  backgroundType: string;
+  events: EventItem[];
+  stories: { enabled: boolean; items: StoryItem[] };
+  gallery: { enabled: boolean; items: Gallery[] };
+  gifts: {
+    enabled: boolean;
+    transfers: GiftTransfer[];
+    packages: GiftPackage[];
+  };
+
   rsvpDeadline: string;
   rsvpOptions: RsvpOptions;
   wishesOptions: WishesOptions | null;
-  events: EventItem[];
-  stories: StoryItem[];
-  gallery: Gallery[];
-  gifts: GiftItem[];
+
+  tokenOverrides: TemplateTokenOverrides | null;
+  templateSlug: string;
+  backgroundType: string;
+
   isPublished: boolean;
 };
 

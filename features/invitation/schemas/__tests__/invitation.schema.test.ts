@@ -9,7 +9,6 @@ const base = {
   title: "",
   coverImage: null,
   coverImageKey: null,
-  tokenId: "aura",
   tokenOverrides: null,
   templateSlug: "kelana",
   backgroundType: "solid",

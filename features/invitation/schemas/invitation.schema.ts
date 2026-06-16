@@ -26,11 +26,18 @@ const storyItemSchema = z.object({
   body: z.string(),
 });
 
-const giftItemSchema = z.object({
+const giftTransferSchema = z.object({
   id: z.string(),
   provider: z.string(),
   accountName: z.string(),
   accountNumber: z.string(),
+});
+
+const giftPackageSchema = z.object({
+  id: z.string(),
+  recipientName: z.string(),
+  recipientPhoneNumber: z.string(),
+  address: z.string(),
 });
 
 const galleryItemSchema = z.object({
@@ -70,8 +77,11 @@ const tokenOverridesSchema = z
   .nullable();
 
 export const saveInvitationSchema = z.object({
-  coverImage: z.string().nullable(),
-  coverImageKey: z.string().nullable(),
+  title: z.string(),
+  coverDesktopImage: z.string().nullable(),
+  coverDesktopImageKey: z.string().nullable(),
+  coverMobileImage: z.string().nullable(),
+  coverMobileImageKey: z.string().nullable(),
   music: z.string(),
   musicKey: z.string(),
   quote: z.string(),
@@ -91,17 +101,22 @@ export const saveInvitationSchema = z.object({
     .string()
     .regex(/^[a-z0-9-]*$/, "Hanya huruf kecil, angka, dan tanda hubung")
     .default(""),
-  title: z.string(),
-  tokenId: z.string(),
   tokenOverrides: tokenOverridesSchema,
   templateSlug: z.string().min(1),
   backgroundType: z.string(),
   rsvpDeadline: z.string(),
   rsvpOptions: rsvpOptionsSchema,
   events: z.array(eventItemSchema),
-  stories: z.array(storyItemSchema),
-  gallery: z.array(galleryItemSchema),
-  gifts: z.array(giftItemSchema),
+  stories: z.object({ enabled: z.boolean(), items: z.array(storyItemSchema) }),
+  gallery: z.object({
+    enabled: z.boolean(),
+    items: z.array(galleryItemSchema),
+  }),
+  gifts: z.object({
+    enabled: z.boolean(),
+    transfers: z.array(giftTransferSchema),
+    packages: z.array(giftPackageSchema),
+  }),
 });
 
 export type SaveInvitationType = z.infer<typeof saveInvitationSchema>;
@@ -120,11 +135,12 @@ const requiredAsset = (message: string) =>
 // Excluded by design: *Key (auto-managed upload metadata), isBrideFirst
 // (boolean), tokenOverrides (optional design override), slug (built at publish).
 export const publishReadySchema = z.object({
-  coverImage: requiredAsset("Gambar sampul wajib diunggah"),
+  title: requiredText("Judul undangan wajib diisi"),
+  coverDesktopImage: requiredAsset("Gambar cover desktop wajib diunggah"),
+  coverMobileImage: requiredAsset("Gambar cover mobile wajib diunggah"),
   music: requiredText("Musik latar wajib diisi"),
   quote: requiredText("Kutipan wajib diisi"),
   quoteReference: requiredText("Sumber kutipan wajib diisi"),
-  title: requiredText("Judul undangan wajib diisi"),
   brideName: requiredText("Nama lengkap mempelai wanita wajib diisi"),
   brideNickname: requiredText("Nama panggilan mempelai wanita wajib diisi"),
   brideDescription: requiredAsset("Deskripsi mempelai wanita wajib diisi"),
@@ -150,27 +166,51 @@ export const publishReadySchema = z.object({
             e.title.trim() !== "" &&
             e.locationName.trim() !== "",
         ),
-      { message: "Lengkapi minimal satu acara (tanggal, nama acara, dan lokasi)" },
+      {
+        message:
+          "Lengkapi minimal satu acara (tanggal, nama acara, dan lokasi)",
+      },
     ),
   stories: z
-    .array(storyItemSchema)
-    .refine((stories) => stories.some((s) => s.title.trim() !== "" || s.body.trim() !== ""), {
-      message: "Tambahkan minimal satu cerita",
-    }),
-  gallery: z
-    .array(galleryItemSchema)
-    .refine((gallery) => gallery.some((g) => g.url.trim() !== ""), {
-      message: "Tambahkan minimal satu foto galeri",
-    }),
-  gifts: z
-    .array(giftItemSchema)
+    .object({ enabled: z.boolean(), items: z.array(storyItemSchema) })
     .refine(
-      (gifts) =>
-        gifts.some(
-          (g) =>
-            g.provider.trim() !== "" &&
-            g.accountName.trim() !== "" &&
-            g.accountNumber.trim() !== "",
+      (s) =>
+        !s.enabled ||
+        s.items.some(
+          (item) => item.title.trim() !== "" || item.body.trim() !== "",
+        ),
+      {
+        message: "Tambahkan minimal satu cerita yang lengkap",
+      },
+    ),
+  gallery: z
+    .object({ enabled: z.boolean(), items: z.array(galleryItemSchema) })
+    .refine(
+      (g) => !g.enabled || g.items.some((item) => item.url.trim() !== ""),
+      {
+        message: "Tambahkan minimal satu foto galeri",
+      },
+    ),
+  gifts: z
+    .object({
+      enabled: z.boolean(),
+      transfers: z.array(giftTransferSchema),
+      packages: z.array(giftPackageSchema),
+    })
+    .refine(
+      (g) =>
+        !g.enabled ||
+        g.transfers.some(
+          (t) =>
+            t.provider.trim() !== "" &&
+            t.accountName.trim() !== "" &&
+            t.accountNumber.trim() !== "",
+        ) ||
+        g.packages.some(
+          (p) =>
+            p.recipientName.trim() !== "" &&
+            p.address.trim() !== "" &&
+            p.recipientPhoneNumber.trim() !== "",
         ),
       { message: "Tambahkan minimal satu rekening/hadiah yang lengkap" },
     ),
@@ -180,8 +220,11 @@ export type PublishReadyType = z.infer<typeof publishReadySchema>;
 
 /** Default editable content for a brand-new draft (matches saveInvitationSchema). */
 export const DEFAULT_INVITATION_CONTENT: SaveInvitationType = {
-  coverImage: null,
-  coverImageKey: null,
+  title: "",
+  coverDesktopImage: null,
+  coverDesktopImageKey: null,
+  coverMobileImage: null,
+  coverMobileImageKey: null,
   music: "",
   musicKey: "",
   quote: "",
@@ -198,15 +241,13 @@ export const DEFAULT_INVITATION_CONTENT: SaveInvitationType = {
   groomImage: null,
   groomImageKey: null,
   slug: "",
-  title: "",
-  tokenId: "aura",
   tokenOverrides: null,
   templateSlug: "kelana",
   backgroundType: "solid",
   rsvpDeadline: "",
   rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
   events: [],
-  stories: [],
-  gallery: [],
-  gifts: [],
+  stories: { enabled: true, items: [] },
+  gallery: { enabled: true, items: [] },
+  gifts: { enabled: true, transfers: [], packages: [] },
 };

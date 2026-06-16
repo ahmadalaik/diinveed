@@ -28,10 +28,14 @@ export const useInvitationStore = create<InvitationStore>()(
     slug: "",
     publicToken: "",
 
-    coverImage: null,
-    coverImageKey: null,
+    title: "Undangan Tanpa Judul",
+    coverDesktopImage: null,
+    coverDesktopImageKey: null,
+    coverMobileImage: null,
+    coverMobileImageKey: null,
     music: "",
     musicKey: "",
+
     quote: "",
     quoteReference: "",
 
@@ -47,18 +51,19 @@ export const useInvitationStore = create<InvitationStore>()(
     groomImage: null,
     groomImageKey: null,
 
-    title: "",
-    tokenId: "aura",
-    tokenOverrides: null,
-    templateSlug: "kelana",
-    backgroundType: "solid",
+    events: [],
+    stories: { enabled: true, items: [] },
+    gallery: { enabled: true, items: [] },
+    gifts: { enabled: true, transfers: [], packages: [] },
+
     rsvpDeadline: "",
     rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: true },
     wishesOptions: null,
-    events: [],
-    stories: [],
-    gallery: [],
-    gifts: [],
+
+    tokenOverrides: null,
+    templateSlug: "kelana",
+    backgroundType: "solid",
+
     isPublished: false,
 
     saveStatus: "saved",
