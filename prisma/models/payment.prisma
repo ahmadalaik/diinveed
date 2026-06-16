@@ -1,0 +1,42 @@
+enum PaymentMethod {
+    bank_transfer
+    qris
+    e_wallet
+    cash
+    gateway
+}
+
+enum PaymentStatus {
+    pending
+    confirmed
+    failed
+    refunded
+}
+
+model Payment {
+    id              String        @id @default(cuid())
+    transactionId   String        @unique @map("transaction_id")
+    method          PaymentMethod
+    amount          Int
+    referenceNumber String?       @map("reference_number")
+    senderName      String?       @map("sender_name")
+    senderBank      String?       @map("sender_bank")
+    proofUrl        String?       @map("proof_url")
+    notes           String?       @db.Text
+
+    gatewayProvider      String? @map("gateway_provider")
+    gatewayTransactionId String? @map("gateway_transaction_id")
+    gatewayPayload       Json?   @map("gateway_payload")
+
+    status      PaymentStatus @default(pending)
+    confirmedBy String?       @map("confirmed_by")
+    confirmedAt DateTime?     @map("confirmed_at")
+
+    transaction Transaction @relation(fields: [transactionId], references: [id])
+    confirmer   User?       @relation("PaymentConfirmer", fields: [confirmedBy], references: [id])
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("payments")
+}

@@ -1,0 +1,26 @@
+enum TemplateStatus {
+    active
+    draft
+    archived
+}
+
+model Template {
+    id           String         @id @default(cuid())
+    name         String         @unique
+    slug         String         @unique
+    category     String
+    description  String?        @db.Text
+    thumbnailUrl String         @map("thumbnail_url")
+    demoUrl      String         @map("demo_url")
+    tags         Json           @default("[]")
+    status       TemplateStatus @default(draft)
+
+    templateConfig Json? @map("template_config")
+
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+    deletedAt DateTime? @map("deleted_at")
+
+    @@index([slug, category, status, deletedAt])
+    @@map("templates")
+}
