@@ -16,46 +16,49 @@ model Invitation {
     slug        String @default("") @map("slug")
     publicToken String @unique @map("public_token")
 
-    music          String @default("")
-    musicPublicId  String @default("") @map("music_public_id")
+    title                String  @default("")
+    coverDesktopImage    String? @map("cover_desktop_image")
+    coverDesktopImageKey String? @map("cover_desktop_image_key")
+    coverMobileImage     String? @map("cover_mobile_image")
+    coverMobileImageKey  String? @map("cover_mobile_image_key")
+    music                String  @default("")
+    musicKey             String  @default("") @map("music_key")
+
     quote          String @default("")
     quoteReference String @default("")
 
-    isBrideFirst       Boolean @default(true) @map("is_bride_first")
-    brideName          String  @default("") @map("bride_name")
-    brideNickname      String  @default("") @map("bride_nickname")
-    brideDescription   String? @map("bride_description")
-    brideImage         String? @map("bride_image")
-    brideImagePublicId String? @map("bride_image_public_id")
-    groomName          String  @default("") @map("groom_name")
-    groomNickname      String  @default("") @map("groom_nickname")
-    groomDescription   String? @map("groom_description")
-    groomImage         String? @map("groom_image")
-    groomImagePublicId String? @map("groom_image_public_id")
+    isBrideFirst     Boolean @default(true) @map("is_bride_first")
+    brideName        String  @default("") @map("bride_name")
+    brideNickname    String  @default("") @map("bride_nickname")
+    brideDescription String? @map("bride_description")
+    brideImage       String? @map("bride_image")
+    brideImageKey    String? @map("bride_image_key")
+    groomName        String  @default("") @map("groom_name")
+    groomNickname    String  @default("") @map("groom_nickname")
+    groomDescription String? @map("groom_description")
+    groomImage       String? @map("groom_image")
+    groomImageKey    String? @map("groom_image_key")
 
-    title              String  @default("")
-    broadcastMessage   String? @map("broadcast_message") @db.Text // DEPRECATED: superseded by MessageTemplate; do not write
-    coverImage         String? @map("cover_image")
-    coverImagePublicId String? @map("cover_image_public_id")
+    events Json
+    stories   Json
+    gallery   Json
+    gifts   Json
 
-    tokenId        String   @default("aura") @map("token_id")
-    tokenOverrides Json?    @map("token_overrides")
-    templateSlug   String   @default("kelana") @map("template_slug")
-    backgroundType String   @default("solid") @map("background_type")
-    rsvpDeadline   String   @default("") @map("rsvp_deadline")
-    rsvpOptions    Json     @map("rsvp_options")
-    wishesOptions  Json?    @map("wishes_options")
-    events         Json
-    stories        Json
-    gallery        Json
-    gifts          Json
-    isPublished    Boolean  @default(false) @map("is_published")
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
+    rsvpDeadline  String @default("") @map("rsvp_deadline")
+    rsvpOptions   Json   @map("rsvp_options")
+    wishesOptions Json?  @map("wishes_options")
 
-    user       User        @relation(fields: [userId], references: [id])
-    guestRsvps GuestRsvp[]
-    guests     Guest[]
+    tokenOverrides Json?  @map("token_overrides")
+    templateSlug   String @default("kelana") @map("template_slug")
+    backgroundType String @default("solid") @map("background_type")
+
+    isPublished Boolean  @default(false) @map("is_published")
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+
+    user             User              @relation(fields: [userId], references: [id])
+    guestRsvps       GuestRsvp[]
+    guests           Guest[]
     messageTemplates MessageTemplate[]
     draft            InvitationDraft?
 
@@ -76,17 +79,17 @@ model InvitationDraft {
 }
 
 model GuestRsvp {
-    id           String       @id @default(cuid())
-    invitationId String       @map("invitation_id")
-    name         String
-    phoneNumber  String?
-    response     RsvpResponse
-    guests       Int          @default(1)
-    wish         String?      @db.Text
+    id               String               @id @default(cuid())
+    invitationId     String               @map("invitation_id")
+    name             String
+    phoneNumber      String?
+    response         RsvpResponse
+    guests           Int                  @default(1)
+    wish             String?              @db.Text
     moderationStatus WishModerationStatus @default(APPROVED) @map("moderation_status")
-    createdAt    DateTime     @default(now()) @map("created_at")
-    updatedAt    DateTime     @updatedAt @map("updated_at")
-    guestId      String?      @map("guest_id")
+    createdAt        DateTime             @default(now()) @map("created_at")
+    updatedAt        DateTime             @updatedAt @map("updated_at")
+    guestId          String?              @map("guest_id")
 
     invitation Invitation @relation(fields: [invitationId], references: [id])
     guest      Guest?     @relation(fields: [guestId], references: [id], onDelete: SetNull)
