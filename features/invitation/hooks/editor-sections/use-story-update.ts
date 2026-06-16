@@ -5,9 +5,14 @@ export function useStoryUpdate(id: string) {
   const set = useInvitationStore((s) => s.set);
 
   return (patch: Partial<StoryItem>) => {
-    const stories = useInvitationStore.getState().stories as StoryItem[];
+    const storiesObj = useInvitationStore.getState().stories;
     set({
-      stories: stories.map((s) => (s.id === id ? { ...s, ...patch } : s)),
+      stories: {
+        ...storiesObj,
+        items: storiesObj.items.map((s) =>
+          s.id === id ? { ...s, ...patch } : s,
+        ),
+      },
     });
   };
 }

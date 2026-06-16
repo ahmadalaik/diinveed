@@ -1,11 +1,34 @@
 import { useInvitationStore } from "../../store/invitation-store";
-import { GiftItem } from "../../types/invitation.type";
+import { GiftTransfer, GiftPackage } from "../../types/invitation.type";
 
-export function useGiftUpdate(id: string) {
+export function useGiftTransferUpdate(id: string) {
   const set = useInvitationStore((s) => s.set);
 
-  return (patch: Partial<GiftItem>) => {
-    const gifts = useInvitationStore.getState().gifts as GiftItem[];
-    set({ gifts: gifts.map((g) => (g.id === id ? { ...g, ...patch } : g)) });
+  return (patch: Partial<GiftTransfer>) => {
+    const giftsObj = useInvitationStore.getState().gifts;
+    set({
+      gifts: {
+        ...giftsObj,
+        transfers: (giftsObj.transfers || []).map((t) =>
+          t.id === id ? { ...t, ...patch } : t,
+        ),
+      },
+    });
+  };
+}
+
+export function useGiftPackageUpdate(id: string) {
+  const set = useInvitationStore((s) => s.set);
+
+  return (patch: Partial<GiftPackage>) => {
+    const giftsObj = useInvitationStore.getState().gifts;
+    set({
+      gifts: {
+        ...giftsObj,
+        packages: (giftsObj.packages || []).map((p) =>
+          p.id === id ? { ...p, ...patch } : p,
+        ),
+      },
+    });
   };
 }

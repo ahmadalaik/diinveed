@@ -12,8 +12,12 @@ export function useInvitationAutoSave() {
 
     const unsub = useInvitationStore.subscribe(
       (s) => ({
-        coverImage: s.coverImage,
-        coverImageKey: s.coverImageKey,
+        slug: s.slug,
+        title: s.title,
+        coverDesktopImage: s.coverDesktopImage,
+        coverDesktopImageKey: s.coverDesktopImageKey,
+        coverMobileImage: s.coverMobileImage,
+        coverMobileImageKey: s.coverMobileImageKey,
         music: s.music,
         musicKey: s.musicKey,
         quote: s.quote,
@@ -29,18 +33,15 @@ export function useInvitationAutoSave() {
         groomDescription: s.groomDescription,
         groomImage: s.groomImage,
         groomImageKey: s.groomImageKey,
-        slug: s.slug,
-        title: s.title,
-        tokenId: s.tokenId,
-        tokenOverrides: s.tokenOverrides,
-        templateSlug: s.templateSlug,
-        backgroundType: s.backgroundType,
-        rsvpDeadline: s.rsvpDeadline,
-        rsvpOptions: s.rsvpOptions,
         events: s.events,
         stories: s.stories,
         gallery: s.gallery,
         gifts: s.gifts,
+        rsvpDeadline: s.rsvpDeadline,
+        rsvpOptions: s.rsvpOptions,
+        templateSlug: s.templateSlug,
+        tokenOverrides: s.tokenOverrides,
+        backgroundType: s.backgroundType,
       }),
       (data) => {
         const { setSaveStatus, setLastSaved } = useInvitationStore.getState();

@@ -46,6 +46,12 @@ const galleryItemSchema = z.object({
   key: z.string(),
 });
 
+const colorSpecOverrideSchema = z.object({
+  primary: z.string().optional(),
+  secondary: z.string().optional(),
+  tertiary: z.string().optional(),
+});
+
 const fontSpecOverrideSchema = z
   .object({
     family: z.string().optional(),
@@ -61,9 +67,13 @@ const tokenOverridesSchema = z
   .object({
     colors: z
       .object({
-        primary: z.string().optional(),
-        secondary: z.string().optional(),
-        tertiary: z.string().optional(),
+        background: colorSpecOverrideSchema.optional(),
+        secondary: colorSpecOverrideSchema.optional(),
+        tertiary: colorSpecOverrideSchema
+          .omit({
+            tertiary: true,
+          })
+          .optional(),
       })
       .optional(),
     typography: z
@@ -84,6 +94,11 @@ export const saveInvitationSchema = z.object({
   coverMobileImageKey: z.string().nullable(),
   music: z.string(),
   musicKey: z.string(),
+  slug: z
+    .string()
+    .regex(/^[a-z0-9-]*$/, "Hanya huruf kecil, angka, dan tanda hubung")
+    .default(""),
+  events: z.array(eventItemSchema),
   quote: z.string(),
   quoteReference: z.string(),
   isBrideFirst: z.boolean(),
@@ -97,16 +112,6 @@ export const saveInvitationSchema = z.object({
   groomDescription: z.string().nullable(),
   groomImage: z.string().nullable(),
   groomImageKey: z.string().nullable(),
-  slug: z
-    .string()
-    .regex(/^[a-z0-9-]*$/, "Hanya huruf kecil, angka, dan tanda hubung")
-    .default(""),
-  tokenOverrides: tokenOverridesSchema,
-  templateSlug: z.string().min(1),
-  backgroundType: z.string(),
-  rsvpDeadline: z.string(),
-  rsvpOptions: rsvpOptionsSchema,
-  events: z.array(eventItemSchema),
   stories: z.object({ enabled: z.boolean(), items: z.array(storyItemSchema) }),
   gallery: z.object({
     enabled: z.boolean(),
@@ -117,6 +122,11 @@ export const saveInvitationSchema = z.object({
     transfers: z.array(giftTransferSchema),
     packages: z.array(giftPackageSchema),
   }),
+  rsvpDeadline: z.string(),
+  rsvpOptions: rsvpOptionsSchema,
+  templateSlug: z.string().min(1),
+  tokenOverrides: tokenOverridesSchema,
+  backgroundType: z.string(),
 });
 
 export type SaveInvitationType = z.infer<typeof saveInvitationSchema>;
@@ -149,13 +159,6 @@ export const publishReadySchema = z.object({
   groomNickname: requiredText("Nama panggilan mempelai pria wajib diisi"),
   groomDescription: requiredAsset("Deskripsi mempelai pria wajib diisi"),
   groomImage: requiredAsset("Foto mempelai pria wajib diunggah"),
-  templateSlug: z.string().min(1, "Template wajib dipilih"),
-  backgroundType: requiredText("Latar belakang wajib dipilih"),
-  rsvpDeadline: requiredText("Batas waktu RSVP wajib diisi"),
-  rsvpOptions: rsvpOptionsSchema.refine(
-    (o) => o.accept || o.decline || o.maybe,
-    { message: "Pilih minimal satu opsi kehadiran RSVP" },
-  ),
   events: z
     .array(eventItemSchema)
     .refine(
@@ -179,17 +182,13 @@ export const publishReadySchema = z.object({
         s.items.some(
           (item) => item.title.trim() !== "" || item.body.trim() !== "",
         ),
-      {
-        message: "Tambahkan minimal satu cerita yang lengkap",
-      },
+      { message: "Tambahkan minimal satu cerita yang lengkap" },
     ),
   gallery: z
     .object({ enabled: z.boolean(), items: z.array(galleryItemSchema) })
     .refine(
       (g) => !g.enabled || g.items.some((item) => item.url.trim() !== ""),
-      {
-        message: "Tambahkan minimal satu foto galeri",
-      },
+      { message: "Tambahkan minimal satu foto galeri" },
     ),
   gifts: z
     .object({
@@ -214,6 +213,13 @@ export const publishReadySchema = z.object({
         ),
       { message: "Tambahkan minimal satu rekening/hadiah yang lengkap" },
     ),
+  rsvpDeadline: requiredText("Batas waktu RSVP wajib diisi"),
+  rsvpOptions: rsvpOptionsSchema.refine(
+    (o) => o.accept || o.decline || o.maybe,
+    { message: "Pilih minimal satu opsi kehadiran RSVP" },
+  ),
+  templateSlug: z.string().min(1, "Template wajib dipilih"),
+  backgroundType: requiredText("Latar belakang wajib dipilih"),
 });
 
 export type PublishReadyType = z.infer<typeof publishReadySchema>;
@@ -241,13 +247,13 @@ export const DEFAULT_INVITATION_CONTENT: SaveInvitationType = {
   groomImage: null,
   groomImageKey: null,
   slug: "",
-  tokenOverrides: null,
-  templateSlug: "kelana",
-  backgroundType: "solid",
-  rsvpDeadline: "",
-  rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
   events: [],
   stories: { enabled: true, items: [] },
   gallery: { enabled: true, items: [] },
   gifts: { enabled: true, transfers: [], packages: [] },
+  rsvpDeadline: "",
+  rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
+  templateSlug: "kelana",
+  tokenOverrides: null,
+  backgroundType: "solid",
 };
