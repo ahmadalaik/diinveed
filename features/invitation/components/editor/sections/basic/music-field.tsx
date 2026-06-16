@@ -2,7 +2,6 @@
 
 import { ChangeEvent, useRef, useState } from "react";
 import { Music, Pause, Play, Upload, X } from "lucide-react";
-import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +10,7 @@ import { useInvitationStore } from "@/features/invitation/store/invitation-store
 import { useR2Upload } from "@/hooks/use-r2-upload";
 import { useAudioPreview } from "@/features/invitation/hooks/use-audio-preview";
 import { MUSIC_PRESETS } from "@/features/invitation/lib/music-presets";
-import { EditorError, EditorField, EditorLabel } from "../editor-field";
+import { EditorError, EditorField, EditorLabel } from "../../editor-field";
 
 export function MusicField() {
   const music = useInvitationStore((s) => s.music);
@@ -23,7 +22,7 @@ export function MusicField() {
   const { upload, remove, isUploading, uploadProgress } = useR2Upload();
   const preview = useAudioPreview();
 
-  const MAX_SIZE_MB = 5;
+  const MAX_SIZE_MB = 8;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
   const [sizeError, setSizeError] = useState<string | null>(null);
 

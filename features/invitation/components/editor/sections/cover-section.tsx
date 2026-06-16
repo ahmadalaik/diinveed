@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { FieldGroup } from "@/components/ui/field";
 
 function CoverImageField() {
-  const coverImage = useInvitationStore((s) => s.coverImage);
-  const coverImageKey = useInvitationStore((s) => s.coverImageKey);
+  const coverDesktopImage = useInvitationStore((s) => s.coverDesktopImage);
+  const coverDesktopImageKey = useInvitationStore((s) => s.coverDesktopImageKey);
   const set = useInvitationStore((s) => s.set);
   const invitationId = useInvitationStore((s) => s.id);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -34,22 +34,22 @@ function CoverImageField() {
 
     setSizeError(null);
     const { url, key: newKey } = await upload(file, { kind: "cover", invitationId });
-    if (coverImageKey) await remove(coverImageKey);
-    set({ coverImage: url, coverImageKey: newKey });
+    if (coverDesktopImageKey) await remove(coverDesktopImageKey);
+    set({ coverDesktopImage: url, coverDesktopImageKey: newKey });
   };
 
   const handleRemove = async () => {
-    if (coverImageKey) await remove(coverImageKey);
-    set({ coverImage: null, coverImageKey: null });
+    if (coverDesktopImageKey) await remove(coverDesktopImageKey);
+    set({ coverDesktopImage: null, coverDesktopImageKey: null });
   };
 
   return (
     <EditorField>
       <EditorLabel htmlFor="coverImage">Cover Image</EditorLabel>
-      {coverImage ? (
+      {coverDesktopImage ? (
         <div className="relative">
           <img
-            src={coverImage}
+            src={coverDesktopImage}
             alt="Cover"
             className="w-full h-40 object-cover rounded-lg"
           />

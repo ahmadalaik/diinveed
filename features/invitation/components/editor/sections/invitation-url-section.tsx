@@ -18,7 +18,7 @@ export function InvitationUrlSection() {
   return (
     <FieldGroup className="gap-3">
       <EditorField>
-        <EditorLabel htmlFor="invitation-url">URL Undangan</EditorLabel>
+        <EditorLabel htmlFor="invitation-url">URL Undangan (Opsional)</EditorLabel>
         <EditorInput
           id="invitation-url"
           value={slug}

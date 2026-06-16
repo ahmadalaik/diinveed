@@ -23,16 +23,16 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { TemplateSelectorSection } from "./sections/template-selector-section";
-import { BasicsSection } from "./sections/basics-section";
-import { CoupleSection } from "./sections/couple-section";
-import { QuoteSection } from "./sections/quote-section";
-import { StoriesSection } from "./sections/stories-section";
-import { EventsSection } from "./sections/events-section";
-import { GallerySection } from "./sections/gallery-section";
-import { GiftsSection } from "./sections/gifts-section";
-import { RsvpSection } from "./sections/rsvp-selection";
-import { ThemeSection } from "./sections/theme-section";
-import { FontSection } from "./sections/font-section";
+import { BasicsSection } from "./sections/basic";
+import { CoupleSection } from "./sections/couple";
+import { QuoteSection } from "./sections/quote";
+import { StoriesSection } from "./sections/story";
+import { EventsSection } from "./sections/event";
+import { GallerySection } from "./sections/gallery";
+import { GiftsSection } from "./sections/gift";
+import { RsvpSection } from "./sections/rsvp";
+import { FontSection } from "./sections/typography";
+import { ColorSection } from "./sections/color";
 
 type Section = {
   value: string;
@@ -44,7 +44,7 @@ type Section = {
   fields?: string[];
 };
 
-const sections: Section[] = [
+const SECTIONS: Section[] = [
   {
     value: "basics",
     label: "Informasi Dasar",
@@ -110,15 +110,8 @@ const sections: Section[] = [
     Content: RsvpSection,
     fields: ["rsvpDeadline", "rsvpOptions"],
   },
-  { value: "theme", label: "Tema Warna", Icon: Palette, Content: ThemeSection },
+  { value: "color", label: "Warna", Icon: Palette, Content: ColorSection },
   { value: "font", label: "Tipografi", Icon: Type, Content: FontSection },
-  // {
-  //   value: "background",
-  //   label: "Latar Belakang",
-  //   Icon: Wallpaper,
-  //   Content: BackgroundSection,
-  //   fields: ["backgroundType"],
-  // },
 ];
 
 export function AccordionSection() {
@@ -129,7 +122,7 @@ export function AccordionSection() {
   const errorSections = useMemo(() => {
     if (!publishErrors) return new Set<string>();
     return new Set(
-      sections
+      SECTIONS
         .filter((s) => s.fields?.some((f) => publishErrors[f]?.length))
         .map((s) => s.value),
     );
@@ -148,8 +141,13 @@ export function AccordionSection() {
   return (
     <>
       <TemplateSelectorSection />
-      <Accordion type="multiple" className="gap-2.5" value={value} onValueChange={setValue}>
-        {sections.map(({ value, label, Icon, Content, contentClassName }) => (
+      <Accordion
+        type="multiple"
+        className="gap-2.5"
+        value={value}
+        onValueChange={setValue}
+      >
+        {SECTIONS.map(({ value, label, Icon, Content, contentClassName }) => (
           <AccordionItem
             key={value}
             value={value}

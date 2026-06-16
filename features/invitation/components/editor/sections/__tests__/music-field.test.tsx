@@ -28,12 +28,14 @@ vi.mock("@/hooks/use-r2-upload", () => ({
   }),
 }));
 
-import { MusicField } from "../music-field";
+import { MusicField } from "../basic/music-field";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
 import { MUSIC_PRESETS } from "@/features/invitation/lib/music-presets";
 
 beforeAll(() => {
-  vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(async () => {});
+  vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(
+    async () => {},
+  );
   vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
 });
 

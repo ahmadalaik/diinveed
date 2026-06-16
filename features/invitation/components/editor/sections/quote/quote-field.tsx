@@ -1,6 +1,5 @@
 "use client";
 
-import { FieldGroup } from "@/components/ui/field";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
 import {
   EditorError,
@@ -8,9 +7,9 @@ import {
   EditorInput,
   EditorLabel,
   EditorTextarea,
-} from "../editor-field";
+} from "../../editor-field";
 
-function QuoteField() {
+export function QuoteField() {
   const quote = useInvitationStore((s) => s.quote);
   const errors = useInvitationStore((s) => s.publishErrors?.quote);
   const set = useInvitationStore((s) => s.set);
@@ -30,7 +29,7 @@ function QuoteField() {
   );
 }
 
-function QuoteReferenceField() {
+export function QuoteReferenceField() {
   const quoteReference = useInvitationStore((s) => s.quoteReference);
   const errors = useInvitationStore((s) => s.publishErrors?.quoteReference);
   const set = useInvitationStore((s) => s.set);
@@ -47,14 +46,5 @@ function QuoteReferenceField() {
       />
       <EditorError errors={errors} />
     </EditorField>
-  );
-}
-
-export function QuoteSection() {
-  return (
-    <FieldGroup className="gap-3">
-      <QuoteField />
-      <QuoteReferenceField />
-    </FieldGroup>
   );
 }

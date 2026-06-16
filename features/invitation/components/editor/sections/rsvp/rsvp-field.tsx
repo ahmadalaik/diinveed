@@ -2,10 +2,9 @@
 
 import { DatePicker } from "@/components/ui/date-picker";
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
-import { EditorError, EditorField, EditorLabel } from "../editor-field";
-import { FieldGroup } from "@/components/ui/field";
+import { EditorError, EditorField, EditorLabel } from "../../editor-field";
 
-function RsvpDeadlineField() {
+export function RsvpDeadlineField() {
   const rsvpDeadline = useInvitationStore((s) => s.rsvpDeadline);
   const errors = useInvitationStore((s) => s.publishErrors?.rsvpDeadline);
   const set = useInvitationStore((s) => s.set);
@@ -23,13 +22,5 @@ function RsvpDeadlineField() {
       />
       <EditorError errors={errors} />
     </EditorField>
-  );
-}
-
-export function RsvpSection() {
-  return (
-    <FieldGroup className="gap-3">
-      <RsvpDeadlineField />
-    </FieldGroup>
   );
 }

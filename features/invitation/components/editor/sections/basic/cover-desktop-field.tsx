@@ -1,36 +1,30 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { ChangeEvent, useRef, useState } from "react";
-import { FieldGroup } from "@/components/ui/field";
-import { useInvitationStore } from "@/features/invitation/store/invitation-store";
-import {
-  EditorError,
-  EditorField,
-  EditorInput,
-  EditorLabel,
-} from "../editor-field";
+import { useRef, useState } from "react";
 import { useR2Upload } from "@/hooks/use-r2-upload";
+import { useInvitationStore } from "@/features/invitation/store/invitation-store";
+import { EditorError, EditorField, EditorLabel } from "../../editor-field";
 import { Button } from "@/components/ui/button";
 import { Upload, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { InvitationUrlSection } from "./invitation-url-section";
-import { MusicField } from "./music-field";
 
-function CoverImageField() {
-  const coverImage = useInvitationStore((s) => s.coverImage);
-  const coverImageKey = useInvitationStore((s) => s.coverImageKey);
-  const errors = useInvitationStore((s) => s.publishErrors?.coverImage);
+export function CoverDesktopImageField() {
+  const coverDesktopImage = useInvitationStore((s) => s.coverDesktopImage);
+  const coverDesktopImageKey = useInvitationStore(
+    (s) => s.coverDesktopImageKey,
+  );
+  const errors = useInvitationStore((s) => s.publishErrors?.coverDesktopImage);
   const set = useInvitationStore((s) => s.set);
   const invitationId = useInvitationStore((s) => s.id);
   const fileRef = useRef<HTMLInputElement>(null);
   const { upload, remove, isUploading, uploadProgress } = useR2Upload();
 
-  const MAX_SIZE_MB = 8;
+  const MAX_SIZE_MB = 12;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
   const [sizeError, setSizeError] = useState<string | null>(null);
 
-  const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -45,23 +39,25 @@ function CoverImageField() {
       kind: "cover",
       invitationId,
     });
-    if (coverImageKey) await remove(coverImageKey);
-    set({ coverImage: url, coverImageKey: newKey });
+    if (coverDesktopImageKey) await remove(coverDesktopImageKey);
+    set({ coverDesktopImage: url, coverDesktopImageKey: newKey });
   };
 
   const handleRemove = async () => {
-    if (coverImageKey) await remove(coverImageKey);
-    set({ coverImage: null, coverImageKey: null });
+    if (coverDesktopImageKey) await remove(coverDesktopImageKey);
+    set({ coverDesktopImage: null, coverDesktopImageKey: null });
   };
 
   return (
     <EditorField>
-      <EditorLabel htmlFor="basics-cover-image">Cover</EditorLabel>
-      {coverImage ? (
+      <EditorLabel htmlFor="basics-cover-desktop-image">
+        Cover Desktop
+      </EditorLabel>
+      {coverDesktopImage ? (
         <div className="relative">
           <img
-            src={coverImage}
-            alt="Cover"
+            src={coverDesktopImage}
+            alt="Cover Desktop"
             className="w-full h-40 object-cover rounded-lg"
           />
           <Button
@@ -79,7 +75,7 @@ function CoverImageField() {
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={isUploading}
-          className="w-full h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 hover:bg-muted/50 transition-colors shadow-none hover:cursor-pointer"
+          className="w-full h-30 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 hover:bg-muted/50 transition-colors shadow-none hover:cursor-pointer"
         >
           <Upload className="h-5 w-5 text-muted-foreground" />
           <span className="text-[10px] text-muted-foreground">
@@ -91,6 +87,7 @@ function CoverImageField() {
       )}
       {sizeError && <EditorError errors={[sizeError]} />}
       <Input
+        id="basics-cover-desktop-image"
         ref={fileRef}
         type="file"
         accept="image/*"
@@ -99,35 +96,5 @@ function CoverImageField() {
       />
       <EditorError errors={errors} />
     </EditorField>
-  );
-}
-
-function CoupleField() {
-  const title = useInvitationStore((s) => s.title);
-  const errors = useInvitationStore((s) => s.publishErrors?.title);
-  const set = useInvitationStore((s) => s.set);
-
-  return (
-    <EditorField>
-      <EditorLabel htmlFor="basics-couple">Couple</EditorLabel>
-      <EditorInput
-        id="basics-couple"
-        value={title}
-        onChange={(e) => set({ title: e.target.value })}
-        placeholder="e.g. Amelia & Theo"
-      />
-      <EditorError errors={errors} />
-    </EditorField>
-  );
-}
-
-export function BasicsSection() {
-  return (
-    <FieldGroup className="gap-3">
-      <CoverImageField />
-      <MusicField />
-      <CoupleField />
-      <InvitationUrlSection />
-    </FieldGroup>
   );
 }
