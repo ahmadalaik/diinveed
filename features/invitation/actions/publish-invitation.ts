@@ -27,7 +27,8 @@ function draftToLiveColumns(data: SaveInvitationType) {
     gallery,
     gifts,
     tokenOverrides,
-    coverImageKey,
+    coverDesktopImageKey,
+    coverMobileImageKey,
     musicKey,
     brideImageKey,
     groomImageKey,
@@ -37,7 +38,8 @@ function draftToLiveColumns(data: SaveInvitationType) {
 
   return {
     ...rest,
-    coverImagePublicId: coverImageKey,
+    coverDesktopImageKey,
+    coverMobileImageKey,
     musicPublicId: musicKey,
     brideImagePublicId: brideImageKey,
     groomImagePublicId: groomImageKey,
@@ -47,9 +49,9 @@ function draftToLiveColumns(data: SaveInvitationType) {
         : (tokenOverrides as Prisma.InputJsonValue),
     rsvpOptions: rsvpOptions as object,
     events: events as object[],
-    stories: stories as object[],
-    gallery: gallery as object[],
-    gifts: gifts as object[],
+    stories: stories as object,
+    gallery: gallery as object,
+    gifts: gifts as object,
   };
 }
 
@@ -84,7 +86,9 @@ export async function publishInvitation(): Promise<
     );
 
   if (!slug) {
-    return fail("URL undangan wajib diisi", { slug: ["URL undangan wajib diisi"] });
+    return fail("URL undangan wajib diisi", {
+      slug: ["URL undangan wajib diisi"],
+    });
   }
 
   const taken = await prisma.invitation.findFirst({

@@ -1,9 +1,8 @@
 "use server";
 
 import { getCurrentUser } from "@/features/auth/utils/session";
-import { EditorInitialData, Gallery } from "../types/invitation.type";
+import { EditorInitialData } from "../types/invitation.type";
 import prisma from "@/lib/prisma";
-import { randomUUID } from "crypto";
 import { generatePublicToken } from "../lib/slug";
 import { DEFAULT_WISHES_OPTIONS } from "../schemas/wish.schema";
 import { logAudit } from "@/lib/audit";
@@ -18,21 +17,6 @@ import {
   type ActionResponse,
 } from "@/lib/action-response";
 
-function normalizeGallery(gallery: unknown): Gallery[] {
-  if (!Array.isArray(gallery)) return [];
-  return gallery.map((item) => {
-    if (typeof item === "string") {
-      return { id: randomUUID(), url: item, key: "" };
-    }
-    const obj = (item ?? {}) as Partial<Gallery>;
-    return {
-      id: obj.id ?? randomUUID(),
-      url: obj.url ?? "",
-      key: obj.key ?? "",
-    };
-  });
-}
-
 /** Merge draft content with live identity/metadata into the editor state. */
 function toEditorState(
   inv: Record<string, unknown>,
@@ -42,7 +26,6 @@ function toEditorState(
 ): EditorInitialData {
   return {
     ...content,
-    gallery: normalizeGallery(content.gallery),
     id: inv.id as string,
     userId: inv.userId as string,
     publicToken: inv.publicToken as string,
@@ -113,7 +96,6 @@ export async function getOrCreateInvitation(): Promise<
     data: {
       userId: user.id,
       publicToken: generatePublicToken(),
-      tokenId: "aura",
       templateSlug: "kelana",
       rsvpOptions: DEFAULT_INVITATION_CONTENT.rsvpOptions,
       wishesOptions: DEFAULT_WISHES_OPTIONS,
