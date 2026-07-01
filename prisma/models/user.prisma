@@ -10,25 +10,30 @@ enum UserStatus {
 }
 
 model User {
-    id        String     @id @default(cuid())
-    name      String
-    username  String     @unique
-    email     String     @unique
-    password  String
-    role      UserRole   @default(user)
-    status    UserStatus @default(active)
-    phone     String?
-    image     String?
-    deletedAt DateTime?  @map("deleted_at")
-    createdAt DateTime   @default(now()) @map("created_at")
-    updatedAt DateTime   @updatedAt @map("updated_at")
+    id            String     @id @default(cuid())
+    name          String
+    email         String
+    emailVerified Boolean    @default(false) @map("email_verified")
+    role          UserRole   @default(user)
+    banned        Boolean?   @default(false)
+    banReason     String?    @map("ban_reason")
+    banExpires    DateTime?  @map("ban_expires")
+    status        UserStatus @default(active)
+    phone         String?
+    image         String?
+    deletedAt     DateTime?  @map("deleted_at")
+    createdAt     DateTime   @default(now()) @map("created_at")
+    updatedAt     DateTime   @updatedAt @map("updated_at")
 
     sessions            Session[]
+    accounts            Account[]
     transactions        Transaction[] @relation("UserTransactions")
     createdTransactions Transaction[] @relation("TransactionCreator")
     confirmedPayments   Payment[]     @relation("PaymentConfirmer")
 
     invitation Invitation?
+    auditLogs  AuditLog[]  @relation("UserAuditLogs")
 
+    @@unique([email])
     @@map("users")
 }
