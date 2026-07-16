@@ -1,0 +1,21 @@
+model AuditLog {
+    id          String   @id @default(cuid())
+    actorId     String?  @map("actor_id")
+    actorLabel  String   @map("actor_label")
+    action      String
+    targetType  String?  @map("target_type")
+    targetId    String?  @map("target_id")
+    targetLabel String?  @map("target_label")
+    metadata    Json?
+    ipAddress   String?  @map("ip_address")
+    userAgent   String?  @map("user_agent") @db.Text
+    createdAt   DateTime @default(now()) @map("created_at")
+
+    actor User? @relation("UserAuditLogs", fields: [actorId], references: [id], onDelete: SetNull)
+
+    @@index([actorId])
+    @@index([action])
+    @@index([targetType, targetId])
+    @@index([createdAt])
+    @@map("audit_logs")
+}
