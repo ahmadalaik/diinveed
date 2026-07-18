@@ -1,1 +1,1 @@
-export const SESSION_COOKIE = "diinveed_session";
+export const SESSION_COOKIE = "better-auth.session_token";

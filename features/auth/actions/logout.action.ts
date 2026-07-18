@@ -1,9 +1,23 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { deleteSession } from "@/features/auth/utils/session";
+import { getCurrentUser } from "../utils/session";
+import { logAudit } from "@/lib/audit";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 export async function logoutAction() {
-  await deleteSession();
+  const user = await getCurrentUser();
+  if (user) {
+    await logAudit({
+      actorId: user.id,
+      actorLabel: user.name,
+      action: "auth.logout",
+    });
+  }
+  
+  const headersList = await headers();
+  await auth.api.signOut({ headers: headersList });
+
   redirect("/login");
 }

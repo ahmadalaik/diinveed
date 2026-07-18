@@ -1,78 +1,22 @@
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import prisma from "@/lib/prisma";
-import { generateToken, sha256 } from "./utils";
-import { SESSION_COOKIE } from "./constants";
-
-export async function createSession(userId: string) {
-  const token = generateToken();
-  const tokenHash = sha256(token);
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-  await prisma.session.create({
-    data: {
-      userId,
-      tokenHash,
-      expiresAt,
-    },
-  });
-
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires: expiresAt,
-  });
-}
-
-export async function deleteSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-
-  if (token) {
-    await prisma.session.deleteMany({
-      where: {
-        tokenHash: sha256(token),
-      },
-    });
-  }
-
-  cookieStore.set(SESSION_COOKIE, "", {
-    path: "/",
-    expires: new Date(0),
-  });
-}
+import { auth } from "@/lib/auth";
 
 export async function getCurrentUser() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-
-  if (!token) {
+  const headersList = await headers();
+  const session = await auth.api.getSession({
+    headers: headersList,
+  });
+  if (!session?.user) {
     return null;
   }
 
-  const session = await prisma.session.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
-      tokenHash: sha256(token),
-    },
-    include: {
-      user: true,
+      id: session.user.id,
     },
   });
-  
-  if (!session) {
-    return null;
-  }
+  if (!user) return null;
 
-  if (session.expiresAt < new Date()) {
-    await prisma.session.delete({
-      where: {
-        id: session.id,
-      },
-    });
-    return null;
-  }
-
-  return session.user;
+  return user;
 }

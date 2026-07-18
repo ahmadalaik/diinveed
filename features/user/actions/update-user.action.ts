@@ -1,10 +1,10 @@
 "use server";
 
-import type { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { getCurrentUser } from "@/features/auth/utils/session";
-import { hashPassword } from "@/features/auth/utils/password";
-import { canManageUser } from "@/lib/permissions";
+import { canManageUser, type Target } from "@/lib/permissions";
 import { logAudit } from "@/lib/audit";
 import {
   updateUserSchema,
@@ -31,12 +31,11 @@ export async function updateUserAction(
     where: { id: userId, deletedAt: null },
     select: { id: true, role: true },
   });
-
   if (!target) {
     return fail("Pengguna tidak ditemukan");
   }
 
-  if (!canManageUser(actor, target)) {
+  if (!canManageUser(actor, target as Target)) {
     return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
@@ -45,39 +44,47 @@ export async function updateUserAction(
     return validationError(parsed.error);
   }
 
-  const { name, username, email, password, phone } = parsed.data;
+  const { name, email, password, phone, role } = parsed.data;
 
   try {
-    // Only check uniqueness against the fields actually being changed.
-    const orConds: Prisma.UserWhereInput[] = [];
-    if (email !== undefined) orConds.push({ email });
-    if (username !== undefined) orConds.push({ username });
-
-    if (orConds.length > 0) {
+    if (email !== undefined) {
       const existing = await prisma.user.findFirst({
-        where: { deletedAt: null, NOT: { id: userId }, OR: orConds },
-        select: { email: true, username: true },
+        where: { NOT: { id: userId }, email },
       });
-
       if (existing) {
-        if (email !== undefined && existing.email === email) {
-          return fail("Email sudah digunakan", { email: ["Email sudah digunakan"] });
-        }
-        return fail("Username sudah digunakan", {
-          username: ["Username sudah digunakan"],
+        return fail("Email sudah digunakan", {
+          email: ["Email sudah digunakan"],
         });
       }
     }
 
-    // Build a PATCH payload from only the provided fields.
-    const data: Prisma.UserUpdateInput = {};
+    const data: { name?: string; email?: string; phone?: string; role?: string } = {};
     if (name !== undefined) data.name = name;
-    if (username !== undefined) data.username = username;
     if (email !== undefined) data.email = email;
     if (phone !== undefined) data.phone = phone;
-    if (password !== undefined) data.password = await hashPassword(password);
+    if (role !== undefined) {
+      data.role = role;
+    }
 
-    await prisma.user.update({ where: { id: userId }, data });
+    if (Object.keys(data).length > 0) {
+      await auth.api.adminUpdateUser({
+        body: {
+          userId,
+          data,
+        },
+        headers: await headers(),
+      });
+    }
+
+    if (password !== undefined) {
+      await auth.api.setUserPassword({
+        body: {
+          userId,
+          newPassword: password,
+        },
+        headers: await headers(),
+      });
+    }
 
     await logAudit({
       actorId: actor.id,
@@ -89,7 +96,9 @@ export async function updateUserAction(
     });
 
     return ok("Pengguna berhasil diperbarui");
-  } catch {
+  } catch (error) {
+    console.log("Error update user: ", error);
+
     return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

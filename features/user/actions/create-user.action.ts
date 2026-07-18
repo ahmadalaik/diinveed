@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { hashPassword } from "@/features/auth/utils/password";
+import { auth } from "@/lib/auth";
 import { getCurrentUser } from "@/features/auth/utils/session";
 import { getAllowedRoles } from "@/lib/permissions";
 import { logAudit } from "@/lib/audit";
@@ -30,42 +30,37 @@ export async function createUserAction(
     return validationError(parsed.error);
   }
 
-  const { name, username, email, password, role, phone } = parsed.data;
+  const { name, email, password, role, phone } = parsed.data;
 
   if (!getAllowedRoles(actor.role).includes(role)) {
     return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
   try {
-    const existing = await prisma.user.findFirst({
-      where: {
-        deletedAt: null,
-        OR: [{ email }, { username }],
-      },
-      select: { email: true, username: true },
+    const existing = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, deletedAt: true },
     });
 
     if (existing) {
-      if (existing.email === email) {
-        return fail("Email sudah digunakan", { email: ["Email sudah digunakan"] });
-      }
-      return fail("Username sudah digunakan", {
-        username: ["Username sudah digunakan"],
-      });
+      return fail("Email sudah digunakan", { email: ["Email sudah digunakan"] });
     }
 
-    const hashedPassword = await hashPassword(password);
-    const user = await prisma.user.create({
-      data: {
+    const userRes = await auth.api.createUser({
+      body: {
         name,
-        username,
         email,
-        password: hashedPassword,
+        password,
         role,
-        phone: phone ?? null,
+        data: {
+          phone: phone ?? null,
+          emailVerified: true,
+          status: "active",
+        },
       },
-      select: { id: true },
     });
+
+    const user = userRes.user;
 
     await logAudit({
       actorId: actor.id,
@@ -77,7 +72,9 @@ export async function createUserAction(
     });
 
     return ok("Pengguna berhasil dibuat", { userId: user.id });
-  } catch {
+  } catch (error) {
+    console.log("Error create user: ", error);
+
     return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

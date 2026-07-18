@@ -1,8 +1,10 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { getCurrentUser } from "@/features/auth/utils/session";
-import { canManageUser } from "@/lib/permissions";
+import { canManageUser, type Target } from "@/lib/permissions";
 import { logAudit } from "@/lib/audit";
 import {
   ok,
@@ -28,7 +30,7 @@ export async function deleteUserAction(
     return fail("Pengguna tidak ditemukan");
   }
 
-  if (!canManageUser(actor, target)) {
+  if (!canManageUser(actor, target as Target)) {
     return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 
@@ -36,6 +38,11 @@ export async function deleteUserAction(
     await prisma.user.update({
       where: { id: userId },
       data: { deletedAt: new Date() },
+    });
+
+    await auth.api.revokeUserSessions({
+      body: { userId },
+      headers: await headers(),
     });
 
     await logAudit({

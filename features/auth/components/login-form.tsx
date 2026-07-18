@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/field";
 import { toast } from "sonner";
 import { useState } from "react";
-import { loginAction } from "@/features/auth/actions/login.action";
 import { useRouter } from "next/navigation";
+import { signIn } from "@/lib/auth-client";
+import { loginAction } from "../actions/login.action";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -25,35 +26,61 @@ export default function LoginForm() {
   const form = useForm<LoginType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      identifier: "",
+      email: "",
       password: "",
     },
   });
 
   const onSubmit = async (data: LoginType) => {
-    const result = await loginAction(data);
+    const { error } = await signIn.email({
+      email: data.email,
+      password: data.password,
+    });
 
-    if (result.errors) {
-      if (result.errors._form) {
-        toast.error(result.errors._form[0]);
+    if (error) {
+      const errorMessage = error.message || "";
+      const lowerMsg = errorMessage.toLowerCase();
+
+      const translations: Record<string, string> = {
+        "invalid email or password": "Email atau password salah",
+        "invalid password": "Email atau password salah",
+        "invalid credentials": "Email atau password salah",
+        "user not found": "Pengguna tidak ditemukan",
+        "too many requests": "Terlalu banyak percobaan, coba lagi nanti",
+      };
+
+      const translatedMessage =
+        Object.entries(translations).find(([key]) =>
+          lowerMsg.includes(key),
+        )?.[1] ||
+        errorMessage ||
+        "Gagal Login";
+
+      toast.error(translatedMessage);
+
+      const errorField =
+        lowerMsg.includes("password") || lowerMsg.includes("credentials")
+          ? "password"
+          : lowerMsg.includes("user not found") || lowerMsg.includes("email")
+            ? "email"
+            : null;
+
+      if (errorField) {
+        form.setError(errorField, { message: translatedMessage });
       }
-
-      Object.keys(result.errors).forEach((key) => {
-        const field = key as keyof LoginType;
-        if (result.errors?.[field]) {
-          form.setError(field, {
-            type: "server",
-            message: result.errors?.[field]?.[0],
-          });
-        }
-      });
       return;
     }
 
-    if (result.success && result.redirectTo) {
-      toast.success("Login successfully!");
-      router.push(result.redirectTo);
+    const result = await loginAction();
+    if (!result.success) {
+      toast.error(result.message || "Login gagal");
+      return;
     }
+
+    toast.success("Login berhasil");
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    router.push(result.data?.redirectTo || "/dashboard");
   };
 
   return (
@@ -83,9 +110,7 @@ export default function LoginForm() {
 
         <div className="relative isolate flex flex-col items-center">
           <GalleryVerticalEnd className="h-9 w-9" />
-          <p className="mt-4 font-semibold text-xl tracking-tight">
-            Log in to Diinveed
-          </p>
+          <p className="mt-4 font-semibold text-xl tracking-tight">Diinveed</p>
 
           <form
             className="w-full space-y-4 mt-8"
@@ -94,18 +119,16 @@ export default function LoginForm() {
             <FieldGroup>
               <Controller
                 control={form.control}
-                name="identifier"
+                name="email"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="identifier">
-                      Username or Email
-                    </FieldLabel>
+                    <FieldLabel htmlFor="email">Email Address</FieldLabel>
                     <Input
                       {...field}
-                      id="identifier"
-                      type="identifier"
+                      id="email"
+                      type="email"
                       aria-invalid={fieldState.invalid}
-                      placeholder="Enter Your Username or Email"
+                      placeholder="Enter Your Email Address"
                       autoComplete="off"
                       disabled={form.formState.isSubmitting}
                     />
@@ -131,6 +154,7 @@ export default function LoginForm() {
                         placeholder="Enter your password"
                         autoComplete="off"
                         disabled={form.formState.isSubmitting}
+                        className="pr-10"
                       />
                       <Button
                         type="button"
@@ -139,7 +163,7 @@ export default function LoginForm() {
                         onClick={() =>
                           setShowPassword((prevState) => !prevState)
                         }
-                        className="text-muted-foreground focus-visible:ring-ring/50 absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent"
+                        className="text-muted-foreground focus-visible:ring-ring/50 absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent z-10"
                       >
                         {showPassword ? <EyeOff /> : <Eye />}
                         <span className="sr-only">
@@ -171,7 +195,7 @@ export default function LoginForm() {
             </Button>
           </form>
 
-          <RegisterRedirect />
+          {/* <RegisterRedirect /> */}
         </div>
       </div>
     </div>

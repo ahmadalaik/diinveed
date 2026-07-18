@@ -1,50 +1,40 @@
 "use server";
 
-import prisma from "@/lib/prisma";
-import { loginSchema, LoginType } from "@/features/auth/schemas/login.schema";
-import { verifyPassword } from "@/features/auth/utils/password";
-import { createSession } from "@/features/auth/utils/session";
 import { homeRouteForRole } from "@/types/role.type";
+import {
+  ACTION_MESSAGES,
+  ActionResponse,
+  fail,
+  ok,
+} from "@/lib/action-response";
+import { getCurrentUser } from "../utils/session";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { logAudit } from "@/lib/audit";
 
-type FieldErrors = Partial<Record<keyof LoginType | "_form", string[]>>;
-
-export type LoginActionResult =
-  | { errors: FieldErrors; success?: undefined; redirectTo?: undefined }
-  | { errors?: undefined; success: true; redirectTo: string };
-
-export async function loginAction(
-  input: LoginType,
-): Promise<LoginActionResult> {
-  const parsed = loginSchema.safeParse(input);
-  if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors as FieldErrors };
-  }
-
-  const { identifier, password } = parsed.data;
-
+export async function loginAction(): Promise<
+  ActionResponse<{ redirectTo: string }>
+> {
   try {
-    const user = await prisma.user.findFirst({
-      where: {
-        deletedAt: null,
-        OR: [{ email: identifier }, { username: identifier }],
-      },
-      select: { id: true, password: true, role: true, status: true },
-    });
-
-    if (!user || !(await verifyPassword(password, user.password))) {
-      return { errors: { _form: ["Invalid username/email or password"] } };
-    }
+    const user = await getCurrentUser();
+    if (!user) return fail("Pengguna tidak ditemukan");
 
     if (user.status !== "active") {
-      return { errors: { _form: ["This account is not active"] } };
+      const headersList = await headers();
+      await auth.api.signOut({ headers: headersList });
+      return fail("Akun tidak aktif, Silahkan kontak admin");
     }
 
-    await createSession(user.id);
+    await logAudit({
+      actorId: user.id,
+      actorLabel: user.name,
+      action: "auth.login",
+    });
 
-    return { success: true, redirectTo: homeRouteForRole(user.role) };
+    return ok("Login berhasil", { redirectTo: homeRouteForRole(user.role) });
   } catch (error) {
-    console.log("Login Error: ", error);
+    console.log("Login action error: ", error);
 
-    return { errors: { _form: ["Login failed, please try again"] } };
+    return fail(ACTION_MESSAGES.SERVER_ERROR);
   }
 }

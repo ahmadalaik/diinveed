@@ -3,7 +3,7 @@
 import z from "zod";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/features/auth/utils/session";
-import { canManageUser, getAllowedRoles } from "@/lib/permissions";
+import { canManageUser, getAllowedRoles, type Target } from "@/lib/permissions";
 import { logAudit } from "@/lib/audit";
 import {
   ok,
@@ -34,7 +34,7 @@ export async function updateRoleAction(
     return fail("Pengguna tidak ditemukan");
   }
 
-  if (!canManageUser(actor, target)) {
+  if (!canManageUser(actor, target as Target)) {
     return fail(ACTION_MESSAGES.UNAUTHORIZED);
   }
 

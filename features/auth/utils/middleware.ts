@@ -21,6 +21,17 @@ export async function adminIsRequired() {
   return user;
 }
 
+export async function superAdminIsRequired() {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/login");
+  }
+  if (user.role !== "super_admin") {
+    redirect("/admin/dashboard");
+  }
+  return user;
+}
+
 export async function authIsNotRequired() {
   const user = await getCurrentUser();
   if (user) {

@@ -30,7 +30,6 @@ export function EditUserDialog({ user, actorRole }: EditUserDialogProps) {
 
   const defaultValues = {
     name: user.name,
-    username: user.username,
     email: user.email,
     phone: user.phone ?? undefined,
     role: user.role,

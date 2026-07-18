@@ -79,8 +79,7 @@ export function UserTable({
             return (
               <TableRow key={user.id} className="group">
                 <TableCell className="px-4 py-3 font-medium">{user.name}</TableCell>
-                <TableCell className="px-4 py-3">{user.username}</TableCell>
-                <TableCell className="px-4 py-3">
+                                <TableCell className="px-4 py-3">
                   <RoleBadge role={user.role} />
                 </TableCell>
                 <TableCell className="px-4 py-3">

@@ -21,8 +21,7 @@ export function UserDetail({
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-semibold">{user.name}</h1>
-          <p className="text-sm text-muted-foreground">@{user.username}</p>
-        </div>
+                  </div>
         {canManage && (
           <div className="flex gap-2">
             <EditUserDialog user={user} actorRole={currentUser.role} />

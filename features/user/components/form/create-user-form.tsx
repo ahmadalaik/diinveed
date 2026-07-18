@@ -39,7 +39,6 @@ export function CreateUserForm({ actorRole }: CreateUserFormProps) {
     resolver: zodResolver(createUserSchema),
     defaultValues: {
       name: "",
-      username: "",
       email: "",
       password: "",
       role:
@@ -75,22 +74,7 @@ export function CreateUserForm({ actorRole }: CreateUserFormProps) {
             </Field>
           )}
         />
-        <Controller
-          control={form.control}
-          name="username"
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="username">Username</FieldLabel>
-              <Input
-                {...field}
-                id="username"
-                placeholder="johndoe"
-                disabled={form.formState.isSubmitting}
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        
         <Controller
           control={form.control}
           name="email"
