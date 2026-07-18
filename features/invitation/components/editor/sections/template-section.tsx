@@ -1,14 +1,17 @@
 "use client";
 
 import { useInvitationStore } from "@/features/invitation/store/invitation-store";
+import { TemplateSelectorSection } from "./template-selector-section";
 
 export function TemplateSection() {
-  const templateSlug = useInvitationStore((s) => s.templateSlug);
+  const errors = useInvitationStore((state) => state.publishErrors?.templateSlug);
 
   return (
-    <div className="rounded-lg border border-border p-4 text-sm text-muted-foreground">
-      Template aktif:{" "}
-      <span className="font-medium text-foreground capitalize">{templateSlug}</span>
+    <div
+      data-publish-field="templateSlug"
+      data-invalid={Boolean(errors?.length) || undefined}
+    >
+      <TemplateSelectorSection embedded />
     </div>
   );
 }

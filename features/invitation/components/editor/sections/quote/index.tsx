@@ -3,7 +3,7 @@ import { QuoteField, QuoteReferenceField } from "./quote-field";
 
 export function QuoteSection() {
   return (
-    <FieldGroup className="gap-3">
+    <FieldGroup className="py-4">
       <QuoteField />
       <QuoteReferenceField />
     </FieldGroup>

@@ -2,9 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
-import { useInvitationStore } from "@/features/invitation/store/invitation-store";
+import {
+  useInvitationStore,
+  useInvitationStoreApi,
+} from "@/features/invitation/store/invitation-store";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
-import { EventDateField, EventDescField, EventLocationField, EventTimeField, EventTitleField } from "./event-field";
+import {
+  EventDateField,
+  EventDescField,
+  EventLocationField,
+  EventLocationMapsUrlField,
+  EventTimeField,
+  EventTitleField,
+} from "./event-field";
 
 interface EventCardProps {
   id: string;
@@ -21,17 +31,18 @@ export function EventCard({
   onMoveUp,
   onMoveDown,
 }: EventCardProps) {
+  const store = useInvitationStoreApi();
   const set = useInvitationStore((s) => s.set);
   const remove = () => {
-    const events = useInvitationStore.getState().events;
+    const events = store.getState().events;
     set({ events: events.filter((e) => e.id !== id) });
   };
 
   return (
-    <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
+    <div className="space-y-3 border rounded-lg p-3 bg-card overflow-hidden">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground uppercase">
-          Sesi {index + 1}
+          Acara {index + 1}
         </span>
         <div className="flex items-center gap-1">
           <div>
@@ -67,12 +78,13 @@ export function EventCard({
           </Button>
         </div>
       </div>
-      <FieldGroup className="gap-3">
+      <FieldGroup className="gap-4">
         <EventTitleField id={id} />
         <EventDateField id={id} />
         <EventTimeField id={id} />
         <EventDescField id={id} />
         <EventLocationField id={id} />
+        <EventLocationMapsUrlField id={id} />
       </FieldGroup>
     </div>
   );

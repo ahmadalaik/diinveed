@@ -1,4 +1,7 @@
-import { useInvitationStore } from "../../store/invitation-store";
+import {
+  useInvitationStore,
+  useInvitationStoreApi,
+} from "../../store/invitation-store";
 import {
   TemplateTokenOverrides,
   TemplateColorTokens,
@@ -8,6 +11,7 @@ import {
 } from "@/features/template/tokens";
 
 export function useTokenUpdate() {
+  const store = useInvitationStoreApi();
   const overrides = useInvitationStore((s) => s.tokenOverrides);
   const templateSlug = useInvitationStore((s) => s.templateSlug);
   const set = useInvitationStore((s) => s.set);
@@ -15,21 +19,58 @@ export function useTokenUpdate() {
   const baseTokens = getTemplateTokens(templateSlug);
   const resolvedTokens = mergeTemplateTokenOverrides(baseTokens, overrides);
 
-  const updateColor = <K extends keyof TemplateColorTokens>(
+  const updateColor = <K extends "background" | "text">(
     group: K,
     key: keyof TemplateColorTokens[K],
-    value: string,
+    value: string | undefined,
   ) => {
-    const currentColors = overrides?.colors || {};
+    const currentOverrides = store.getState().tokenOverrides;
+    const currentColors = currentOverrides?.colors || {};
     const currentGroup = currentColors[group] || {};
+
+    const newGroup = { ...currentGroup } as Record<string, string>;
+    if (value === undefined) {
+      delete newGroup[key as string];
+    } else {
+      newGroup[key as string] = value;
+    }
+
     set({
       tokenOverrides: {
-        ...overrides,
+        ...currentOverrides,
         colors: {
           ...currentColors,
-          [group]: {
-            ...currentGroup,
-            [key]: value,
+          [group]: newGroup,
+        },
+      },
+    });
+  };
+
+  const updateButtonColor = (
+    variant: "primary" | "secondary",
+    type: "text" | "background",
+    value: string | undefined,
+  ) => {
+    const currentOverrides = store.getState().tokenOverrides;
+    const currentColors = currentOverrides?.colors || {};
+    const currentButton = currentColors.button || {};
+    const currentVariant = currentButton[variant] || {};
+
+    const newVariant = { ...currentVariant } as Record<string, string>;
+    if (value === undefined) {
+      delete newVariant[type];
+    } else {
+      newVariant[type] = value;
+    }
+
+    set({
+      tokenOverrides: {
+        ...currentOverrides,
+        colors: {
+          ...currentColors,
+          button: {
+            ...currentButton,
+            [variant]: newVariant,
           },
         },
       },
@@ -37,12 +78,13 @@ export function useTokenUpdate() {
   };
 
   const resetColorGroup = (group: keyof TemplateColorTokens) => {
-    const currentColors = overrides?.colors || {};
+    const currentOverrides = store.getState().tokenOverrides;
+    const currentColors = currentOverrides?.colors || {};
     const { [group]: _removed, ...rest } = currentColors;
 
     set({
       tokenOverrides: {
-        ...overrides,
+        ...currentOverrides,
         colors: Object.keys(rest).length > 0 ? rest : undefined,
       },
     });
@@ -53,12 +95,13 @@ export function useTokenUpdate() {
     key: keyof FontSpec,
     value: string | number,
   ) => {
-    const currentTypography = overrides?.typography || {};
+    const currentOverrides = store.getState().tokenOverrides;
+    const currentTypography = currentOverrides?.typography || {};
     const currentGroup = currentTypography[group] || {};
 
     set({
       tokenOverrides: {
-        ...overrides,
+        ...currentOverrides,
         typography: {
           ...currentTypography,
           [group]: {
@@ -73,12 +116,13 @@ export function useTokenUpdate() {
   const resetTypographyGroup = (
     group: keyof NonNullable<TemplateTokenOverrides["typography"]>,
   ) => {
-    const currentTypography = overrides?.typography || {};
+    const currentOverrides = store.getState().tokenOverrides;
+    const currentTypography = currentOverrides?.typography || {};
     const { [group]: _removed, ...rest } = currentTypography;
 
     set({
       tokenOverrides: {
-        ...overrides,
+        ...currentOverrides,
         typography: Object.keys(rest).length > 0 ? rest : undefined,
       },
     });
@@ -88,6 +132,7 @@ export function useTokenUpdate() {
     resolvedTokens,
     overrides,
     updateColor,
+    updateButtonColor,
     resetColorGroup,
     updateTypography,
     resetTypographyGroup,

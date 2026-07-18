@@ -15,13 +15,14 @@ export function QuoteField() {
   const set = useInvitationStore((s) => s.set);
 
   return (
-    <EditorField>
+    <EditorField publishField="quote" invalid={Boolean(errors?.length)}>
       <EditorLabel htmlFor="quote">Kutipan</EditorLabel>
       <EditorTextarea
         id="quote"
         autoComplete="off"
         placeholder="Tidak ada solusi yang lebih baik bagi dua insan yang saling mencintai dibanding pernikahan."
         value={quote}
+        aria-invalid={Boolean(errors?.length)}
         onChange={(e) => set({ quote: e.target.value })}
       />
       <EditorError errors={errors} />
@@ -35,13 +36,17 @@ export function QuoteReferenceField() {
   const set = useInvitationStore((s) => s.set);
 
   return (
-    <EditorField>
+    <EditorField
+      publishField="quoteReference"
+      invalid={Boolean(errors?.length)}
+    >
       <EditorLabel htmlFor="quoteReference">Referensi</EditorLabel>
       <EditorInput
         id="quoteReference"
         autoComplete="off"
         placeholder="HR. Ibu Majah"
         value={quoteReference}
+        aria-invalid={Boolean(errors?.length)}
         onChange={(e) => set({ quoteReference: e.target.value })}
       />
       <EditorError errors={errors} />

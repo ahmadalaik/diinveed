@@ -12,14 +12,14 @@ export type MusicPreset = {
  */
 export const MUSIC_PRESETS: MusicPreset[] = [
   {
-    id: "soft-romance",
-    title: "Soft Romance",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    id: "wildfire",
+    title: "Wildfire - Jessie Villa",
+    url: "https://pub-3f4024c2e27241cd8bb9531a1d174687.r2.dev/asset/music/Wildfire%20-%20Jessie%20Villa.mp3",
   },
   {
-    id: "gentle-piano",
-    title: "Gentle Piano",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    id: "i-love-what-you-do-to-me",
+    title: "I Love What You Do To Me - The Soundlings",
+    url: "https://pub-3f4024c2e27241cd8bb9531a1d174687.r2.dev/asset/music/I%20Love%20What%20You%20Do%20To%20Me%20-%20The%20Soundlings.mp3",
   },
   {
     id: "warm-strings",

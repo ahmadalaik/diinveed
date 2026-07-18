@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { shallow } from "zustand/shallow";
-import { useInvitationStore } from "../store/invitation-store";
+import {
+  useInvitationStoreApi,
+  type InvitationStore,
+  type InvitationStoreApi,
+} from "../store/invitation-store";
 import { InvitationState } from "../types/invitation.type";
 
-function getPreviewSnapshot(): InvitationState {
-  const s = useInvitationStore.getState();
+function getPreviewSnapshot(store: InvitationStoreApi): InvitationState {
+  const s = store.getState();
   return {
     id: s.id,
     userId: s.userId,
@@ -19,6 +23,7 @@ function getPreviewSnapshot(): InvitationState {
     coverMobileImageKey: s.coverMobileImageKey,
     music: s.music,
     musicKey: s.musicKey,
+    musicFileName: s.musicFileName,
     quote: s.quote,
     quoteReference: s.quoteReference,
     isBrideFirst: s.isBrideFirst,
@@ -32,6 +37,10 @@ function getPreviewSnapshot(): InvitationState {
     groomDescription: s.groomDescription,
     groomImage: s.groomImage,
     groomImageKey: s.groomImageKey,
+    coupleSceneImage: s.coupleSceneImage,
+    coupleSceneImageKey: s.coupleSceneImageKey,
+    livestreamUrl: s.livestreamUrl,
+    dressCode: s.dressCode,
     events: s.events,
     stories: s.stories,
     gallery: s.gallery,
@@ -46,9 +55,7 @@ function getPreviewSnapshot(): InvitationState {
   };
 }
 
-function selectPreviewFields(
-  s: ReturnType<typeof useInvitationStore.getState>,
-) {
+function selectPreviewFields(s: InvitationStore) {
   return {
     title: s.title,
     coverDesktopImage: s.coverDesktopImage,
@@ -67,6 +74,10 @@ function selectPreviewFields(
     groomNickname: s.groomNickname,
     groomDescription: s.groomDescription,
     groomImage: s.groomImage,
+    coupleSceneImage: s.coupleSceneImage,
+    coupleSceneImageKey: s.coupleSceneImageKey,
+    livestreamUrl: s.livestreamUrl,
+    dressCode: s.dressCode,
     events: s.events,
     stories: s.stories,
     gallery: s.gallery,
@@ -80,17 +91,20 @@ function selectPreviewFields(
 }
 
 export function usePreviewState(debounceMs = 400): InvitationState {
-  const [snapshot, setSnapshot] = useState<InvitationState>(getPreviewSnapshot);
+  const store = useInvitationStoreApi();
+  const [snapshot, setSnapshot] = useState<InvitationState>(() =>
+    getPreviewSnapshot(store),
+  );
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
-    const unsub = useInvitationStore.subscribe(
+    const unsub = store.subscribe(
       selectPreviewFields,
       () => {
         clearTimeout(timer);
         timer = setTimeout(() => {
-          setSnapshot(getPreviewSnapshot());
+          setSnapshot(getPreviewSnapshot(store));
         }, debounceMs);
       },
       { equalityFn: shallow },
@@ -100,7 +114,7 @@ export function usePreviewState(debounceMs = 400): InvitationState {
       unsub();
       clearTimeout(timer);
     };
-  }, [debounceMs]);
+  }, [debounceMs, store]);
 
   return snapshot;
 }

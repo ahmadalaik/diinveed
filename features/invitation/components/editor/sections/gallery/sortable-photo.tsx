@@ -11,7 +11,7 @@ import Image from "next/image";
 interface Props {
   id: string;
   url: string;
-  onRemove: () => void;
+  onRemove: () => Promise<void> | void;
 }
 
 export function SortablePhoto({ id, url, onRemove }: Props) {
@@ -49,13 +49,17 @@ export function SortablePhoto({ id, url, onRemove }: Props) {
       </AspectRatio>
       <Button
         type="button"
+        aria-label="Hapus foto galeri"
         size="icon"
         variant="secondary"
-        onClick={onRemove}
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
         onPointerDown={(e) => e.stopPropagation()}
         className="absolute right-1 top-1 size-5 rounded-full bg-background/70 text-muted-foreground shadow-sm backdrop-blur-sm hover:bg-background hover:text-destructive hover:cursor-pointer"
       >
-        <X className="size-3" />
+        <X className="size-3.5" />
       </Button>
     </div>
   );

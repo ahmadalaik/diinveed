@@ -27,25 +27,48 @@ import {
 } from "@/components/ui/alert-dialog";
 import { moderateWish } from "@/features/invitation/actions/moderate-wish";
 import { deleteWish } from "@/features/invitation/actions/delete-wish";
-import type { WishRow, WishModerationStatus } from "@/features/invitation/types/invitation.type";
+import type {
+  WishRow,
+  WishModerationStatus,
+} from "@/features/invitation/types/invitation.type";
 import { TablePagination } from "@/components/table-pagination";
 import { TableEmptyState } from "@/components/table-empty-state";
 import type { PageSearchParams } from "@/lib/pagination";
 
-type Counts = { all: number; pending: number; approved: number; hidden: number };
+type Counts = {
+  all: number;
+  pending: number;
+  approved: number;
+  hidden: number;
+};
 
-const TABS: { label: string; status?: WishModerationStatus; countKey: keyof Counts }[] = [
+const TABS: {
+  label: string;
+  status?: WishModerationStatus;
+  countKey: keyof Counts;
+}[] = [
   { label: "Semua", countKey: "all" },
   { label: "Menunggu", status: "PENDING", countKey: "pending" },
   { label: "Tampil", status: "APPROVED", countKey: "approved" },
   { label: "Disembunyikan", status: "HIDDEN", countKey: "hidden" },
 ];
 
-const STATUS_BADGE: Record<WishModerationStatus, { label: string; variant: "default" | "secondary" | "destructive" }> = {
+const STATUS_BADGE: Record<
+  WishModerationStatus,
+  { label: string; variant: "default" | "secondary" | "destructive" }
+> = {
   PENDING: { label: "Menunggu", variant: "secondary" },
   APPROVED: { label: "Tampil", variant: "default" },
   HIDDEN: { label: "Disembunyikan", variant: "destructive" },
 };
+
+interface Props {
+  rows: WishRow[];
+  counts: Counts;
+  activeStatus?: WishModerationStatus;
+  page: number;
+  totalPages: number;
+}
 
 export function WishesList({
   rows,
@@ -53,13 +76,7 @@ export function WishesList({
   activeStatus,
   page,
   totalPages,
-}: {
-  rows: WishRow[];
-  counts: Counts;
-  activeStatus?: WishModerationStatus;
-  page: number;
-  totalPages: number;
-}) {
+}: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
@@ -138,7 +155,9 @@ export function WishesList({
                   <TableCell>
                     <p className="text-sm font-medium">{r.name}</p>
                     {r.category && (
-                      <p className="text-xs text-muted-foreground">{r.category}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {r.category}
+                      </p>
                     )}
                   </TableCell>
                   <TableCell className="max-w-xs">
@@ -207,7 +226,10 @@ export function WishesList({
         />
       )}
 
-      <AlertDialog open={pendingDelete !== null} onOpenChange={(o) => !o && setPendingDelete(null)}>
+      <AlertDialog
+        open={pendingDelete !== null}
+        onOpenChange={(o) => !o && setPendingDelete(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Hapus ucapan ini?</AlertDialogTitle>

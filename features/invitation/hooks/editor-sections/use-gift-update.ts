@@ -1,11 +1,15 @@
-import { useInvitationStore } from "../../store/invitation-store";
+import {
+  useInvitationStore,
+  useInvitationStoreApi,
+} from "../../store/invitation-store";
 import { GiftTransfer, GiftPackage } from "../../types/invitation.type";
 
 export function useGiftTransferUpdate(id: string) {
+  const store = useInvitationStoreApi();
   const set = useInvitationStore((s) => s.set);
 
   return (patch: Partial<GiftTransfer>) => {
-    const giftsObj = useInvitationStore.getState().gifts;
+    const giftsObj = store.getState().gifts;
     set({
       gifts: {
         ...giftsObj,
@@ -18,10 +22,11 @@ export function useGiftTransferUpdate(id: string) {
 }
 
 export function useGiftPackageUpdate(id: string) {
+  const store = useInvitationStoreApi();
   const set = useInvitationStore((s) => s.set);
 
   return (patch: Partial<GiftPackage>) => {
-    const giftsObj = useInvitationStore.getState().gifts;
+    const giftsObj = store.getState().gifts;
     set({
       gifts: {
         ...giftsObj,

@@ -30,8 +30,12 @@ export function GallerySection() {
   const set = useInvitationStore((s) => s.set);
   const invitationId = useInvitationStore((s) => s.id);
   const fileRef = useRef<HTMLInputElement>(null);
-  const { upload, isUploading, uploadProgress } = useR2Upload();
-  const sensors = useSensors(useSensor(PointerSensor));
+  const { upload, remove, isUploading, uploadProgress } = useR2Upload();
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+  );
 
   const MAX_GALLERY_IMAGE = 10;
   const MAX_SIZE_MB = 12;
@@ -71,19 +75,35 @@ export function GallerySection() {
     });
   };
 
+  const handleRemove = async (id: string, key: string) => {
+    await remove(key);
+    set({
+      gallery: {
+        ...gallery,
+        items: gallery.items.filter((g) => g.id !== id),
+      },
+    });
+  };
+
   if (!isEnabled) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3 py-4">
         <GalleryEnabledField />
         <div className="flex flex-col justify-center items-center w-full h-30">
-          <span>Section gallery tidak ditampilkan di undangan</span>
+          <span className="text-xs">
+            Section gallery tidak ditampilkan di undangan
+          </span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div
+      data-publish-field="gallery"
+      data-invalid={Boolean(errors?.length) || undefined}
+      className="py-4"
+    >
       <EditorError errors={errors} />
       <DndContext
         sensors={sensors}
@@ -94,20 +114,13 @@ export function GallerySection() {
           items={gallery.items.map((g) => g.id)}
           strategy={rectSortingStrategy}
         >
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2.5">
             {gallery.items.map((item) => (
               <SortablePhoto
                 key={item.id}
                 id={item.id}
                 url={item.url}
-                onRemove={() =>
-                  set({
-                    gallery: {
-                      ...gallery,
-                      items: gallery.items.filter((g) => g.id !== item.id),
-                    },
-                  })
-                }
+                onRemove={() => handleRemove(item.id, item.key)}
               />
             ))}
             <Button
@@ -117,6 +130,7 @@ export function GallerySection() {
               disabled={
                 gallery.items.length >= MAX_GALLERY_IMAGE || isUploading
               }
+              aria-invalid={Boolean(errors?.length)}
               className="aspect-3/4 h-auto w-full border-2 border-dashed text-muted-foreground hover:cursor-pointer"
             >
               {isUploading ? (

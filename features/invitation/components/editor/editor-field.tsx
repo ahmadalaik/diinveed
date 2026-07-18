@@ -19,11 +19,25 @@ import { Textarea } from "@/components/ui/textarea";
 const editorControlClass =
   "h-auto rounded-md border-transparent bg-muted/60 px-2.5 py-2 text-[13px] shadow-none transition-colors hover:bg-muted focus-visible:bg-background";
 
+type EditorFieldProps = React.ComponentProps<typeof Field> & {
+  publishField?: string;
+  invalid?: boolean;
+};
+
 function EditorField({
   className,
+  publishField,
+  invalid,
   ...props
-}: React.ComponentProps<typeof Field>) {
-  return <Field className={cn("gap-1.5", className)} {...props} />;
+}: EditorFieldProps) {
+  return (
+    <Field
+      className={cn("gap-1.5", className)}
+      data-publish-field={publishField}
+      data-invalid={invalid || undefined}
+      {...props}
+    />
+  );
 }
 
 function EditorLabel({
@@ -41,17 +55,35 @@ function EditorLabel({
   );
 }
 
+type EditorControlValidationProps = {
+  publishField?: string;
+  invalid?: boolean;
+};
+
 function EditorInput({
   className,
+  publishField,
+  invalid,
+  "aria-invalid": ariaInvalid,
   ...props
-}: React.ComponentProps<typeof Input>) {
-  return <Input className={cn(editorControlClass, className)} {...props} />;
+}: React.ComponentProps<typeof Input> & EditorControlValidationProps) {
+  return (
+    <Input
+      className={cn(editorControlClass, className)}
+      data-publish-field={publishField}
+      aria-invalid={ariaInvalid ?? invalid}
+      {...props}
+    />
+  );
 }
 
 function EditorTextarea({
   className,
+  publishField,
+  invalid,
+  "aria-invalid": ariaInvalid,
   ...props
-}: React.ComponentProps<typeof Textarea>) {
+}: React.ComponentProps<typeof Textarea> & EditorControlValidationProps) {
   return (
     <Textarea
       className={cn(
@@ -59,6 +91,8 @@ function EditorTextarea({
         "min-h-15 resize-y leading-relaxed",
         className,
       )}
+      data-publish-field={publishField}
+      aria-invalid={ariaInvalid ?? invalid}
       {...props}
     />
   );

@@ -1,6 +1,9 @@
 "use client";
 
-import { useInvitationStore } from "@/features/invitation/store/invitation-store";
+import {
+  useInvitationStore,
+  useInvitationStoreApi,
+} from "@/features/invitation/store/invitation-store";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -10,6 +13,7 @@ import { StoryCard } from "./story-card";
 import { StoryEnabledField } from "./story-field";
 
 export function StoriesSection() {
+  const store = useInvitationStoreApi();
   const ids = useInvitationStore(
     useShallow((s) => s.stories.items.map((e) => e.id)),
   );
@@ -20,7 +24,7 @@ export function StoriesSection() {
   const MAX_CHAPTER = 5;
 
   const add = () => {
-    const stories = useInvitationStore.getState().stories;
+    const stories = store.getState().stories;
     if (stories.items.length >= MAX_CHAPTER) return;
 
     set({
@@ -35,7 +39,7 @@ export function StoriesSection() {
   };
 
   const move = (index: number, direction: -1 | 1) => {
-    const stories = useInvitationStore.getState().stories;
+    const stories = store.getState().stories;
     const target = index + direction;
     if (target < 0 || target >= stories.items.length) return;
     set({
@@ -45,17 +49,21 @@ export function StoriesSection() {
 
   if (!isEnabled) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3 py-4">
         <StoryEnabledField />
-        <div className="flex flex-col justify-center items-center w-full h-30">
-          <span>Section story tidak ditampilkan di undangan</span>
+        <div className="flex flex-col justify-center items-center w-full h-20 rounded-md bg-muted text-muted-foreground text-xs">
+          <span>Section hadiah tidak ditampilkan di undangan</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div
+      data-publish-field="stories"
+      data-invalid={Boolean(errors?.length) || undefined}
+      className="space-y-3 py-4"
+    >
       <EditorError errors={errors} />
       <StoryEnabledField />
       {ids.map((id, index) => (

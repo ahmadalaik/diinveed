@@ -34,6 +34,7 @@ const mockUser = {
 const validInput = {
   music: "",
   musicKey: "",
+  musicFileName: null,
   quote: "",
   quoteReference: "",
   title: "Amelia & Theo",
@@ -42,7 +43,7 @@ const validInput = {
   coverMobileImage: null,
   coverMobileImageKey: null,
   tokenOverrides: null,
-  templateSlug: "kelana",
+  templateSlug: "kalandra",
   backgroundType: "solid",
   rsvpDeadline: "2026-08-01",
   rsvpOptions: {
@@ -68,6 +69,14 @@ const validInput = {
   groomDescription: null,
   groomImage: null,
   groomImageKey: null,
+  coupleSceneImage: "https://cdn.test/couple.webp",
+  coupleSceneImageKey: "users/u/invitations/i/couple/couple.webp",
+  livestreamUrl: "https://youtube.com/live/example",
+  dressCode: {
+    enabled: true,
+    description: "Earth tones",
+    colors: ["#334433", "#D4AF72"],
+  },
 };
 
 beforeEach(() => {
@@ -91,7 +100,20 @@ describe("saveInvitation", () => {
     expect(prismaMock.invitationDraft.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { invitationId: "inv-1" },
-        data: expect.objectContaining({ hasUnpublishedChanges: true }),
+        data: expect.objectContaining({
+          hasUnpublishedChanges: true,
+          data: expect.objectContaining({
+            coupleSceneImage: "https://cdn.test/couple.webp",
+            coupleSceneImageKey:
+              "users/u/invitations/i/couple/couple.webp",
+            livestreamUrl: "https://youtube.com/live/example",
+            dressCode: {
+              enabled: true,
+              description: "Earth tones",
+              colors: ["#334433", "#D4AF72"],
+            },
+          }),
+        }),
       }),
     );
     expect(logAudit).toHaveBeenCalledWith(

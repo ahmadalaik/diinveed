@@ -1,4 +1,5 @@
 import z from "zod";
+import { DEFAULT_DRESS_CODE } from "../types/invitation.type";
 
 const rsvpOptionsSchema = z.object({
   accept: z.boolean(),
@@ -46,6 +47,43 @@ const galleryItemSchema = z.object({
   key: z.string(),
 });
 
+const hexColorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/);
+
+const dressCodeSchema = z
+  .object({
+    enabled: z.boolean(),
+    description: z.string(),
+    colors: z.array(hexColorSchema).max(5),
+  })
+  .superRefine((value, ctx) => {
+    if (!value.enabled) return;
+
+    if (value.description.trim().length === 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["description"],
+        message: "Deskripsi dress code wajib diisi",
+      });
+    }
+
+    if (value.colors.length < 2) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["colors"],
+        message: "Pilih minimal dua warna",
+      });
+    }
+  });
+
+const optionalHttpsUrlSchema = z
+  .string()
+  .url()
+  .refine(
+    (value) => value.startsWith("https://"),
+    "URL harus menggunakan HTTPS",
+  )
+  .nullable();
+
 const colorSpecOverrideSchema = z.object({
   primary: z.string().optional(),
   secondary: z.string().optional(),
@@ -68,12 +106,17 @@ const tokenOverridesSchema = z
     colors: z
       .object({
         background: colorSpecOverrideSchema.optional(),
-        secondary: colorSpecOverrideSchema.optional(),
-        tertiary: colorSpecOverrideSchema
-          .omit({
-            tertiary: true,
-          })
-          .optional(),
+        text: colorSpecOverrideSchema.optional(),
+        button: z.object({
+          primary: z.object({
+            text: z.string().optional(),
+            background: z.string().optional(),
+          }).optional(),
+          secondary: z.object({
+            text: z.string().optional(),
+            background: z.string().optional(),
+          }).optional(),
+        }).optional(),
       })
       .optional(),
     typography: z
@@ -94,6 +137,7 @@ export const saveInvitationSchema = z.object({
   coverMobileImageKey: z.string().nullable(),
   music: z.string(),
   musicKey: z.string(),
+  musicFileName: z.string().nullable(),
   slug: z
     .string()
     .regex(/^[a-z0-9-]*$/, "Hanya huruf kecil, angka, dan tanda hubung")
@@ -112,6 +156,10 @@ export const saveInvitationSchema = z.object({
   groomDescription: z.string().nullable(),
   groomImage: z.string().nullable(),
   groomImageKey: z.string().nullable(),
+  coupleSceneImage: z.string().nullable().default(null),
+  coupleSceneImageKey: z.string().nullable().default(null),
+  livestreamUrl: optionalHttpsUrlSchema.default(null),
+  dressCode: dressCodeSchema.default(DEFAULT_DRESS_CODE),
   stories: z.object({ enabled: z.boolean(), items: z.array(storyItemSchema) }),
   gallery: z.object({
     enabled: z.boolean(),
@@ -124,7 +172,7 @@ export const saveInvitationSchema = z.object({
   }),
   rsvpDeadline: z.string(),
   rsvpOptions: rsvpOptionsSchema,
-  templateSlug: z.string().min(1),
+  templateSlug: z.string(),
   tokenOverrides: tokenOverridesSchema,
   backgroundType: z.string(),
 });
@@ -226,13 +274,14 @@ export type PublishReadyType = z.infer<typeof publishReadySchema>;
 
 /** Default editable content for a brand-new draft (matches saveInvitationSchema). */
 export const DEFAULT_INVITATION_CONTENT: SaveInvitationType = {
-  title: "",
+  title: "Undangan Tanpa Judul",
   coverDesktopImage: null,
   coverDesktopImageKey: null,
   coverMobileImage: null,
   coverMobileImageKey: null,
   music: "",
   musicKey: "",
+  musicFileName: null,
   quote: "",
   quoteReference: "",
   isBrideFirst: true,
@@ -246,6 +295,10 @@ export const DEFAULT_INVITATION_CONTENT: SaveInvitationType = {
   groomDescription: null,
   groomImage: null,
   groomImageKey: null,
+  coupleSceneImage: null,
+  coupleSceneImageKey: null,
+  livestreamUrl: null,
+  dressCode: DEFAULT_DRESS_CODE,
   slug: "",
   events: [],
   stories: { enabled: true, items: [] },
@@ -253,7 +306,7 @@ export const DEFAULT_INVITATION_CONTENT: SaveInvitationType = {
   gifts: { enabled: true, transfers: [], packages: [] },
   rsvpDeadline: "",
   rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
-  templateSlug: "kelana",
+  templateSlug: "",
   tokenOverrides: null,
   backgroundType: "solid",
 };

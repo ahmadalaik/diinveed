@@ -15,13 +15,14 @@ export function BrideNameField() {
   const set = useInvitationStore((s) => s.set);
 
   return (
-    <EditorField>
-      <EditorLabel htmlFor="brideName">Nama Mempelai Wanita</EditorLabel>
+    <EditorField publishField="brideName" invalid={Boolean(errors?.length)}>
+      <EditorLabel htmlFor="brideName">Nama mempelai wanita</EditorLabel>
       <EditorInput
         id="brideName"
         autoComplete="off"
         placeholder="Citra Maharani"
         value={brideName}
+        aria-invalid={Boolean(errors?.length)}
         onChange={(e) => set({ brideName: e.target.value })}
       />
       <EditorError errors={errors} />
@@ -35,15 +36,16 @@ export function BrideNicknameField() {
   const set = useInvitationStore((s) => s.set);
 
   return (
-    <EditorField>
+    <EditorField publishField="brideNickname" invalid={Boolean(errors?.length)}>
       <EditorLabel htmlFor="brideNickname">
-        Nama Panggilan Mempelai Wanita
+        Nama panggilan mempelai wanita
       </EditorLabel>
       <EditorInput
         id="brideNickname"
         autoComplete="off"
         placeholder="Citra"
         value={brideNickname}
+        aria-invalid={Boolean(errors?.length)}
         onChange={(e) => set({ brideNickname: e.target.value })}
       />
       <EditorError errors={errors} />
@@ -57,12 +59,16 @@ export function BrideDescField() {
   const set = useInvitationStore((s) => s.set);
 
   return (
-    <EditorField>
+    <EditorField
+      publishField="brideDescription"
+      invalid={Boolean(errors?.length)}
+    >
       <EditorLabel htmlFor="brideDesc">Deskripsi</EditorLabel>
       <EditorTextarea
         id="brideDesc"
         placeholder="Putri kedua dari Bapak Widodo dan Ibu Endang"
         value={brideDesc ?? ""}
+        aria-invalid={Boolean(errors?.length)}
         onChange={(e) => set({ brideDescription: e.target.value })}
       />
       <EditorError errors={errors} />

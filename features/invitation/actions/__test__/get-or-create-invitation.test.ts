@@ -67,7 +67,7 @@ const baseInvitation = {
   groomImageKey: "live/groom",
   title: "Amelia & Theo",
   tokenOverrides: null,
-  templateSlug: "kelana",
+  templateSlug: "kalandra",
   backgroundType: "solid",
   rsvpDeadline: "2026-09-01",
   rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: false },
@@ -106,6 +106,7 @@ describe("getOrCreateInvitation", () => {
     expect(result.success).toBe(true);
     expect(prismaMock.invitation.create).toHaveBeenCalled();
     expect(prismaMock.invitationDraft.create).toHaveBeenCalled();
+    expect(result.data?.title).toBe("Undangan Tanpa Judul");
     expect(result.data?.hasUnpublishedChanges).toBe(false);
     expect(logAudit).toHaveBeenCalledWith(
       expect.objectContaining({

@@ -2,7 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
-import { useInvitationStore } from "@/features/invitation/store/invitation-store";
+import {
+  useInvitationStore,
+  useInvitationStoreApi,
+} from "@/features/invitation/store/invitation-store";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import {
   GiftProviderField,
@@ -28,10 +31,11 @@ export function GiftTransferCard({
   onMoveUp,
   onMoveDown,
 }: GiftCardProps) {
+  const store = useInvitationStoreApi();
   const set = useInvitationStore((s) => s.set);
 
   const remove = () => {
-    const gifts = useInvitationStore.getState().gifts;
+    const gifts = store.getState().gifts;
     set({
       gifts: {
         ...gifts,
@@ -41,7 +45,7 @@ export function GiftTransferCard({
   };
 
   return (
-    <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
+    <div className="space-y-3 border rounded-lg p-3 bg-card overflow-hidden">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground uppercase">
           Rekening {index + 1}
@@ -80,7 +84,7 @@ export function GiftTransferCard({
           </Button>
         </div>
       </div>
-      <FieldGroup className="gap-3">
+      <FieldGroup className="gap-4">
         <GiftProviderField id={id} />
         <GiftAccountNameField id={id} />
         <GiftAccountNumberField id={id} />
@@ -96,10 +100,11 @@ export function GiftPackageCard({
   onMoveUp,
   onMoveDown,
 }: GiftCardProps) {
+  const store = useInvitationStoreApi();
   const set = useInvitationStore((s) => s.set);
 
   const remove = () => {
-    const gifts = useInvitationStore.getState().gifts;
+    const gifts = store.getState().gifts;
     set({
       gifts: {
         ...gifts,
@@ -109,7 +114,7 @@ export function GiftPackageCard({
   };
 
   return (
-    <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
+    <div className="space-y-3 border rounded-lg p-3 bg-card overflow-hidden">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground uppercase">
           Alamat Pengiriman Kado {index + 1}
@@ -148,7 +153,7 @@ export function GiftPackageCard({
           </Button>
         </div>
       </div>
-      <FieldGroup className="gap-3">
+      <FieldGroup className="gap-4">
         <GiftPackageRecipientNameField id={id} />
         <GiftPackageRecipientPhoneNumberField id={id} />
         <GiftPackageAddressField id={id} />

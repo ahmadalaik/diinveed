@@ -1,23 +1,32 @@
 "use client";
 
 import { EditorInitialData } from "../../types/invitation.type";
-import { useHydrateInvitationStore } from "../../hooks/use-hydrate-invitation-store";
 import { useInvitationAutoSave } from "../../hooks/use-invitation-autosave";
+import { InvitationStoreProvider } from "../../store/invitation-store";
 import { Editor } from "./editor";
-import { Preview } from "../preview/preview";
+import { LivePreview } from "../live-preview/live-preview";
+import { InitialThemeDialog } from "./initial-theme-dialog";
 
-type Props = {
+interface Props {
   initialData: EditorInitialData;
-};
+}
 
 export function InvitationEditor({ initialData }: Props) {
-  useHydrateInvitationStore(initialData);
+  return (
+    <InvitationStoreProvider initialData={initialData}>
+      <InvitationEditorContent />
+    </InvitationStoreProvider>
+  );
+}
+
+function InvitationEditorContent() {
   useInvitationAutoSave();
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <Editor />
-      <Preview />
+      <LivePreview />
+      <InitialThemeDialog />
     </div>
   );
 }

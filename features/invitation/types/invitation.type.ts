@@ -14,6 +14,18 @@ export type WishesOptions = {
   showCategory: boolean;
 };
 
+export type DressCode = {
+  enabled: boolean;
+  description: string;
+  colors: string[];
+};
+
+export const DEFAULT_DRESS_CODE: DressCode = {
+  enabled: false,
+  description: "",
+  colors: [],
+};
+
 export type WishModerationStatus = "PENDING" | "APPROVED" | "HIDDEN";
 
 export type EventItem = {
@@ -68,6 +80,7 @@ export type InvitationState = {
   coverMobileImageKey: string | null;
   music: string;
   musicKey: string;
+  musicFileName: string | null;
 
   quote: string;
   quoteReference: string;
@@ -83,6 +96,11 @@ export type InvitationState = {
   groomDescription: string | null;
   groomImage: string | null;
   groomImageKey: string | null;
+
+  coupleSceneImage: string | null;
+  coupleSceneImageKey: string | null;
+  livestreamUrl: string | null;
+  dressCode: DressCode;
 
   events: EventItem[];
   stories: { enabled: boolean; items: StoryItem[] };

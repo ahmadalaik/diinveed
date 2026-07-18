@@ -26,23 +26,15 @@ function draftToLiveColumns(data: SaveInvitationType) {
     stories,
     gallery,
     gifts,
+    dressCode,
     tokenOverrides,
-    coverDesktopImageKey,
-    coverMobileImageKey,
-    musicKey,
-    brideImageKey,
-    groomImageKey,
-    slug: _slug,
+    slug: _slug, // remove slug let system handle it
     ...rest
   } = data;
 
   return {
     ...rest,
-    coverDesktopImageKey,
-    coverMobileImageKey,
-    musicPublicId: musicKey,
-    brideImagePublicId: brideImageKey,
-    groomImagePublicId: groomImageKey,
+    dressCode: dressCode as Prisma.InputJsonValue,
     tokenOverrides:
       tokenOverrides === null
         ? Prisma.DbNull

@@ -1,6 +1,9 @@
 "use client";
 
-import { useInvitationStore } from "@/features/invitation/store/invitation-store";
+import {
+  useInvitationStore,
+  useInvitationStoreApi,
+} from "@/features/invitation/store/invitation-store";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -10,6 +13,7 @@ import { GiftTransferCard, GiftPackageCard } from "./gift-card";
 import { GiftEnabledField } from "./gift-field";
 
 export function GiftsSection() {
+  const store = useInvitationStoreApi();
   const transferIds = useInvitationStore(
     useShallow((s) => (s.gifts.transfers || []).map((t) => t.id)),
   );
@@ -24,7 +28,7 @@ export function GiftsSection() {
   const MAX_GIFT = 1;
 
   const addTransfer = () => {
-    const gifts = useInvitationStore.getState().gifts;
+    const gifts = store.getState().gifts;
     const currentTransfers = gifts.transfers || [];
     if (currentTransfers.length >= MAX_TRANSFER) return;
 
@@ -45,7 +49,7 @@ export function GiftsSection() {
   };
 
   const addPackage = () => {
-    const gifts = useInvitationStore.getState().gifts;
+    const gifts = store.getState().gifts;
     const currentPackages = gifts.packages || [];
     if (currentPackages.length >= MAX_GIFT) return;
 
@@ -66,7 +70,7 @@ export function GiftsSection() {
   };
 
   const moveTransfer = (index: number, direction: -1 | 1) => {
-    const gifts = useInvitationStore.getState().gifts;
+    const gifts = store.getState().gifts;
     const currentTransfers = gifts.transfers || [];
     const target = index + direction;
     if (target < 0 || target >= currentTransfers.length) return;
@@ -79,7 +83,7 @@ export function GiftsSection() {
   };
 
   const movePackage = (index: number, direction: -1 | 1) => {
-    const gifts = useInvitationStore.getState().gifts;
+    const gifts = store.getState().gifts;
     const currentPackages = gifts.packages || [];
     const target = index + direction;
     if (target < 0 || target >= currentPackages.length) return;
@@ -93,9 +97,9 @@ export function GiftsSection() {
 
   if (!isEnabled) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3 py-4">
         <GiftEnabledField />
-        <div className="flex flex-col justify-center items-center w-full h-30 text-muted-foreground text-sm">
+        <div className="flex flex-col justify-center items-center w-full h-20 rounded-md bg-muted text-muted-foreground text-xs">
           <span>Section hadiah tidak ditampilkan di undangan</span>
         </div>
       </div>
@@ -103,14 +107,18 @@ export function GiftsSection() {
   }
 
   return (
-    <div className="space-y-6">
+    <div
+      data-publish-field="gifts"
+      data-invalid={Boolean(errors?.length) || undefined}
+      className="space-y-6"
+    >
       <EditorError errors={errors} />
       <GiftEnabledField />
 
       {/* Bank/E-Wallet Section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between border-b pb-1">
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-xs font-medium text-foreground">
             Rekening Bank / E-Wallet
           </span>
           <span className="text-xs text-muted-foreground">
@@ -141,7 +149,7 @@ export function GiftsSection() {
       {/* Package Address Section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between border-b pb-1">
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-xs font-medium text-foreground">
             Kirim Kado (Alamat Pengiriman)
           </span>
           <span className="text-xs text-muted-foreground">

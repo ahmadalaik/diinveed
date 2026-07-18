@@ -7,11 +7,14 @@ import { Switch } from "@/components/ui/switch";
 export function NameOrderField() {
   const isBrideFirst = useInvitationStore((s) => s.isBrideFirst);
   const set = useInvitationStore((s) => s.set);
-  
+
   return (
-    <EditorField className="flex-row">
+    <EditorField
+      orientation="horizontal"
+      className="items-center justify-between"
+    >
       <EditorLabel htmlFor="is-bride-first">
-        Nama Mempelai Wanita Dahulu
+        Nama mempelai wanita dahulu
       </EditorLabel>
       <Switch
         id="is-bride-first"

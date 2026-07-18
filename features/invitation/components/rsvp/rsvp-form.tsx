@@ -11,7 +11,12 @@ import { Button } from "@/components/ui/button";
 
 type Props = {
   publicToken: string;
-  rsvpOptions: Record<string, string>;
+  rsvpOptions: {
+    accept: boolean | string;
+    decline: boolean | string;
+    maybe: boolean | string;
+    plusOne: boolean | string;
+  };
   guestSlug?: string;
   guestName?: string;
 };

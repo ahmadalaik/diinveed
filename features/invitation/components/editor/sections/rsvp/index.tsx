@@ -3,7 +3,7 @@ import { RsvpDeadlineField } from "./rsvp-field";
 
 export function RsvpSection() {
   return (
-    <FieldGroup className="gap-3">
+    <FieldGroup className="py-4">
       <RsvpDeadlineField />
     </FieldGroup>
   );

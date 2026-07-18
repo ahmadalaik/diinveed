@@ -2,7 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
-import { useInvitationStore } from "@/features/invitation/store/invitation-store";
+import {
+  useInvitationStore,
+  useInvitationStoreApi,
+} from "@/features/invitation/store/invitation-store";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import {
   StoryDescriptionField,
@@ -25,17 +28,18 @@ export function StoryCard({
   onMoveUp,
   onMoveDown,
 }: StoryCardProps) {
+  const store = useInvitationStoreApi();
   const set = useInvitationStore((s) => s.set);
 
   const remove = () => {
-    const stories = useInvitationStore.getState().stories;
+    const stories = store.getState().stories;
     set({
       stories: { ...stories, items: stories.items.filter((e) => e.id !== id) },
     });
   };
 
   return (
-    <div className="space-y-2 border rounded-lg p-3 bg-card overflow-hidden">
+    <div className="space-y-3 border rounded-lg p-3 bg-card overflow-hidden">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground uppercase">
           Chapter {index + 1}
@@ -74,7 +78,7 @@ export function StoryCard({
           </Button>
         </div>
       </div>
-      <FieldGroup className="gap-3">
+      <FieldGroup className="gap-4">
         <StoryYearField id={id} />
         <StoryTitleField id={id} />
         <StoryDescriptionField id={id} />

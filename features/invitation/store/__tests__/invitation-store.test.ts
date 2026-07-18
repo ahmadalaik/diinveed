@@ -1,10 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { useInvitationStore } from "../invitation-store";
+import {
+  createInvitationStore,
+  type InvitationStoreApi,
+} from "../invitation-store";
 
-const { getState, setState } = useInvitationStore;
+let store: InvitationStoreApi;
 
 beforeEach(() => {
-  setState({
+  store = createInvitationStore({
     publishErrors: null,
     brideName: "",
     events: [],
@@ -12,46 +15,60 @@ beforeEach(() => {
   });
 });
 
+describe("invitation store — instance isolation", () => {
+  it("does not share state between store instances", () => {
+    const first = createInvitationStore({ title: "Pertama" });
+    const second = createInvitationStore({ title: "Kedua" });
+
+    first.getState().set({ title: "Diubah" });
+
+    expect(first.getState().title).toBe("Diubah");
+    expect(second.getState().title).toBe("Kedua");
+    expect(first.getInitialState().title).toBe("Pertama");
+  });
+});
+
 describe("invitation store — publishErrors prune-on-edit", () => {
   it("clears a field's error when that field is edited", () => {
-    getState().setPublishErrors({
+    store.getState().setPublishErrors({
       brideName: ["wajib"],
       events: ["wajib"],
     });
 
-    getState().set({ brideName: "Citra" });
+    store.getState().set({ brideName: "Citra" });
 
-    expect(getState().publishErrors).toEqual({ events: ["wajib"] });
+    expect(store.getState().publishErrors).toEqual({ events: ["wajib"] });
   });
 
   it("clears array-field errors when the array is edited", () => {
-    getState().setPublishErrors({ events: ["wajib"] });
+    store.getState().setPublishErrors({ events: ["wajib"] });
 
-    getState().set({ events: [{ id: "e1" } as never] });
+    store.getState().set({ events: [{ id: "e1" } as never] });
 
-    expect(getState().publishErrors).toBeNull();
+    expect(store.getState().publishErrors).toBeNull();
   });
 
   it("becomes null once the last error is pruned", () => {
-    getState().setPublishErrors({ brideName: ["wajib"] });
+    store.getState().setPublishErrors({ brideName: ["wajib"] });
 
-    getState().set({ brideName: "Citra" });
+    store.getState().set({ brideName: "Citra" });
 
-    expect(getState().publishErrors).toBeNull();
+    expect(store.getState().publishErrors).toBeNull();
   });
 
   it("leaves errors untouched when an unrelated field is edited", () => {
-    getState().setPublishErrors({ brideName: ["wajib"] });
+    store.getState().setPublishErrors({ brideName: ["wajib"] });
 
-    getState().set({ groomName: "Deni" });
+    store.getState().set({ groomName: "Deni" });
 
-    expect(getState().publishErrors).toEqual({ brideName: ["wajib"] });
+    expect(store.getState().publishErrors).toEqual({ brideName: ["wajib"] });
   });
 
   it("is a no-op for prune when there are no errors", () => {
-    getState().set({ brideName: "Citra" });
+    store.getState().set({ brideName: "Citra" });
 
-    expect(getState().publishErrors).toBeNull();
-    expect(getState().brideName).toBe("Citra");
+    expect(store.getState().publishErrors).toBeNull();
+    expect(store.getState().brideName).toBe("Citra");
   });
 });
+

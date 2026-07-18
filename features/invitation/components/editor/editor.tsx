@@ -1,8 +1,11 @@
-import { Copy, GalleryVerticalEnd, Loader2 } from "lucide-react";
+import { Check, Clock3, Copy, GalleryVerticalEnd, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AccordionSection } from "./accordion-section";
-import { useInvitationStore } from "../../store/invitation-store";
+import {
+  type SaveStatus,
+  useInvitationStore,
+} from "../../store/invitation-store";
 import {
   publishInvitation,
   unpublishInvitation,
@@ -16,7 +19,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
@@ -24,57 +26,88 @@ export function relativeTime(date: Date) {
   return formatDistanceToNow(date, { addSuffix: true, locale: idLocale });
 }
 
-function SaveDot() {
+function getSaveStatusContent(saveStatus: SaveStatus, lastSaved: Date | null) {
+  switch (saveStatus) {
+    case "saving":
+      return {
+        label: "Menyimpan…",
+        tooltip: "Perubahan sedang disimpan",
+      };
+    case "unsaved":
+      return {
+        label: "Belum disimpan",
+        tooltip: "Perubahan akan disimpan otomatis",
+      };
+    case "saved":
+      return {
+        label: "Tersimpan",
+        tooltip: lastSaved
+          ? `Tersimpan ${relativeTime(lastSaved)}`
+          : "Semua perubahan tersimpan",
+      };
+  }
+}
+
+function SaveStatusIcon({ status }: { status: SaveStatus }) {
+  switch (status) {
+    case "saving":
+      return (
+        <Loader2
+          data-icon="inline-start"
+          className="animate-spin motion-reduce:animate-none"
+        />
+      );
+    case "unsaved":
+      return <Clock3 data-icon="inline-start" />;
+    case "saved":
+      return <Check data-icon="inline-start" />;
+  }
+}
+
+export function SaveStatusBadge() {
   const saveStatus = useInvitationStore((s) => s.saveStatus);
   const lastSaved = useInvitationStore((s) => s.lastSaved);
-
-  const getLabel = () => {
-    if (saveStatus === "saving") return "Menyimpan...";
-    if (saveStatus === "unsaved") return "Perubahan belum disimpan";
-    if (lastSaved) return `Tersimpan · ${relativeTime(lastSaved)}`;
-    return null;
-  };
-
-  const label = getLabel();
-  if (!label) return null;
+  const { label, tooltip } = getSaveStatusContent(saveStatus, lastSaved);
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="flex size-6 shrink-0 items-center justify-center">
-            {saveStatus === "saving" ? (
-              <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
-            ) : (
-              <span
-                className={cn(
-                  "size-2 rounded-full",
-                  saveStatus === "unsaved" ? "bg-amber-500" : "bg-emerald-500",
-                )}
-              />
-            )}
-          </span>
+          <Badge
+            variant={saveStatus === "unsaved" ? "outline" : "secondary"}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={tooltip}
+          >
+            <SaveStatusIcon status={saveStatus} />
+            {label}
+          </Badge>
         </TooltipTrigger>
-        <TooltipContent>{label}</TooltipContent>
+        <TooltipContent>{tooltip}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
 }
 
-function TitleInput() {
+export function TitleInput() {
   const title = useInvitationStore((s) => s.title);
+  const errors = useInvitationStore((s) => s.publishErrors?.title);
   const set = useInvitationStore((s) => s.set);
   return (
     <Input
+      data-publish-field="title"
       value={title}
       onChange={(e) => set({ title: e.target.value })}
-      placeholder="Invitation title"
+      aria-invalid={Boolean(errors?.length)}
+      aria-label="Judul undangan"
+      placeholder="Judul undangan"
       className="h-auto border-none px-0 py-0 text-sm font-medium shadow-none focus-visible:ring-0"
     />
   );
 }
 
-function Brand() {
+export function Brand() {
   return (
     <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
       <GalleryVerticalEnd className="size-4" />
@@ -196,7 +229,7 @@ export function Editor() {
         <div className="flex items-center gap-2">
           <Brand />
           <TitleInput />
-          <SaveDot />
+          <SaveStatusBadge />
         </div>
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">

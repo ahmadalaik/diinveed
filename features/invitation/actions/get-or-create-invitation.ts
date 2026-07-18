@@ -56,31 +56,15 @@ export async function getOrCreateInvitation(): Promise<
       data: unknown;
       hasUnpublishedChanges: boolean;
       updatedAt: Date;
-    } | null;
+    };
 
-    if (!draft) {
-      const newDraft = await prisma.invitationDraft.create({
-        data: {
-          invitationId: existingRecord.id as string,
-          data: DEFAULT_INVITATION_CONTENT as object,
-          hasUnpublishedChanges: false,
-        },
-      });
-      return ok(
-        "Undangan dimuat",
-        toEditorState(
-          existingRecord,
-          DEFAULT_INVITATION_CONTENT,
-          false,
-          newDraft.updatedAt,
-        ),
-      );
-    }
+    if (!draft) return fail("Draf undangan tidak ditemukan");
 
     const content = {
       ...DEFAULT_INVITATION_CONTENT,
       ...(draft.data as Partial<SaveInvitationType>),
     } as SaveInvitationType;
+    
     return ok(
       "Undangan dimuat",
       toEditorState(
@@ -96,7 +80,7 @@ export async function getOrCreateInvitation(): Promise<
     data: {
       userId: user.id,
       publicToken: generatePublicToken(),
-      templateSlug: "kelana",
+      templateSlug: "kalandra",
       rsvpOptions: DEFAULT_INVITATION_CONTENT.rsvpOptions,
       wishesOptions: DEFAULT_WISHES_OPTIONS,
       events: [],

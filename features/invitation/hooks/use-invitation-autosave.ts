@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
-import { useInvitationStore } from "../store/invitation-store";
+import { useInvitationStoreApi } from "../store/invitation-store";
 import { saveInvitation } from "../actions/save-invitation";
 import { toast } from "sonner";
 import { shallow } from "zustand/shallow";
 
 export function useInvitationAutoSave() {
+  const store = useInvitationStoreApi();
+
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
-    const unsub = useInvitationStore.subscribe(
+    const unsub = store.subscribe(
       (s) => ({
         slug: s.slug,
         title: s.title,
@@ -20,6 +22,7 @@ export function useInvitationAutoSave() {
         coverMobileImageKey: s.coverMobileImageKey,
         music: s.music,
         musicKey: s.musicKey,
+        musicFileName: s.musicFileName,
         quote: s.quote,
         quoteReference: s.quoteReference,
         isBrideFirst: s.isBrideFirst,
@@ -33,6 +36,10 @@ export function useInvitationAutoSave() {
         groomDescription: s.groomDescription,
         groomImage: s.groomImage,
         groomImageKey: s.groomImageKey,
+        coupleSceneImage: s.coupleSceneImage,
+        coupleSceneImageKey: s.coupleSceneImageKey,
+        livestreamUrl: s.livestreamUrl,
+        dressCode: s.dressCode,
         events: s.events,
         stories: s.stories,
         gallery: s.gallery,
@@ -44,7 +51,7 @@ export function useInvitationAutoSave() {
         backgroundType: s.backgroundType,
       }),
       (data) => {
-        const { setSaveStatus, setLastSaved } = useInvitationStore.getState();
+        const { setSaveStatus, setLastSaved } = store.getState();
         setSaveStatus("unsaved");
         clearTimeout(timer);
         timer = setTimeout(async () => {
@@ -54,7 +61,7 @@ export function useInvitationAutoSave() {
             if (result.success) {
               setSaveStatus("saved");
               setLastSaved(new Date());
-              useInvitationStore.getState().setHasUnpublishedChanges(true);
+              store.getState().setHasUnpublishedChanges(true);
             } else {
               setSaveStatus("unsaved");
               toast.error(result.message);
@@ -69,7 +76,7 @@ export function useInvitationAutoSave() {
     );
 
     function handleBeforeUnload(e: BeforeUnloadEvent) {
-      if (useInvitationStore.getState().saveStatus === "unsaved") {
+      if (store.getState().saveStatus === "unsaved") {
         e.preventDefault();
       }
     }
@@ -80,5 +87,5 @@ export function useInvitationAutoSave() {
       clearTimeout(timer);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []);
+  }, [store]);
 }

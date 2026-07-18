@@ -10,7 +10,7 @@ const base = {
   coverImage: null,
   coverImageKey: null,
   tokenOverrides: null,
-  templateSlug: "kelana",
+  templateSlug: "kalandra",
   backgroundType: "solid",
   rsvpDeadline: "",
   rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: true },
@@ -22,7 +22,7 @@ const base = {
   brideName: "Citra",
   brideNickname: "Citra",
   brideDescription: "Putri kedua",
-  brideImage: "https://res.cloudinary.com/demo/image/upload/bride.webp",
+  brideImage: "https://pub-test.r2.dev/bride.webp",
   brideImageKey: "diinveed/bride",
   groomName: "Deni",
   groomNickname: "Deni",
@@ -60,7 +60,7 @@ describe("saveInvitationSchema gallery", () => {
       gallery: [
         {
           id: "photo-1",
-          url: "https://res.cloudinary.com/demo/image/upload/photo.webp",
+          url: "https://pub-test.r2.dev/photo.webp",
           key: "diinveed/photo",
         },
       ],
@@ -71,7 +71,7 @@ describe("saveInvitationSchema gallery", () => {
   it("rejects gallery items that are bare strings", () => {
     const result = saveInvitationSchema.safeParse({
       ...base,
-      gallery: ["https://res.cloudinary.com/demo/image/upload/photo.webp"],
+      gallery: ["https://pub-test.r2.dev/photo.webp"],
     });
     expect(result.success).toBe(false);
   });

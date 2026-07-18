@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { publishInvitation, unpublishInvitation } from "../publish-invitation";
 import { ACTION_MESSAGES } from "@/lib/action-response";
 import { logAudit } from "@/lib/audit";
+import { DEFAULT_INVITATION_CONTENT } from "../../schemas/invitation.schema";
 
 vi.mock("@/lib/prisma", () => ({
   default: {
@@ -38,20 +39,22 @@ const mockUser = {
 };
 
 const readyInvitation = {
-  coverImage: "https://res.cloudinary.com/demo/image/upload/cover.webp",
-  music: "https://res.cloudinary.com/demo/video/upload/song.mp3",
+  ...DEFAULT_INVITATION_CONTENT,
+  coverDesktopImage: "https://pub-test.r2.dev/cover-desktop.webp",
+  coverMobileImage: "https://pub-test.r2.dev/cover-mobile.webp",
+  music: "https://pub-test.r2.dev/song.mp3",
   quote: "Dan di antara tanda-tanda kekuasaan-Nya...",
   quoteReference: "QS. Ar-Rum: 21",
   title: "Amelia & Theo",
   brideName: "Amelia",
   brideNickname: "Amelia",
   brideDescription: "Putri kedua dari Bapak Budi",
-  brideImage: "https://res.cloudinary.com/demo/image/upload/bride.webp",
+  brideImage: "https://pub-test.r2.dev/bride.webp",
   groomName: "Theo",
   groomNickname: "Theo",
   groomDescription: "Putra pertama dari Bapak Andi",
-  groomImage: "https://res.cloudinary.com/demo/image/upload/groom.webp",
-  templateSlug: "kelana",
+  groomImage: "https://pub-test.r2.dev/groom.webp",
+  templateSlug: "kalandra",
   backgroundType: "solid",
   rsvpDeadline: "2026-09-01",
   rsvpOptions: { accept: true, decline: true, maybe: true, plusOne: true },
@@ -68,46 +71,49 @@ const readyInvitation = {
       mapsUrl: "",
     },
   ],
-  stories: [{ id: "st-1", year: "2020", title: "Pertama bertemu", body: "..." }],
-  gallery: [
-    {
-      id: "g-1",
-      url: "https://res.cloudinary.com/demo/image/upload/photo.webp",
-      key: "diinveed/photo",
-    },
-  ],
-  gifts: [
-    {
-      id: "gift-1",
-      provider: "BCA",
-      accountName: "Amelia",
-      accountNumber: "1234567890",
-    },
-  ],
+  stories: {
+    enabled: true,
+    items: [
+      { id: "st-1", year: "2020", title: "Pertama bertemu", body: "..." },
+    ],
+  },
+  gallery: {
+    enabled: true,
+    items: [
+      {
+        id: "g-1",
+        url: "https://pub-test.r2.dev/photo.webp",
+        key: "diinveed/photo",
+      },
+    ],
+  },
+  gifts: {
+    enabled: true,
+    transfers: [
+      {
+        id: "gift-1",
+        provider: "BCA",
+        accountName: "Amelia",
+        accountNumber: "1234567890",
+      },
+    ],
+    packages: [],
+  },
+  coupleSceneImage: "https://cdn.test/couple.webp",
+  coupleSceneImageKey: "users/u/invitations/i/couple/couple.webp",
+  livestreamUrl: "https://youtube.com/live/example",
+  dressCode: {
+    enabled: true,
+    description: "Earth tones",
+    colors: ["#334433", "#D4AF72"],
+  },
 };
 
 const incompleteInvitation = {
-  coverImage: null,
-  music: "",
-  quote: "",
-  quoteReference: "",
+  ...DEFAULT_INVITATION_CONTENT,
   title: "",
-  brideName: "",
-  brideNickname: "",
-  brideDescription: null,
-  brideImage: null,
-  groomName: "",
-  groomNickname: "",
-  groomDescription: null,
-  groomImage: null,
-  templateSlug: "",
   backgroundType: "",
-  rsvpDeadline: "",
   rsvpOptions: { accept: false, decline: false, maybe: false, plusOne: false },
-  events: [],
-  stories: [],
-  gallery: [],
-  gifts: [],
 };
 
 beforeEach(() => {
@@ -133,7 +139,8 @@ describe("publishInvitation", () => {
       draft: { data: incompleteInvitation, hasUnpublishedChanges: true },
     });
     const result = await publishInvitation();
-    expect(result.errors?.coverImage).toBeDefined();
+    expect(result.errors?.coverDesktopImage).toBeDefined();
+    expect(result.errors?.coverMobileImage).toBeDefined();
     expect(result.errors?.music).toBeDefined();
     expect(result.errors?.quote).toBeDefined();
     expect(result.errors?.quoteReference).toBeDefined();
@@ -178,7 +185,19 @@ describe("publishInvitation", () => {
     expect(prismaMock.invitation.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: "inv-1" },
-        data: expect.objectContaining({ isPublished: true, slug: "amelia-theo" }),
+        data: expect.objectContaining({
+          isPublished: true,
+          slug: "amelia-theo",
+          coupleSceneImage: "https://cdn.test/couple.webp",
+          coupleSceneImageKey:
+            "users/u/invitations/i/couple/couple.webp",
+          livestreamUrl: "https://youtube.com/live/example",
+          dressCode: {
+            enabled: true,
+            description: "Earth tones",
+            colors: ["#334433", "#D4AF72"],
+          },
+        }),
       }),
     );
     expect(prismaMock.invitationDraft.update).toHaveBeenCalledWith(

@@ -1,55 +1,29 @@
 "use client";
 
-import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
-import { useTokenUpdate } from "@/features/invitation/hooks/editor-sections/use-token-update";
-import { EditorField, EditorLabel } from "../../editor-field";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, ChevronDown } from "lucide-react";
+import { useTokenUpdate } from "@/features/invitation/hooks/editor-sections/use-token-update";
+import { cn } from "@/lib/utils";
+import { ChevronDown, Search } from "lucide-react";
 import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Button } from "@/components/ui/button";
+import { EditorField, EditorLabel } from "../../editor-field";
+import { FONT_LIST } from "./data/font-list";
 
-const TYPOGRAPHY_LABELS = {
+export const TYPOGRAPHY_LABELS = {
   font: "Font",
   appearance: "Appearance",
   size: "Size",
   letterCase: "Letter Case",
 };
-
-const FONT_LIST = [
-  { label: "Inter", category: "Sans Serif", value: "var(--font-sans)" },
-  { label: "Geist", category: "Sans Serif", value: "var(--font-geist-sans)" },
-  { label: "Montserrat", category: "Sans Serif", value: "var(--font-montserrat)" },
-  { label: "Outfit", category: "Sans Serif", value: "var(--font-outfit)" },
-  { label: "Plus Jakarta", category: "Sans Serif", value: "var(--font-jakarta)" },
-  
-  { label: "Cormorant", category: "Serif", value: "var(--font-serif)" },
-  { label: "Lora", category: "Serif", value: "var(--font-lora)" },
-  { label: "Fraunces", category: "Serif", value: "var(--font-fraunces)" },
-
-  { label: "Great Vibes", category: "Handwriting", value: "var(--font-script)" },
-  { label: "Dancing Script", category: "Handwriting", value: "var(--font-dancing)" },
-  { label: "Caveat", category: "Handwriting", value: "var(--font-caveat)" },
-
-  { label: "Geist Mono", category: "Monospace", value: "var(--font-geist-mono)" },
-  { label: "Fira Code", category: "Monospace", value: "var(--font-fira)" },
-];
 
 const CATEGORIES = ["Semua", "Sans Serif", "Serif", "Handwriting", "Monospace"];
 
@@ -67,9 +41,9 @@ function FontPickerDialog({ value, onValueChange, children }: FontPickerProps) {
   );
   const [category, setCategory] = useState("Semua");
 
-  const filteredFonts = FONT_LIST.filter((f) => {
-    const matchSearch = f.label.toLowerCase().includes(search.toLowerCase());
-    const matchCategory = category === "Semua" || f.category === category;
+  const filteredFonts = FONT_LIST.filter((font) => {
+    const matchSearch = font.label.toLowerCase().includes(search.toLowerCase());
+    const matchCategory = category === "Semua" || font.category === category;
     return matchSearch && matchCategory;
   });
 
@@ -88,14 +62,14 @@ function FontPickerDialog({ value, onValueChange, children }: FontPickerProps) {
               placeholder="Search fonts"
               className="pl-9"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(event) => setSearch(event.target.value)}
             />
           </div>
 
           <Input
             placeholder="Type something"
             value={previewText}
-            onChange={(e) => setPreviewText(e.target.value)}
+            onChange={(event) => setPreviewText(event.target.value)}
           />
 
           <Tabs
@@ -129,7 +103,11 @@ function FontPickerDialog({ value, onValueChange, children }: FontPickerProps) {
                       onValueChange(font.value);
                       setOpen(false);
                     }}
-                    className={`p-4 border rounded-lg hover:border-primary transition-colors text-left space-y-2 cursor-pointer ${value === font.value ? "border-primary ring-1 ring-primary" : ""}`}
+                    className={cn(
+                      "p-4 border rounded-lg hover:border-primary transition-colors text-left space-y-2 cursor-pointer",
+                      value === font.value &&
+                        "border-primary ring-1 ring-primary",
+                    )}
                   >
                     <div className="text-xs text-muted-foreground">
                       {font.label}
@@ -156,18 +134,22 @@ function FontPickerDialog({ value, onValueChange, children }: FontPickerProps) {
   );
 }
 
-function TypographyGroupField({ label, group }: { label: string; group: "heading" | "body" }) {
-  const { resolvedTokens, updateTypography, resetTypographyGroup } = useTokenUpdate();
+function TypographyGroupField({
+  label,
+  group,
+}: {
+  label: string;
+  group: "heading" | "body";
+}) {
+  const { resolvedTokens, updateTypography, resetTypographyGroup } =
+    useTokenUpdate();
   const fontSpec = resolvedTokens.typography[group];
 
-  const sizeNum = parseFloat(fontSpec.size) || 1;
-
   return (
-    <FieldSet className="space-y-4">
-      {/* Preview & Reset */}
+    <FieldSet className="space-y-0">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <FieldLegend className="text-[10.5px] font-medium tracking-[0.04em] text-muted-foreground uppercase mb-0 border-none pb-0">
+          <FieldLegend className="text-[13px]! font-medium text-muted-foreground uppercase mb-0 border-none pb-0">
             {label}
           </FieldLegend>
           <Button
@@ -180,23 +162,25 @@ function TypographyGroupField({ label, group }: { label: string; group: "heading
             Reset
           </Button>
         </div>
-        <div className="p-4 bg-muted/30 rounded-lg flex items-center justify-center min-h-[80px] overflow-hidden">
+        <div className="p-4 bg-muted rounded-lg flex items-center justify-center min-h-20 overflow-hidden">
           <span
-            className="text-center"
+            className={cn(
+              "text-center",
+              group === "heading" ? "text-xl" : "text-sm",
+            )}
             style={{
               fontFamily: fontSpec.family,
-              fontSize: fontSpec.size,
               fontWeight: fontSpec.weight,
-              textTransform: fontSpec.transform !== "none" ? fontSpec.transform : undefined,
+              textTransform:
+                fontSpec.transform !== "none" ? fontSpec.transform : undefined,
             }}
           >
-            Lorem Ipsum is simply dummy text
+            Lorem ipsum is simply dummy text
           </span>
         </div>
       </div>
 
-      <FieldGroup className="space-y-4">
-        {/* Font Picker */}
+      <FieldGroup className="gap-4">
         <EditorField>
           <EditorLabel htmlFor={`${group}-font`} className="text-xs">
             {TYPOGRAPHY_LABELS.font}
@@ -205,73 +189,17 @@ function TypographyGroupField({ label, group }: { label: string; group: "heading
             value={fontSpec.family}
             onValueChange={(val) => updateTypography(group, "family", val)}
           >
-            <Button variant="outline" className="w-full justify-between font-normal px-3 py-2 h-auto text-sm">
+            <Button
+              variant="outline"
+              className="w-full justify-between font-normal px-2.5 py-2 h-auto text-[13px] border-transparent bg-muted/60 shadow-none hover:bg-muted focus-visible:bg-background transition-all"
+            >
               <span className="truncate">
-                {FONT_LIST.find((f) => f.value === fontSpec.family)?.label ||
-                  fontSpec.family}
+                {FONT_LIST.find((font) => font.value === fontSpec.family)
+                  ?.label || fontSpec.family}
               </span>
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
           </FontPickerDialog>
-        </EditorField>
-
-        <div className="flex gap-4">
-          {/* Appearance */}
-          <EditorField className="flex-1">
-            <EditorLabel className="text-xs">{TYPOGRAPHY_LABELS.appearance}</EditorLabel>
-            <Select
-              value={fontSpec.weight.toString()}
-              onValueChange={(v) => updateTypography(group, "weight", parseInt(v))}
-            >
-              <SelectTrigger className="h-9 text-xs">
-                <SelectValue placeholder="Weight" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="300" className="text-xs">Light</SelectItem>
-                <SelectItem value="400" className="text-xs">Regular</SelectItem>
-                <SelectItem value="500" className="text-xs">Medium</SelectItem>
-                <SelectItem value="600" className="text-xs">Semi Bold</SelectItem>
-                <SelectItem value="700" className="text-xs">Bold</SelectItem>
-              </SelectContent>
-            </Select>
-          </EditorField>
-
-          {/* Size */}
-          <EditorField className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <EditorLabel className="text-xs mb-0">{TYPOGRAPHY_LABELS.size}</EditorLabel>
-            </div>
-            <div className="flex items-center gap-3 h-9">
-              <span className="text-xs font-serif italic">A</span>
-              <Slider
-                value={[sizeNum]}
-                min={0.5}
-                max={4}
-                step={0.1}
-                onValueChange={([val]) => updateTypography(group, "size", `${val}rem`)}
-              />
-              <span className="text-lg font-serif italic">A</span>
-            </div>
-          </EditorField>
-        </div>
-
-        {/* Letter Case */}
-        <EditorField>
-          <EditorLabel className="text-xs">{TYPOGRAPHY_LABELS.letterCase}</EditorLabel>
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            value={fontSpec.transform}
-            onValueChange={(v) => {
-              if (v) updateTypography(group, "transform", v);
-            }}
-            className="justify-start gap-2 h-9"
-          >
-            <ToggleGroupItem value="none" className="flex-1 px-0 h-full">-</ToggleGroupItem>
-            <ToggleGroupItem value="uppercase" className="flex-1 px-0 h-full">AG</ToggleGroupItem>
-            <ToggleGroupItem value="lowercase" className="flex-1 px-0 h-full">ag</ToggleGroupItem>
-            <ToggleGroupItem value="capitalize" className="flex-1 px-0 h-full">Ag</ToggleGroupItem>
-          </ToggleGroup>
         </EditorField>
       </FieldGroup>
     </FieldSet>

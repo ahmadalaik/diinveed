@@ -29,7 +29,10 @@ vi.mock("@/hooks/use-r2-upload", () => ({
 }));
 
 import { MusicField } from "../basic/music-field";
-import { useInvitationStore } from "@/features/invitation/store/invitation-store";
+import {
+  createInvitationStore,
+  InvitationStoreProvider,
+} from "@/features/invitation/store/invitation-store";
 import { MUSIC_PRESETS } from "@/features/invitation/lib/music-presets";
 
 beforeAll(() => {
@@ -40,7 +43,6 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  useInvitationStore.setState({ music: "", musicKey: "" });
   uploadMock.mockReset();
   removeMock.mockReset();
 });
@@ -49,29 +51,37 @@ afterEach(() => cleanup());
 
 describe("MusicField", () => {
   it("selecting a preset stores its url and clears the musicKey", async () => {
-    render(<MusicField />);
+    const store = createInvitationStore({ music: "", musicKey: "" });
+    render(
+      <InvitationStoreProvider store={store}>
+        <MusicField />
+      </InvitationStoreProvider>,
+    );
     const preset = MUSIC_PRESETS[0];
 
+    fireEvent.click(screen.getByRole("button", { name: "Pilih musik" }));
     fireEvent.click(screen.getByText(new RegExp(preset.title)));
 
-    await waitFor(() =>
-      expect(useInvitationStore.getState().music).toBe(preset.url),
-    );
-    expect(useInvitationStore.getState().musicKey).toBe("");
+    await waitFor(() => expect(store.getState().music).toBe(preset.url));
+    expect(store.getState().musicKey).toBe("");
   });
 
   it("removing an uploaded track calls Cloudinary remove and clears the store", async () => {
-    useInvitationStore.setState({
+    const store = createInvitationStore({
       music: "https://x/up.mp3",
       musicKey: "pid-1",
     });
-    render(<MusicField />);
+    render(
+      <InvitationStoreProvider store={store}>
+        <MusicField />
+      </InvitationStoreProvider>,
+    );
 
     fireEvent.click(screen.getByLabelText("Hapus musik"));
 
     await waitFor(() => expect(removeMock).toHaveBeenCalledWith("pid-1"));
-    expect(useInvitationStore.getState().music).toBe("");
-    expect(useInvitationStore.getState().musicKey).toBe("");
+    expect(store.getState().music).toBe("");
+    expect(store.getState().musicKey).toBe("");
   });
 
   it("uploading a file stores the returned url and musicKey", async () => {
@@ -79,23 +89,25 @@ describe("MusicField", () => {
       url: "https://x/new.mp3",
       key: "pid-new",
     });
-    render(<MusicField />);
+    const store = createInvitationStore({ music: "", musicKey: "" });
+    render(
+      <InvitationStoreProvider store={store}>
+        <MusicField />
+      </InvitationStoreProvider>,
+    );
 
-    // The upload pane is forceMount-ed (hidden when inactive), so the file
-    // input is always present in the DOM.
+    fireEvent.click(screen.getByRole("button", { name: "Pilih musik" }));
     const input = document.querySelector(
       'input[type="file"]',
     ) as HTMLInputElement;
     const file = new File(["x"], "song.mp3", { type: "audio/mpeg" });
     fireEvent.change(input, { target: { files: [file] } });
 
-    await waitFor(() =>
-      expect(useInvitationStore.getState().music).toBe("https://x/new.mp3"),
-    );
+    await waitFor(() => expect(store.getState().music).toBe("https://x/new.mp3"));
     expect(uploadMock).toHaveBeenCalledWith(file, {
       kind: "music",
-      invitationId: useInvitationStore.getState().id,
+      invitationId: store.getState().id,
     });
-    expect(useInvitationStore.getState().musicKey).toBe("pid-new");
+    expect(store.getState().musicKey).toBe("pid-new");
   });
 });

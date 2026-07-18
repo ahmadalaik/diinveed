@@ -10,11 +10,12 @@ export function RsvpDeadlineField() {
   const set = useInvitationStore((s) => s.set);
 
   return (
-    <EditorField>
+    <EditorField publishField="rsvpDeadline" invalid={Boolean(errors?.length)}>
       <EditorLabel htmlFor="rsvp-deadline">Tenggat Waktu RSVP</EditorLabel>
       <DatePicker
         id="rsvp-deadline"
         value={rsvpDeadline}
+        aria-invalid={Boolean(errors?.length)}
         onChange={(date) => set({ rsvpDeadline: date })}
         yearsBack={0}
         yearsForward={5}

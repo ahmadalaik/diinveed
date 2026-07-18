@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useInvitationStore } from "../store/invitation-store";
+import { useInvitationStoreApi } from "../store/invitation-store";
 import { EditorInitialData } from "../types/invitation.type";
 
 // Hydrate the store synchronously during the first render (before children
@@ -11,8 +11,10 @@ import { EditorInitialData } from "../types/invitation.type";
 // blank. The useState initializer runs once on mount, during render; the
 // setState is idempotent so StrictMode's double invocation is harmless.
 export function useHydrateInvitationStore(initialData: EditorInitialData) {
+  const store = useInvitationStoreApi();
+
   useState(() => {
-    useInvitationStore.setState({ 
+    store.setState({
       ...initialData,
       lastSaved: initialData.updatedAt,
       saveStatus: "saved",
