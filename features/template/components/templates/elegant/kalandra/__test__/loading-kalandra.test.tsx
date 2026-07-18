@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { LoadingKelana } from "../loading-kelana";
+import { KalandraPreloader } from "../kalandra-preloader";
 import type { InvitationState } from "@/features/invitation/types/invitation.type";
 
 const inv = {
@@ -16,10 +16,10 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe("LoadingKelana", () => {
+describe("KalandraPreloader", () => {
   it("renders the couple names while loading", () => {
     render(
-      <LoadingKelana
+      <KalandraPreloader
         inv={inv}
         onDone={() => {}}
         preload={() => new Promise(() => {})}
@@ -32,7 +32,7 @@ describe("LoadingKelana", () => {
 
   it("respects bride-first order", () => {
     render(
-      <LoadingKelana
+      <KalandraPreloader
         inv={{ ...inv, isBrideFirst: false } as InvitationState}
         onDone={() => {}}
         preload={() => new Promise(() => {})}
@@ -43,11 +43,15 @@ describe("LoadingKelana", () => {
     );
   });
 
-  it("does not call onDone before the 3s minimum, then calls it after the fade", async () => {
+  it("does not call onDone before the 5s minimum, then calls it after the fade", async () => {
     vi.useFakeTimers();
     const onDone = vi.fn();
     render(
-      <LoadingKelana inv={inv} onDone={onDone} preload={() => Promise.resolve()} />,
+      <KalandraPreloader
+        inv={inv}
+        onDone={onDone}
+        preload={() => Promise.resolve()}
+      />,
     );
 
     await act(async () => {
@@ -56,7 +60,7 @@ describe("LoadingKelana", () => {
     expect(onDone).not.toHaveBeenCalled();
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(2999);
+      await vi.advanceTimersByTimeAsync(4999);
     });
     expect(onDone).not.toHaveBeenCalled();
 
@@ -70,7 +74,7 @@ describe("LoadingKelana", () => {
     vi.useFakeTimers();
     const onDone = vi.fn();
     render(
-      <LoadingKelana
+      <KalandraPreloader
         inv={inv}
         onDone={onDone}
         preload={() => new Promise(() => {})}
@@ -83,3 +87,4 @@ describe("LoadingKelana", () => {
     expect(onDone).toHaveBeenCalledTimes(1);
   });
 });
+

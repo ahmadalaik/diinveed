@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { motion } from "motion/react";
 import { MessageCircleHeart } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getPublicWishes } from "@/features/invitation/actions/get-public-wishes";
 import type { PublicWish } from "@/features/invitation/types/invitation.type";
@@ -23,15 +23,36 @@ const fadeUp = {
   },
 };
 
-export function WishesKelana({ publicToken, showCategory, mode }: Props) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+const DUMMY_WISHES: PublicWish[] = [
+  {
+    id: "dummy-1",
+    name: "Ahmad & Keluarga",
+    wish: "Selamat menempuh hidup baru! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah.",
+    category: "Keluarga",
+    createdAt: new Date(),
+  },
+  {
+    id: "dummy-2",
+    name: "Budi Santoso",
+    wish: "Happy wedding! Lancar-lancar sampai hari H ya.",
+    category: "Sahabat",
+    createdAt: new Date(),
+  },
+  {
+    id: "dummy-3",
+    name: "Citra",
+    wish: "Selamat ya! Semoga bahagia selalu bersama pasangan.",
+    category: "Rekan Kerja",
+    createdAt: new Date(),
+  },
+];
 
-  const [wishes, setWishes] = useState<PublicWish[]>([]);
+export function KalandraWishes({ publicToken, showCategory, mode }: Props) {
+  const isPreview = mode === "preview" || publicToken === "preview";
+  const [wishes, setWishes] = useState<PublicWish[]>(isPreview ? DUMMY_WISHES : []);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-  const isPreview = mode === "preview";
 
   useEffect(() => {
     if (isPreview) return;
@@ -67,53 +88,62 @@ export function WishesKelana({ publicToken, showCategory, mode }: Props) {
 
   return (
     <section
-      ref={ref}
       id="wishes"
-      className="px-8 py-24 bg-[#f9f7f2] relative overflow-hidden"
+      className="py-24 relative overflow-hidden"
     >
       <motion.div
         className="text-center mb-12"
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        whileInView="visible"
+          viewport={{ once: true, margin: "-150px" }}
         variants={fadeUp}
       >
-        <h2 className="font-(family-name:--tpl-font-heading) text-4xl text-(--tpl-primary) mb-3">
-          Ucapan & Doa
+        <h2
+          className={cn(
+            "text-4xl mb-3",
+            "font-(family-name:--tpl-font-heading) text-(--tpl-text-secondary)",
+          )}
+        >
+          Wishes
         </h2>
-        <div className="w-12 h-px bg-(--tpl-tertiary) mx-auto mb-4" />
-        <p className="text-[10px] text-stone-500 text-balance uppercase tracking-[0.2em]">
+        <div
+          className={cn(
+            "w-12 h-px mx-auto mb-4",
+            "bg-(--tpl-text-tertiary)",
+          )}
+        />
+        <p className="text-[10px] text-(--tpl-text-tertiary)/60 text-balance capitalize tracking-[0.2em]">
           Ucapan hangat dari mereka yang berbahagia
         </p>
       </motion.div>
 
       <div className="max-w-md mx-auto space-y-4">
-        {isPreview ? (
-          <p className="text-center text-[10px] text-amber-500 tracking-widest uppercase">
-            Preview Mode · Ucapan tampil di undangan publik
-          </p>
-        ) : wishes.length === 0 && !loading ? (
-          <p className="text-center text-sm text-stone-400 py-8">
+        {wishes.length === 0 && !loading ? (
+          <p className="text-center text-sm text-(--tpl-text-tertiary)/50 py-8">
             Belum ada ucapan. Jadilah yang pertama!
           </p>
         ) : (
           wishes.map((w) => (
             <div
               key={w.id}
-              className="rounded-md bg-white/80 shadow-sm p-4 backdrop-blur-sm"
+              className="rounded-md bg-(--tpl-bg-secondary)/80 shadow-sm p-4 backdrop-blur-sm"
             >
               <div className="flex items-center gap-2 mb-1">
                 <MessageCircleHeart
                   strokeWidth={1.5}
-                  className="size-4 text-(--tpl-tertiary)"
+                  className={cn(
+                    "size-4",
+                    "text-(--tpl-text-secondary)",
+                  )}
                 />
-                <p className="text-sm font-medium text-stone-700">{w.name}</p>
+                <p className="text-sm font-medium text-(--tpl-text-secondary)/90">{w.name}</p>
                 {showCategory && w.category && (
-                  <span className="text-[10px] uppercase tracking-wider text-stone-400 border border-stone-200 rounded-full px-2 py-0.5">
+                  <span className="text-[10px] uppercase tracking-wider text-(--tpl-text-tertiary)/50 border border-(--tpl-text-secondary)/20 rounded-full px-2 py-0.5">
                     {w.category}
                   </span>
                 )}
               </div>
-              <p className="text-sm text-stone-600 whitespace-pre-line pl-6">
+              <p className="text-sm text-(--tpl-text-tertiary)/80 whitespace-pre-line pl-6">
                 {w.wish}
               </p>
             </div>
