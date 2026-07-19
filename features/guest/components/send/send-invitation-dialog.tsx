@@ -56,11 +56,26 @@ export function SendInvitationDialog({
 
   useEffect(() => {
     if (!open) return;
-    setSent(new Set());
-    setLoading(true);
-    getGuestsForSend({ ids, filter })
-      .then((res) => setRecipients(res.guests ?? []))
-      .finally(() => setLoading(false));
+    let active = true;
+
+    const fetchGuests = async () => {
+      setSent(new Set());
+      setLoading(true);
+      try {
+        const res = await getGuestsForSend({ ids, filter });
+        if (active) {
+          setRecipients(res.guests ?? []);
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    fetchGuests();
+
+    return () => {
+      active = false;
+    };
   }, [open, ids, filter]);
 
   const sendTo = (guest: GuestSendRow) => {
@@ -100,7 +115,7 @@ export function SendInvitationDialog({
         </DialogHeader>
 
         <div className="space-y-1.5">
-          <Label>Template</Label>
+          <Label>Template Pesan</Label>
           <Select value={templateId} onValueChange={setTemplateId}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Pilih template" />

@@ -1,7 +1,6 @@
 import { CheckCheck, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { GuestStatusKey } from "../lib/guest-status";
 
@@ -35,28 +34,29 @@ export const GROUP_META: Record<
   hadir: {
     label: "Hadir",
     badge:
-      "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
-    dot: "bg-emerald-500",
-    chart: "oklch(58% 0.14 155)",
+      "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900/50",
+    dot: "bg-blue-600",
+    chart: "#2563eb",
   },
   mungkin: {
     label: "Mungkin",
     badge:
-      "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
+      "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900/50",
     dot: "bg-amber-500",
-    chart: "oklch(72% 0.15 75)",
+    chart: "#fbbf24",
   },
   "tidak-hadir": {
     label: "Tidak hadir",
-    badge: "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400",
-    dot: "bg-red-500",
-    chart: "oklch(58% 0.18 25)",
+    badge:
+      "bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-900/50",
+    dot: "bg-rose-500",
+    chart: "#f43f5e",
   },
   menunggu: {
     label: "Menunggu",
-    badge: "bg-muted text-muted-foreground",
-    dot: "bg-muted-foreground/50",
-    chart: "oklch(80% 0.01 100)",
+    badge: "bg-zinc-100 text-zinc-500 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700",
+    dot: "bg-zinc-300 dark:bg-zinc-600",
+    chart: "#e4e4e7",
   },
 };
 
@@ -66,16 +66,21 @@ export function StatusBadge({
   className,
 }: {
   statusKey: GuestStatusKey;
-  /** Optional override (e.g. precise "Belum dikirim" vs grouped "Menunggu"). */
   label?: string;
   className?: string;
 }) {
   const m = GROUP_META[STATUS_GROUP[statusKey]];
   return (
-    <Badge className={cn("gap-1.5", m.badge, className)}>
+    <div
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border",
+        m.badge,
+        className
+      )}
+    >
       <span className={cn("size-1.5 rounded-full", m.dot)} />
       {label ?? m.label}
-    </Badge>
+    </div>
   );
 }
 
@@ -83,13 +88,13 @@ export function StatusBadge({
 export function SendIndicator({ sentAt }: { sentAt: Date | null }) {
   if (!sentAt)
     return (
-      <span className="text-muted-foreground/70 flex items-center gap-1.5 text-xs">
+      <span className="text-zinc-400 flex items-center gap-1.5 text-xs">
         <Clock className="size-3" /> Belum dikirim
       </span>
     );
   return (
-    <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-      <CheckCheck className="size-3.5 text-sky-500" /> {relativeTime(sentAt)}
+    <span className="text-zinc-600 flex items-center gap-1.5 text-xs font-medium">
+      <CheckCheck className="size-3.5 text-blue-600" /> Terkirim {relativeTime(sentAt)}
     </span>
   );
 }
@@ -154,7 +159,7 @@ export function Donut({
         x={cx}
         y={cy - 2}
         textAnchor="middle"
-        className="fill-foreground font-mono text-2xl font-medium"
+        className="fill-foreground text-2xl font-semibold tracking-tight"
       >
         {data.reduce((s, d) => s + d.value, 0)}
       </text>

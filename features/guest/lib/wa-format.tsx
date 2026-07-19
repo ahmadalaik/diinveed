@@ -55,6 +55,27 @@ export function wrapSelection(
   const before = value.slice(0, start);
   const selected = value.slice(start, end);
   const after = value.slice(end);
+
+  if (before.endsWith(marker) && after.startsWith(marker)) {
+    return {
+      value: `${before.slice(0, -marker.length)}${selected}${after.slice(marker.length)}`,
+      selectionStart: start - marker.length,
+      selectionEnd: end - marker.length,
+    };
+  }
+
+  if (
+    selected.length >= marker.length * 2 &&
+    selected.startsWith(marker) &&
+    selected.endsWith(marker)
+  ) {
+    return {
+      value: `${before}${selected.slice(marker.length, -marker.length)}${after}`,
+      selectionStart: start,
+      selectionEnd: end - marker.length * 2,
+    };
+  }
+
   return {
     value: `${before}${marker}${selected}${marker}${after}`,
     selectionStart: start + marker.length,

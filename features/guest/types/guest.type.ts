@@ -58,4 +58,4 @@ export type MessageTemplate = {
 };
 
 /** Status filter keys used by the toolbar and where-builder. */
-export type GuestStatusFilter = "hadir" | "menunggu" | "mungkin" | "tidak-hadir";
+export type GuestStatusFilter = "hadir" | "menunggu" | "mungkin" | "tidak-hadir" | "unregistered";

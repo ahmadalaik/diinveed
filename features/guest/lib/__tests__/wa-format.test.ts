@@ -42,4 +42,36 @@ describe("wrapSelection", () => {
       selectionEnd: 2,
     });
   });
+
+  it.each([
+    ["bold", "*"],
+    ["italic", "_"],
+    ["strikethrough", "~"],
+  ])("removes %s markers when the same format is applied twice", (_format, marker) => {
+    const formatted = wrapSelection("hello", 0, 5, marker);
+
+    expect(
+      wrapSelection(formatted.value, formatted.selectionStart, formatted.selectionEnd, marker),
+    ).toEqual({
+      value: "hello",
+      selectionStart: 0,
+      selectionEnd: 5,
+    });
+  });
+
+  it.each([
+    ["bold", "*"],
+    ["italic", "_"],
+    ["strikethrough", "~"],
+  ])("removes saved %s markers included in the selection", (_format, marker) => {
+    const prefix = "Say ";
+    const formatted = `${marker}hello${marker}`;
+    const value = `${prefix}${formatted} now`;
+
+    expect(wrapSelection(value, prefix.length, prefix.length + formatted.length, marker)).toEqual({
+      value: "Say hello now",
+      selectionStart: 4,
+      selectionEnd: 9,
+    });
+  });
 });

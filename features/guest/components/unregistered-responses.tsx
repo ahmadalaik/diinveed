@@ -49,44 +49,42 @@ export function UnregisteredResponses({
   }
 
   return (
-    <Card className="overflow-hidden py-0">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent">
-              <TableHead>Nama</TableHead>
-              <TableHead>Telepon</TableHead>
-              <TableHead className="text-center">Pax</TableHead>
-              <TableHead>RSVP</TableHead>
-              <TableHead>Harapan</TableHead>
+    <div className="overflow-x-auto">
+      <Table className="text-[13.5px]">
+        <TableHeader>
+          <TableRow className="hover:bg-transparent border-b border-zinc-100">
+            <TableHead className="font-bold text-zinc-400">Nama</TableHead>
+            <TableHead className="font-bold text-zinc-400">Telepon</TableHead>
+            <TableHead className="font-bold text-zinc-400 text-center">Pax</TableHead>
+            <TableHead className="font-bold text-zinc-400">RSVP</TableHead>
+            <TableHead className="font-bold text-zinc-400">Harapan</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {responses.map((r) => (
+            <TableRow key={r.id} className="border-b border-zinc-100 hover:bg-zinc-50/70 transition-colors">
+              <TableCell className="font-bold text-zinc-950 dark:text-white">{r.name}</TableCell>
+              <TableCell className="text-zinc-500 font-medium font-mono">
+                {r.phoneNumber ?? "—"}
+              </TableCell>
+              <TableCell className="text-center font-bold text-zinc-800 dark:text-zinc-200">
+                {r.guests}
+              </TableCell>
+              <TableCell>
+                <StatusBadge statusKey={STATUS_KEY[r.response]} />
+              </TableCell>
+              <TableCell className="text-zinc-500 max-w-44 truncate font-medium">
+                {r.wish ?? "—"}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {responses.map((r) => (
-              <TableRow key={r.id}>
-                <TableCell className="font-medium">{r.name}</TableCell>
-                <TableCell className="text-muted-foreground font-mono text-xs">
-                  {r.phoneNumber ?? "—"}
-                </TableCell>
-                <TableCell className="text-center font-mono">
-                  {r.guests}
-                </TableCell>
-                <TableCell>
-                  <StatusBadge statusKey={STATUS_KEY[r.response]} />
-                </TableCell>
-                <TableCell className="text-muted-foreground max-w-44 truncate text-xs">
-                  {r.wish ?? "—"}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+          ))}
+        </TableBody>
+      </Table>
       {totalPages > 1 && (
-        <div className="flex justify-end border-t px-4 py-2.5">
+        <div className="flex justify-end border-t border-zinc-100 mt-4 pt-3.5 text-zinc-500 font-medium text-[13px]">
           <TablePagination page={page} totalPages={totalPages} searchParams={searchParams} pageParam="upage" />
         </div>
       )}
-    </Card>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Edit, Plus, Send, Trash2, Users, X } from "lucide-react";
+import { Edit3, Plus, Send, Trash2, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -24,6 +24,7 @@ import { SendIndicator, StatusBadge, initials } from "./guest-visuals";
 import { GuestFormDialog } from "./guest-form-dialog";
 import { DeleteGuestDialog } from "./delete-guest-dialog";
 import { SendInvitationDialog } from "./send/send-invitation-dialog";
+import { cn } from "@/lib/utils";
 
 export type GuestList = {
   rows: GuestWithRsvp[];
@@ -39,7 +40,6 @@ type Props = {
   invitationSlug: string;
   filters: GuestFilters;
   searchParams: PageSearchParams;
-  toolbar: React.ReactNode;
 };
 
 export function GuestTable({
@@ -49,7 +49,6 @@ export function GuestTable({
   invitationSlug,
   filters,
   searchParams,
-  toolbar,
 }: Props) {
   const { rows: guestRows, page, totalPages, total } = guests;
 
@@ -59,7 +58,8 @@ export function GuestTable({
   const [sendIds, setSendIds] = useState<string[] | undefined>(undefined);
 
   const pageIds = guestRows.map((g) => g.id);
-  const allOnPageSelected = pageIds.length > 0 && pageIds.every((id) => selected.has(id));
+  const allOnPageSelected =
+    pageIds.length > 0 && pageIds.every((id) => selected.has(id));
   const selectionCount = allMatching ? total : selected.size;
 
   const toggle = (id: string) => {
@@ -99,31 +99,33 @@ export function GuestTable({
 
   return (
     <div className="space-y-4">
-      {toolbar}
-
       {/* Bulk action bar */}
       {selectionCount > 0 && (
-        <div className="bg-primary text-primary-foreground flex flex-wrap items-center gap-2.5 rounded-md px-3.5 py-2 text-sm">
-          <span className="font-mono">{selectionCount}</span>
-          <span className="opacity-80">terpilih</span>
-          {allOnPageSelected && !allMatching && total > guestRows.length && (
-            <button className="underline opacity-90" onClick={() => setAllMatching(true)}>
-              Pilih semua {total} tamu yang cocok
-            </button>
-          )}
-          <div className="ml-auto flex items-center gap-1.5">
+        <div className="bg-zinc-900 text-zinc-100 flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-2 text-[13px] font-medium shadow-md">
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold">{selectionCount}</span>
+            <span className="opacity-80">tamu dipilih dari halaman ini</span>
+            {allOnPageSelected && !allMatching && total > guestRows.length && (
+              <button
+                className="underline opacity-90 font-bold ml-1"
+                onClick={() => setAllMatching(true)}
+              >
+                Pilih semua {total} tamu yang cocok
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             <Button
               size="sm"
-              variant="secondary"
-              className="bg-white/10 text-white hover:bg-white/20"
+              className="bg-white/10 text-white hover:bg-white/20 border border-white/10 rounded-full px-3 h-7 text-[11.5px] font-bold"
               onClick={openBulkSend}
             >
-              <Send className="size-3.5" /> Kirim WhatsApp ({selectionCount})
+              <Send /> Kirim WhatsApp ({selectionCount})
             </Button>
             <Button
               size="icon"
               variant="ghost"
-              className="text-white hover:bg-white/20 hover:text-white"
+              className="text-zinc-400 hover:text-white size-7 rounded-full flex items-center justify-center"
               onClick={clearSelection}
             >
               <X className="size-3.5" />
@@ -135,120 +137,172 @@ export function GuestTable({
       {total === 0 ? (
         <EmptyState categories={categories} />
       ) : (
-        <Card className="overflow-hidden py-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-9">
-                    <Checkbox
-                      checked={allOnPageSelected}
-                      onCheckedChange={togglePage}
-                      aria-label="Pilih semua di halaman"
-                    />
-                  </TableHead>
-                  <TableHead>Tamu</TableHead>
-                  <TableHead>Telepon</TableHead>
-                  <TableHead>Kategori</TableHead>
-                  <TableHead className="text-center">Pax</TableHead>
-                  <TableHead>RSVP</TableHead>
-                  <TableHead>Undangan</TableHead>
-                  <TableHead className="w-10" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {guestRows.map((guest) => {
-                  const st = guestStatus(guest);
-                  const checked = allMatching || selected.has(guest.id);
-                  return (
-                    <TableRow key={guest.id} className="group">
-                      <TableCell>
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={() => toggle(guest.id)}
-                          aria-label={`Pilih ${guest.name}`}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2.5">
-                          <Avatar className="size-7">
-                            <AvatarFallback className="text-[10px]">
-                              {initials(guest.name)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="font-medium">{guest.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground font-mono text-xs">
-                        {guest.phoneNumber ?? "—"}
-                      </TableCell>
-                      <TableCell>
-                        {guest.category ? (
-                          <Badge variant="outline" className="font-normal">
-                            {guest.category}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-xs">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center font-mono">{guest.invitedCount}</TableCell>
-                      <TableCell>
-                        <StatusBadge statusKey={st.key} label={st.label} />
-                      </TableCell>
-                      <TableCell>
-                        <SendIndicator sentAt={guest.sentAt} />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-1 opacity-0 transition group-hover:opacity-100">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="size-7"
-                            aria-label={`Kirim ke ${guest.name}`}
-                            onClick={() => openRowSend(guest.id)}
+        <div className="overflow-x-auto">
+          <Table className="text-[13.5px]">
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-b border-zinc-100">
+                <TableHead className="w-9">
+                  <Checkbox
+                    checked={allOnPageSelected}
+                    onCheckedChange={togglePage}
+                    aria-label="Pilih semua di halaman"
+                    className="border-zinc-300"
+                  />
+                </TableHead>
+                <TableHead className="font-bold text-zinc-500">Tamu</TableHead>
+                <TableHead className="font-bold text-zinc-500">
+                  Telepon
+                </TableHead>
+                <TableHead className="font-bold text-zinc-500">
+                  Kategori
+                </TableHead>
+                <TableHead className="font-bold text-zinc-500 text-center">
+                  Pax
+                </TableHead>
+                <TableHead className="font-bold text-zinc-500">RSVP</TableHead>
+                <TableHead className="font-bold text-zinc-500">
+                  Undangan
+                </TableHead>
+                <TableHead className="w-10 text-right font-bold text-zinc-500">
+                  Aksi
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {guestRows.map((guest, idx) => {
+                const st = guestStatus(guest);
+                const checked = allMatching || selected.has(guest.id);
+
+                // Cycle avatar colors: blue, rose, amber, default zinc
+                const colorCycles = ["blue", "rose", "amber", "zinc"];
+                const colorTheme = colorCycles[idx % colorCycles.length];
+                const avatarBg =
+                  colorTheme === "blue"
+                    ? "bg-blue-50 text-blue-800"
+                    : colorTheme === "rose"
+                      ? "bg-rose-50 text-rose-800"
+                      : colorTheme === "amber"
+                        ? "bg-amber-50 text-amber-800"
+                        : "bg-zinc-100 text-zinc-650 bg-zinc-100/80 text-zinc-600";
+
+                return (
+                  <TableRow
+                    key={guest.id}
+                    className="group border-b border-zinc-100 hover:bg-zinc-50/70 transition-colors"
+                  >
+                    <TableCell>
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => toggle(guest.id)}
+                        aria-label={`Pilih ${guest.name}`}
+                        className="border-zinc-300"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2.5 font-bold text-zinc-950 dark:text-white">
+                        <Avatar>
+                          <AvatarFallback
+                            className={cn(
+                              "text-[11px] font-extrabold",
+                              avatarBg,
+                            )}
                           >
-                            <Send className="size-3.5" />
-                          </Button>
-                          <GuestFormDialog
-                            mode="edit"
-                            guest={guest}
-                            categories={categories}
-                            trigger={
-                              <Button size="icon" variant="ghost" className="size-7">
-                                <span className="sr-only">Edit</span>
-                                <Edit className="size-3.5" />
-                              </Button>
-                            }
-                          />
-                          <DeleteGuestDialog
-                            guestId={guest.id}
-                            guestName={guest.name}
-                            trigger={
-                              <Button
-                                size="icon"
-                                variant="destructive"
-                                className="bg-transparent size-7"
-                              >
-                                <Trash2 className="size-3.5" />
-                              </Button>
-                            }
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-2.5">
-            <span className="text-muted-foreground text-xs">
-              Menampilkan <span className="text-foreground font-mono">{guestRows.length}</span> dari{" "}
-              <span className="font-mono">{total}</span> tamu
+                            {initials(guest.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        {guest.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-zinc-500 font-medium">
+                      {guest.phoneNumber ?? "—"}
+                    </TableCell>
+                    <TableCell>
+                      {guest.category ? (
+                        <Badge
+                          variant="secondary"
+                          className="h-auto bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200/80 dark:border-zinc-700 px-2.5 py-0.5 text-[11.5px] font-semibold rounded-full"
+                        >
+                          {guest.category}
+                        </Badge>
+                      ) : (
+                        <span className="text-zinc-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center font-bold text-zinc-800 dark:text-zinc-200">
+                      {guest.invitedCount}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge statusKey={st.key} label={st.label} />
+                    </TableCell>
+                    <TableCell>
+                      <SendIndicator sentAt={guest.sentAt} />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-1 items-center">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="size-7 rounded-full text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100"
+                          aria-label={`Kirim ke ${guest.name}`}
+                          onClick={() => openRowSend(guest.id)}
+                          title="Kirim Pesan"
+                        >
+                          <Send />
+                        </Button>
+                        <GuestFormDialog
+                          mode="edit"
+                          guest={guest}
+                          categories={categories}
+                          trigger={
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="size-7 rounded-full text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100"
+                              title="Edit Tamu"
+                            >
+                              <span className="sr-only">Edit</span>
+                              <Edit3 />
+                            </Button>
+                          }
+                        />
+                        <DeleteGuestDialog
+                          guestId={guest.id}
+                          guestName={guest.name}
+                          trigger={
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="size-7 rounded-full text-zinc-400 hover:text-rose-600 hover:bg-rose-50"
+                              title="Hapus Tamu"
+                            >
+                              <Trash2 />
+                            </Button>
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+
+          {/* Footer pagination */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-100 mt-4 pt-3.5 text-zinc-500 font-medium text-[13px]">
+            <span>
+              Menampilkan{" "}
+              <span className="text-zinc-800 font-bold">
+                {guestRows.length}
+              </span>{" "}
+              dari <span className="text-zinc-800 font-bold">{total}</span> tamu
             </span>
-            <TablePagination page={page} totalPages={totalPages} searchParams={searchParams} />
+            <TablePagination
+              page={page}
+              totalPages={totalPages}
+              searchParams={searchParams}
+            />
           </div>
-        </Card>
+        </div>
       )}
 
       <SendInvitationDialog
@@ -272,7 +326,8 @@ function EmptyState({ categories }: { categories: string[] }) {
         </div>
         <h3 className="text-base font-medium">Belum ada tamu</h3>
         <p className="text-muted-foreground max-w-xs text-sm">
-          Tambahkan tamu pertama Anda untuk mulai mengelola daftar undangan dan memantau RSVP.
+          Tambahkan tamu pertama Anda untuk mulai mengelola daftar undangan dan
+          memantau RSVP.
         </p>
         <GuestFormDialog
           mode="create"

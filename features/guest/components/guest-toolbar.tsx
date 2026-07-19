@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   Select,
   SelectContent,
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 
 const STATUS_FILTERS = [
-  { key: "all", label: "Semua" },
+  { key: "all", label: "Semua Status" },
   { key: "hadir", label: "Hadir" },
   { key: "menunggu", label: "Menunggu" },
   { key: "mungkin", label: "Mungkin" },
@@ -53,27 +53,45 @@ export function GuestToolbar({ categories }: { categories: string[] }) {
   const category = params.get("category") ?? ALL_CATEGORIES;
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Tabs value={status} onValueChange={(v) => setParam("status", v === "all" ? null : v)}>
-        <TabsList>
-          {STATUS_FILTERS.map((f) => (
-            <TabsTrigger key={f.key} value={f.key}>
-              {f.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+    <div className="flex flex-col sm:flex-row gap-3">
+      <div className="relative w-full flex-1">
+        <Search className="text-zinc-400 absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2" />
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Cari nama atau telepon..."
+          className="h-9 pl-9 pr-4 bg-zinc-50 border-zinc-200 focus:bg-white rounded-full text-[13.5px] font-medium"
+        />
+      </div>
 
-      <div className="ml-auto flex flex-wrap items-center gap-2">
+      <div className="flex items-center gap-2 sm:w-[320px] shrink-0">
+        <Select
+          value={status}
+          onValueChange={(v) => setParam("status", v === "all" ? null : v)}
+        >
+          <SelectTrigger size="sm" className="w-full bg-white border-zinc-200 rounded-full h-9 text-[13.5px] font-semibold text-zinc-500">
+            <SelectValue placeholder="Status Kehadiran" />
+          </SelectTrigger>
+          <SelectContent position="popper">
+            {STATUS_FILTERS.map((f) => (
+              <SelectItem key={f.key} value={f.key}>
+                {f.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <Select
           value={category}
-          onValueChange={(v) => setParam("category", v === ALL_CATEGORIES ? null : v)}
+          onValueChange={(v) =>
+            setParam("category", v === ALL_CATEGORIES ? null : v)
+          }
         >
-          <SelectTrigger size="sm" className="w-40">
+          <SelectTrigger size="sm" className="w-full bg-white border-zinc-200 rounded-full h-9 text-[13.5px] font-semibold text-zinc-500">
             <SelectValue placeholder="Kategori" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ALL_CATEGORIES}>Semua kategori</SelectItem>
+            <SelectItem value={ALL_CATEGORIES}>Semua Kategori</SelectItem>
             {categories.map((c) => (
               <SelectItem key={c} value={c}>
                 {c}
@@ -81,16 +99,6 @@ export function GuestToolbar({ categories }: { categories: string[] }) {
             ))}
           </SelectContent>
         </Select>
-
-        <div className="relative">
-          <Search className="text-muted-foreground absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cari nama atau telepon…"
-            className="h-8 w-56 pl-8"
-          />
-        </div>
       </div>
     </div>
   );

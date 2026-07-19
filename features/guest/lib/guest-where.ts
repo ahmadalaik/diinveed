@@ -8,7 +8,7 @@ export type GuestFilters = {
 };
 
 const STATUS_RESPONSE: Record<
-  Exclude<GuestStatusFilter, "menunggu">,
+  Exclude<GuestStatusFilter, "menunggu" | "unregistered">,
   "ACCEPT" | "MAYBE" | "DECLINE"
 > = {
   hadir: "ACCEPT",
@@ -25,6 +25,9 @@ export function buildGuestWhere(
 
   if (filters.status === "menunggu") {
     where.rsvps = { none: {} };
+  } else if (filters.status === "unregistered") {
+    // Guest query shouldn't match unregistered as they have no Guest record.
+    where.id = "NONE";
   } else if (filters.status) {
     where.rsvps = { some: { response: STATUS_RESPONSE[filters.status] } };
   }
