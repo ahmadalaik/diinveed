@@ -3,7 +3,6 @@ import {
   TEMPLATES,
   resolveTemplateSlug,
 } from "@/features/template/registry/templates";
-import { parsePublicToken } from "@/features/invitation/lib/slug";
 import type { InvitationState } from "@/features/invitation/types/invitation.type";
 
 export default async function InvitationPage({
@@ -15,10 +14,9 @@ export default async function InvitationPage({
 }) {
   const { invitationSlug } = await params;
   const { to } = await searchParams;
-  const publicToken = parsePublicToken(invitationSlug);
 
-  const invitation = await prisma.invitation.findUnique({
-    where: { publicToken },
+  const invitation = await prisma.invitation.findFirst({
+    where: { slug: invitationSlug },
     omit: { userId: true },
   });
   if (!invitation || !invitation.isPublished) {
