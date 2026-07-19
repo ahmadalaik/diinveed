@@ -10,6 +10,7 @@ export interface CreateUploadUrlInput {
   contentType: string;
   /** Required for invitation-scoped kinds; omit for `thumbnail`. */
   scope?: KeyScope;
+  fileName?: string | null;
 }
 
 export interface CreateUploadUrlResult {
@@ -22,8 +23,9 @@ export async function createUploadUrl({
   ext,
   contentType,
   scope,
+  fileName,
 }: CreateUploadUrlInput): Promise<CreateUploadUrlResult> {
-  const key = buildKey(kind, ext, scope);
+  const key = buildKey(kind, ext, scope, fileName);
   const command = new PutObjectCommand({
     Bucket: R2_BUCKET,
     Key: key,

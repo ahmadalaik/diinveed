@@ -5,8 +5,8 @@
  */
 export async function resizeToWebp(
   file: File,
-  maxEdge = 2000,
-  quality = 0.85,
+  maxEdge = 2560,
+  quality = 0.9,
 ): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const longest = Math.max(bitmap.width, bitmap.height);

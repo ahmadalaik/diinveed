@@ -13,24 +13,35 @@ export interface UploadOptions {
   kind: StorageKind;
   /** Required for invitation-scoped kinds (gallery/couple/cover/music); omit for thumbnail. */
   invitationId?: string;
+  /** If true, the original file name (sanitized) will be included in the R2 key */
+  preserveFileName?: boolean;
+  /** Maximum width or height used when converting images to WebP. */
+  maxImageEdge?: number;
 }
 
 export function useR2Upload() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  async function upload(
+  const upload = async (
     file: File,
     opts: UploadOptions,
-  ): Promise<UploadedImage> {
+  ): Promise<UploadedImage> => {
     setIsUploading(true);
     setUploadProgress(0);
 
     // Images: shrink to <=2000px WebP before upload. Music: send as-is.
     const isImage = opts.kind !== "music";
-    const body: Blob = isImage ? await resizeToWebp(file) : file;
+    const body: Blob = isImage
+      ? await resizeToWebp(file, opts.maxImageEdge ?? 2560)
+      : file;
     const ext = isImage ? "webp" : file.name.split(".").pop() || "bin";
-    const contentType = isImage ? "image/webp" : file.type || "application/octet-stream";
+    const contentType = isImage
+      ? "image/webp"
+      : file.type || "application/octet-stream";
+    const fileName = opts.preserveFileName
+      ? file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")
+      : undefined;
 
     let sigRes: Response;
     try {
@@ -42,6 +53,7 @@ export function useR2Upload() {
           ext,
           contentType,
           invitationId: opts.invitationId,
+          fileName,
         }),
       });
     } catch (e) {
@@ -85,7 +97,7 @@ export function useR2Upload() {
       xhr.setRequestHeader("Content-Type", contentType);
       xhr.send(body);
     });
-  }
+  };
 
   // Best-effort cleanup: a failed delete must not break the surrounding upload
   // flow, so this never throws. It returns whether the object was deleted so a

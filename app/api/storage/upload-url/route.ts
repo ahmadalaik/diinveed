@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { kind, ext, contentType, invitationId } = await request.json();
+  const { kind, ext, contentType, invitationId, fileName } = await request.json();
   if (!KINDS.includes(kind) || typeof ext !== "string" || typeof contentType !== "string") {
     return Response.json({ error: "Invalid request" }, { status: 400 });
   }
@@ -27,6 +27,6 @@ export async function POST(request: Request) {
     scope = { userId: user.id, invitationId };
   }
 
-  const { uploadUrl, key } = await createUploadUrl({ kind, ext, contentType, scope });
+  const { uploadUrl, key } = await createUploadUrl({ kind, ext, contentType, scope, fileName });
   return Response.json({ uploadUrl, key, publicUrl: publicUrl(key) });
 }

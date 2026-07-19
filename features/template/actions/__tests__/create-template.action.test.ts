@@ -40,7 +40,7 @@ const validInput = {
   category: "Elegant",
   description: "A nice template",
   status: "active" as const,
-  thumbnailUrl: "https://res.cloudinary.com/test/image/upload/v1/test.jpg",
+  thumbnailUrl: "https://pub-test.r2.dev/v1/test.jpg",
 };
 
 beforeEach(() => {

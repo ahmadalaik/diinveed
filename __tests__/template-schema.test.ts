@@ -6,7 +6,7 @@ describe("createTemplateActionSchema", () => {
     name: "Coastal",
     category: "Elegant",
     status: "draft" as const,
-    thumbnailUrl: "https://res.cloudinary.com/demo/image/upload/sample.jpg",
+    thumbnailUrl: "https://pub-test.r2.dev/sample.jpg",
   };
 
   it("accepts valid data with thumbnailUrl", () => {

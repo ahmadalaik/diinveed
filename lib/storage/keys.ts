@@ -23,6 +23,7 @@ export function buildKey(
   kind: StorageKind,
   ext: string,
   scope?: KeyScope,
+  fileName?: string | null
 ): string {
   const uuid = randomUUID();
 
@@ -32,6 +33,10 @@ export function buildKey(
 
   if (!scope?.userId || !scope?.invitationId) {
     throw new Error(`buildKey: kind "${kind}" requires a user/invitation scope`);
+  }
+
+  if (fileName) {
+    return `users/${scope.userId}/invitations/${scope.invitationId}/${kind}/${uuid}/${fileName}`;
   }
 
   return `users/${scope.userId}/invitations/${scope.invitationId}/${kind}/${uuid}.${ext}`;
