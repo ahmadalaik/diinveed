@@ -4,19 +4,25 @@ import { useEffect, useState } from "react";
 import type { TemplateProps } from "../types";
 import { Lightbox } from "./lightbox";
 import AgnimayaLayout from "./layout/agnimaya-layout";
-import BannerAgnimaya from "./banner-agnimaya";
-import { EnvelopeAgnimaya } from "./envelope-agnimaya";
-import { PrologAgnimaya } from "./prolog-agnimaya";
-import { QuoteAgnimaya } from "./quote-agnimaya";
-import { CoupleAgnimaya } from "./couple-agnimaya";
-import { CountdownAgnimaya } from "./countdown-agnimaya";
-import { EventsAgnimaya } from "./events-agnimaya";
-import { StoriesAgnimaya } from "./stories-agnimaya";
-import { GalleryAgnimaya } from "./gallery-agnimaya";
-import { GiftsAgnimaya } from "./gifts-agnimaya";
-import { RSVPAgnimaya } from "./rsvp-agnimaya";
-import { FooterAgnimaya } from "./footer-agnimaya";
-import { MusicPlayer } from "./music-player";
+import BannerAgnimaya from "./agnimaya-banner";
+import { EnvelopeAgnimaya } from "./agnimaya-cover";
+import { PrologAgnimaya } from "./agnimaya-prolog";
+import { QuoteAgnimaya } from "./agnimaya-quote";
+import { CoupleAgnimaya } from "./agnimaya-couple";
+import { CountdownAgnimaya } from "./agnimaya-countdown";
+import { EventsAgnimaya } from "./agnimaya-events";
+import { StoriesAgnimaya } from "./agnimaya-stories";
+import { GalleryAgnimaya } from "./agnimaya-gallery";
+import { GiftsAgnimaya } from "./agnimaya-gifts";
+import { RSVPAgnimaya } from "./agnimaya-rsvp";
+import { FooterAgnimaya } from "./agnimaya-footer";
+import { MusicPlayer } from "./agnimaya-music-player";
+import {
+  agnimayaTokens,
+  mergeTemplateTokenOverrides,
+  templateCssVars,
+} from "@/features/template/tokens";
+import { LoadingAgnimaya } from "./agnimaya-preloader";
 
 export default function AgnimayaTemplate({
   invitation,
@@ -25,7 +31,8 @@ export default function AgnimayaTemplate({
   guestName,
 }: TemplateProps) {
   const isPreview = mode === "preview";
-  const [opened, setOpened] = useState(isPreview);
+  const [opened, setOpened] = useState(!isPreview);
+  const [loading, setLoading] = useState(!isPreview);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
 
@@ -48,7 +55,15 @@ export default function AgnimayaTemplate({
   }, [lightboxOpen]);
 
   return (
-    <>
+    <div
+      style={templateCssVars(
+        mergeTemplateTokenOverrides(agnimayaTokens, invitation.tokenOverrides),
+      )}
+    >
+      {loading && (
+        <LoadingAgnimaya inv={invitation} onDone={() => setLoading(false)} />
+      )}
+
       <Lightbox
         lightboxOpen={lightboxOpen}
         closeLightbox={closeLightbox}
@@ -56,12 +71,18 @@ export default function AgnimayaTemplate({
         mode={mode}
       />
 
-      <div className="relative w-full h-svh overflow-hidden font-serif">
-        <div className="hidden lg:block fixed left-0 top-0 w-[70%] h-svh">
+      <div className="relative w-full h-dvh overflow-hidden font-(family-name:--tpl-font-body)">
+        <div className="hidden lg:block fixed left-0 top-0 w-[70%] h-dvh">
           <BannerAgnimaya inv={invitation} />
         </div>
 
-        {!opened && <EnvelopeAgnimaya inv={invitation} onOpen={setOpened} />}
+        {!opened && (
+          <EnvelopeAgnimaya
+            inv={invitation}
+            onOpen={setOpened}
+            guestName={guestName}
+          />
+        )}
 
         <AgnimayaLayout>
           <MusicPlayer open={opened} autoPlay={mode === "guest"} />
@@ -71,9 +92,11 @@ export default function AgnimayaTemplate({
           <CoupleAgnimaya inv={invitation} />
           <CountdownAgnimaya inv={invitation} />
           <EventsAgnimaya inv={invitation} />
-          <StoriesAgnimaya inv={invitation} />
-          <GalleryAgnimaya inv={invitation} openLightbox={openLightbox} />
-          <GiftsAgnimaya inv={invitation} />
+          {invitation.stories?.enabled && <StoriesAgnimaya inv={invitation} />}
+          {invitation.gallery?.enabled && (
+            <GalleryAgnimaya inv={invitation} openLightbox={openLightbox} />
+          )}
+          {invitation.gifts?.enabled && <GiftsAgnimaya inv={invitation} />}
           <RSVPAgnimaya
             publicToken={invitation.publicToken}
             mode={mode}
@@ -83,6 +106,6 @@ export default function AgnimayaTemplate({
           <FooterAgnimaya inv={invitation} />
         </AgnimayaLayout>
       </div>
-    </>
+    </div>
   );
 }

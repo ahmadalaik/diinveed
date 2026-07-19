@@ -44,7 +44,7 @@ export function StoriesAgnimaya({ inv }: Props) {
   const headingInView = useInView(headingRef, { once: true, margin: "-60px" });
 
   return (
-    <section className="px-8 py-24 bg-champagne/10 border-b border-camel/10">
+    <section className="px-8 py-24 bg-(--tpl-bg-secondary)/10 border-b border-(--tpl-bg-tertiary)/10">
       <motion.div
         ref={headingRef}
         className="flex items-center gap-4 mb-10"
@@ -53,23 +53,23 @@ export function StoriesAgnimaya({ inv }: Props) {
         variants={fadeUp(0)}
       >
         <div className="h-px w-12 bg-rosegold" />
-        <span className="text-gold font-sans text-[10px] tracking-[0.25em] uppercase">
+        <span className="text-(--tpl-text-secondary) font-(family-name:--tpl-font-body) text-[10px] tracking-[0.25em] uppercase">
           Our Story
         </span>
       </motion.div>
 
       <div className="space-y-10">
-        {inv.stories.map((story, index) => (
+        {inv.stories.items.map((story, index) => (
           <StoryCard key={story.id} delay={index * 0.15}>
-            <h2 className="text-2xl font-serif font-light text-espresso mb-2">
+            <h2 className="text-2xl font-(family-name:--tpl-font-heading) font-light text-(--tpl-text-primary) mb-2">
               {story.title}
             </h2>
             {story.year && (
-              <p className="text-gold font-sans text-[10px] tracking-[0.2em] uppercase mb-4">
+              <p className="text-(--tpl-text-secondary) font-(family-name:--tpl-font-body) text-[10px] tracking-[0.2em] uppercase mb-4">
                 {format(new Date(story.year), "yyyy")}
               </p>
             )}
-            <p className="text-sm text-espresso/70 leading-loose font-sans font-light">
+            <p className="text-sm text-(--tpl-text-primary)/70 leading-loose font-(family-name:--tpl-font-body) font-light">
               {story.body}
             </p>
           </StoryCard>

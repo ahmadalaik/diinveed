@@ -27,7 +27,7 @@ export function PrologAgnimaya({ inv }: Props) {
     <section className="relative h-svh w-full overflow-hidden flex justify-center items-center px-8 py-10 text-center">
       <div className="flex flex-col justify-end h-full w-full">
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0.2}>
-          <span className="text-gold text-xs tracking-[0.3em] font-sans uppercase mb-4 block">
+          <span className="text-(--tpl-text-secondary) text-xs tracking-[0.3em] font-(family-name:--tpl-font-body) uppercase mb-4 block">
             Save the Date
           </span>
         </motion.div>
@@ -37,10 +37,10 @@ export function PrologAgnimaya({ inv }: Props) {
           initial="hidden"
           animate="visible"
           custom={0.5}
-          className="text-espresso leading-none text-6xl font-serif font-light tracking-tight mb-3"
+          className="text-(--tpl-text-primary) leading-none text-6xl font-(family-name:--tpl-font-heading) font-light tracking-tight mb-3"
         >
           {inv.brideNickname}{" "}
-          <span className="text-rosegold italic text-4xl align-middle mx-2 opacity-80">
+          <span className="text-(--tpl-text-tertiary) italic text-4xl align-middle mx-2 opacity-80">
             &amp;
           </span>{" "}
           {inv.groomNickname}
@@ -52,10 +52,10 @@ export function PrologAgnimaya({ inv }: Props) {
           animate="visible"
           custom={0.85}
         >
-          <p className="font-sans text-2xl italic text-camel tracking-wide mb-4">
+          <p className="font-(family-name:--tpl-font-body) text-2xl italic text-(--tpl-text-secondary) tracking-wide mb-4">
             {formatDate(inv.events[0]?.date, "PP")}
           </p>
-          <p className="font-serif text-base italic text-espresso/70 leading-relaxed text-balance">
+          <p className="font-(family-name:--tpl-font-heading) text-base italic text-(--tpl-text-primary)/70 leading-relaxed text-balance">
             &ldquo;We invite you to share in our joy and request your presence at
             our wedding.&rdquo;
           </p>
@@ -66,7 +66,7 @@ export function PrologAgnimaya({ inv }: Props) {
           initial="hidden"
           animate="visible"
           custom={1.3}
-          className="mt-10 flex justify-center text-gold animate-bounce"
+          className="mt-10 flex justify-center text-(--tpl-text-secondary) animate-bounce"
         >
           <MoveDown strokeWidth={1.5} />
         </motion.div>

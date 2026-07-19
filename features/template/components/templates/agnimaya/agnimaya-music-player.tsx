@@ -25,9 +25,9 @@ export function MusicPlayer({ open, autoPlay = true }: Props) {
     audio.addEventListener("pause", handlePause);
 
     if (open && autoPlay) {
-      audio
-        .play()
-        .catch((err) => console.log("Autoplay is blocked by browser: ", err));
+      void audio.play().catch(() => {
+        setIsPlaying(false);
+      });
     } else if (!open) {
       audio.pause();
     }
@@ -44,9 +44,10 @@ export function MusicPlayer({ open, autoPlay = true }: Props) {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play().catch((e) => console.error("Playback error:", e));
+      void audioRef.current.play().catch(() => {
+        setIsPlaying(false);
+      });
     }
-    setIsPlaying(!isPlaying);
   };
 
   return (
@@ -55,12 +56,13 @@ export function MusicPlayer({ open, autoPlay = true }: Props) {
         ref={audioRef}
         src={DEMO_MUSIC}
         loop
+        onError={() => setIsPlaying(false)}
       />
 
       <button
         onClick={togglePlay}
         className={cn(
-          "bg-espresso hover:bg-gold p-3 rounded-full transition-all text-ivory flex items-center justify-center pointer-events-auto",
+          "bg-(--tpl-btn-bg-primary) hover:bg-gold p-3 rounded-full transition-all text-(--tpl-text-primary) flex items-center justify-center pointer-events-auto",
           isPlaying && "animate-spin-slow",
         )}
       >

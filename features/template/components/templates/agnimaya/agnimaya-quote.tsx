@@ -24,7 +24,7 @@ export function QuoteAgnimaya({ inv }: Props) {
   return (
     <section
       ref={ref}
-      className="px-8 py-14 bg-champagne/10 border-b border-camel/10 text-center"
+      className="px-8 py-14 bg-(--tpl-bg-secondary)/10 border-b border-(--tpl-bg-tertiary)/10 text-center"
     >
       <motion.div
         className="flex justify-center items-center gap-4 mb-8"
@@ -32,18 +32,18 @@ export function QuoteAgnimaya({ inv }: Props) {
         animate={isInView ? "visible" : "hidden"}
         variants={fadeUp(0)}
       >
-        <p className="text-3xl font-serif tracking-[0.2em] text-espresso/80">
+        <p className="text-3xl font-(family-name:--tpl-font-heading) tracking-[0.2em] text-(--tpl-text-primary)/80">
           {inv.brideNickname && inv.brideNickname.charAt(0)}
         </p>
         <div className="w-px h-16 bg-rosegold/50" />
-        <p className="text-3xl font-serif tracking-[0.2em] text-espresso/80">
+        <p className="text-3xl font-(family-name:--tpl-font-heading) tracking-[0.2em] text-(--tpl-text-primary)/80">
           {inv.groomNickname && inv.groomNickname.charAt(0)}
         </p>
       </motion.div>
 
       {inv.quote && (
         <motion.p
-          className="font-serif text-base text-camel italic leading-relaxed"
+          className="font-(family-name:--tpl-font-heading) text-base text-(--tpl-text-secondary) italic leading-relaxed"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0.25)}
@@ -54,7 +54,7 @@ export function QuoteAgnimaya({ inv }: Props) {
 
       {inv.quoteReference && (
         <motion.h4
-          className="font-serif text-lg font-medium mt-4 italic text-gold"
+          className="font-(family-name:--tpl-font-heading) text-lg font-medium mt-4 italic text-(--tpl-text-secondary)"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0.45)}

@@ -33,16 +33,48 @@ export function CountdownAgnimaya({ inv }: Props) {
   });
 
   const mainEvent = inv.events[0];
-  const gallery = inv.gallery.filter((g) => g.url);
+  const gallery = inv.gallery.items.filter((g) => g.url);
   const extendedGallery = gallery.length > 0 ? [...gallery, gallery[0]] : [];
 
   useEffect(() => {
     if (gallery.length === 0) return;
-    const interval = setInterval(() => {
-      setIsTransitioning(true);
-      setCurrentIndex((prev) => prev + 1);
-    }, 5000);
-    return () => clearInterval(interval);
+
+    let intervalId: NodeJS.Timeout | null = null;
+
+    const startInterval = () => {
+      if (!intervalId) {
+        intervalId = setInterval(() => {
+          setIsTransitioning(true);
+          setCurrentIndex((prev) => prev + 1);
+        }, 5000);
+      }
+    };
+
+    const stopInterval = () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopInterval();
+      } else {
+        startInterval();
+      }
+    };
+
+    if (!document.hidden) {
+      startInterval();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      stopInterval();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [gallery.length]);
 
   useEffect(() => {
@@ -103,7 +135,7 @@ export function CountdownAgnimaya({ inv }: Props) {
   return (
     <section
       ref={ref}
-      className="relative px-8 py-24 bg-espresso text-center overflow-hidden"
+      className="relative px-8 py-24 bg-(--tpl-bg-secondary) text-center overflow-hidden"
     >
       <div
         className={cn(
@@ -124,11 +156,11 @@ export function CountdownAgnimaya({ inv }: Props) {
           />
         ))}
       </div>
-      <div className="absolute inset-0 bg-espresso/80" />
+      <div className="absolute inset-0 bg-(--tpl-bg-secondary)/80" />
 
       <div className="relative z-10">
         <motion.p
-          className="text-gold text-xs font-sans uppercase tracking-[0.3em] mb-8"
+          className="text-(--tpl-text-secondary) text-xs font-(family-name:--tpl-font-body) uppercase tracking-[0.3em] mb-8"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0)}
@@ -137,17 +169,17 @@ export function CountdownAgnimaya({ inv }: Props) {
         </motion.p>
 
         <motion.div
-          className="grid grid-cols-4 gap-4 text-ivory"
+          className="grid grid-cols-4 gap-4 text-(--tpl-text-primary)"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0.25)}
         >
           {units.map((unit) => (
             <div key={unit.label} className="flex flex-col items-center">
-              <span className="text-3xl font-serif font-light tabular-nums">
+              <span className="text-3xl font-(family-name:--tpl-font-heading) font-light tabular-nums">
                 {unit.value}
               </span>
-              <span className="text-[9px] uppercase tracking-[0.2em] text-champagne font-sans mt-2">
+              <span className="text-[9px] uppercase tracking-[0.2em] text-champagne font-(family-name:--tpl-font-body) mt-2">
                 {unit.label}
               </span>
             </div>

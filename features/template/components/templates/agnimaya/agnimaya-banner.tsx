@@ -10,13 +10,13 @@ interface Props {
   inv: InvitationState;
 }
 
-export default function BannerAgnimaya({ inv }: Props) {
+export default function AgnimayaBanner({ inv }: Props) {
   return (
-    <aside className="relative w-full h-[60vh] lg:h-svh lg:sticky lg:top-0 overflow-hidden bg-espresso">
+    <aside className="relative w-full h-[60vh] lg:h-svh lg:sticky lg:top-0 overflow-hidden bg-(--tpl-bg-secondary)">
       <div className="absolute inset-0">
-        {inv.coverImage && (
+        {inv.coverDesktopImage && (
           <Image
-            src={inv.coverImage}
+            src={inv.coverDesktopImage}
             alt="Cover Image"
             fill
             sizes="(max-width: 1024px) 100vw, 75vw"
@@ -27,7 +27,7 @@ export default function BannerAgnimaya({ inv }: Props) {
       </div>
 
       <motion.div
-        className="absolute bottom-10 left-6 lg:bottom-16 lg:left-16 z-20 text-ivory max-w-4xl"
+        className="absolute bottom-10 left-6 lg:bottom-16 lg:left-16 z-20 text-(--tpl-text-primary) max-w-4xl"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -39,7 +39,7 @@ export default function BannerAgnimaya({ inv }: Props) {
         }}
       >
         <motion.p
-          className="text-gold uppercase text-sm lg:text-base tracking-[0.3em] font-sans mb-6"
+          className="text-(--tpl-text-secondary) uppercase text-sm lg:text-base tracking-[0.3em] font-(family-name:--tpl-font-body) mb-6"
           variants={{
             hidden: { opacity: 0, x: -20 },
             visible: {
@@ -54,7 +54,7 @@ export default function BannerAgnimaya({ inv }: Props) {
 
         {inv.isBrideFirst ? (
           <motion.h1
-            className="text-7xl lg:text-9xl leading-none font-serif font-light tracking-tight drop-shadow-lg"
+            className="text-7xl lg:text-9xl leading-none font-(family-name:--tpl-font-heading) font-light tracking-tight drop-shadow-lg"
             variants={{
               hidden: { opacity: 0, y: 30 },
               visible: {
@@ -65,14 +65,14 @@ export default function BannerAgnimaya({ inv }: Props) {
             }}
           >
             {inv.brideNickname}{" "}
-            <span className="text-rosegold italic text-5xl lg:text-7xl align-middle mx-2 lg:mx-4 opacity-80">
+            <span className="text-(--tpl-text-tertiary) italic text-5xl lg:text-7xl align-middle mx-2 lg:mx-4 opacity-80">
               &amp;
             </span>{" "}
             {inv.groomNickname}
           </motion.h1>
         ) : (
           <motion.h1
-            className="text-7xl lg:text-9xl leading-none font-serif font-light tracking-tight drop-shadow-lg"
+            className="text-7xl lg:text-9xl leading-none font-(family-name:--tpl-font-heading) font-light tracking-tight drop-shadow-lg"
             variants={{
               hidden: { opacity: 0, y: 30 },
               visible: {
@@ -83,7 +83,7 @@ export default function BannerAgnimaya({ inv }: Props) {
             }}
           >
             {inv.brideNickname}{" "}
-            <span className="text-rosegold italic text-5xl lg:text-7xl align-middle mx-2 lg:mx-4 opacity-80">
+            <span className="text-(--tpl-text-tertiary) italic text-5xl lg:text-7xl align-middle mx-2 lg:mx-4 opacity-80">
               &amp;
             </span>{" "}
             {inv.groomNickname}
@@ -102,7 +102,7 @@ export default function BannerAgnimaya({ inv }: Props) {
           }}
         >
           <CalendarHeart strokeWidth={1.5} />
-          <span className="font-serif text-xl italic tracking-wide">
+          <span className="font-(family-name:--tpl-font-heading) text-xl italic tracking-wide">
             {formatDate(inv.events[0]?.date, "PPP")}
           </span>
         </motion.div>

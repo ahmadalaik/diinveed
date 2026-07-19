@@ -34,10 +34,10 @@ const fadeUp = (delay: number) => ({
 });
 
 const inputClass =
-  "w-full bg-camel/5 border border-transparent px-5 py-2.5 h-auto rounded-xl text-espresso focus-visible:ring-0 focus-visible:border-rosegold focus:outline-none placeholder:text-camel/40 text-base font-serif transition-[color,background-color,border-color,box-shadow] duration-200 shadow-sm";
+  "w-full bg-camel/5 border border-transparent px-5 py-2.5 h-auto rounded-xl text-(--tpl-text-primary) focus-visible:ring-0 focus-visible:border-rosegold focus:outline-none placeholder:text-(--tpl-text-secondary)/40 text-base font-(family-name:--tpl-font-heading) transition-[color,background-color,border-color,box-shadow] duration-200 shadow-sm";
 
 const labelClass =
-  "block text-[10px] font-sans uppercase tracking-[0.2em] text-camel mb-3 ml-2 transition-colors group-focus-within:text-rosegold";
+  "block text-[10px] font-(family-name:--tpl-font-body) uppercase tracking-[0.2em] text-(--tpl-text-secondary) mb-3 ml-2 transition-colors group-focus-within:text-(--tpl-text-tertiary)";
 
 interface Props {
   publicToken: string;
@@ -87,19 +87,19 @@ export function RSVPAgnimaya({ publicToken, mode, guestSlug, guestName }: Props)
   };
 
   return (
-    <section ref={ref} id="rsvp" className="px-8 py-24 bg-ivory">
-      <div className="border border-rosegold/30 bg-champagne/10 p-8 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)]">
+    <section ref={ref} id="rsvp" className="px-8 py-24 bg-(--tpl-bg-primary)">
+      <div className="border border-rosegold/30 bg-(--tpl-bg-secondary)/10 p-8 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)]">
         <motion.div
           className="text-center mb-12"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0)}
         >
-          <h2 className="text-4xl font-serif font-light text-espresso mb-3">
+          <h2 className="text-4xl font-(family-name:--tpl-font-heading) font-light text-(--tpl-text-primary) mb-3">
             R.S.V.P
           </h2>
           <div className="w-12 h-px bg-rosegold mx-auto mb-4" />
-          <p className="text-gold font-sans text-[10px] tracking-[0.3em] uppercase">
+          <p className="text-(--tpl-text-secondary) font-(family-name:--tpl-font-body) text-[10px] tracking-[0.3em] uppercase">
             Kindly RSVP at your earliest convenience.
           </p>
         </motion.div>
@@ -152,24 +152,24 @@ export function RSVPAgnimaya({ publicToken, mode, guestSlug, guestName }: Props)
                   }
                 >
                   <SelectTrigger
-                    className="w-full h-auto! bg-camel/5 border border-transparent px-5 py-2.5 rounded-xl text-espresso focus:ring-0 focus:border-rosegold data-placeholder:text-camel/40 text-base font-serif shadow-sm"
+                    className="w-full h-auto! bg-camel/5 border border-transparent px-5 py-2.5 rounded-xl text-(--tpl-text-primary) focus:ring-0 focus:border-rosegold data-placeholder:text-(--tpl-text-secondary)/40 text-base font-(family-name:--tpl-font-heading) shadow-sm"
                     disabled={isPreview}
                   >
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent
                     position="popper"
-                    className="rounded-xl bg-ivory border border-camel/10 shadow-xl mt-0.5"
+                    className="rounded-xl bg-(--tpl-bg-primary) border border-(--tpl-bg-tertiary)/10 shadow-xl mt-0.5"
                   >
                     <SelectItem
                       value="ACCEPT"
-                      className="py-2.5 px-5 focus:bg-camel/10 text-espresso font-serif cursor-pointer rounded-lg text-base"
+                      className="py-2.5 px-5 focus:bg-camel/10 text-(--tpl-text-primary) font-(family-name:--tpl-font-heading) cursor-pointer rounded-lg text-base"
                     >
                       Joyfully Attend
                     </SelectItem>
                     <SelectItem
                       value="DECLINE"
-                      className="py-2.5 px-5 focus:bg-camel/10 text-espresso font-serif cursor-pointer rounded-lg text-base"
+                      className="py-2.5 px-5 focus:bg-camel/10 text-(--tpl-text-primary) font-(family-name:--tpl-font-heading) cursor-pointer rounded-lg text-base"
                     >
                       Regretfully Decline
                     </SelectItem>
@@ -192,24 +192,24 @@ export function RSVPAgnimaya({ publicToken, mode, guestSlug, guestName }: Props)
                     }
                   >
                     <SelectTrigger
-                      className="w-full h-auto! bg-camel/5 border border-transparent px-5 py-2.5 rounded-xl text-espresso focus:ring-0 focus:border-rosegold data-placeholder:text-camel/40 text-base font-serif shadow-sm"
+                      className="w-full h-auto! bg-camel/5 border border-transparent px-5 py-2.5 rounded-xl text-(--tpl-text-primary) focus:ring-0 focus:border-rosegold data-placeholder:text-(--tpl-text-secondary)/40 text-base font-(family-name:--tpl-font-heading) shadow-sm"
                       disabled={isPreview}
                     >
                       <SelectValue placeholder="Guests" />
                     </SelectTrigger>
                     <SelectContent
                       position="popper"
-                      className="rounded-xl bg-ivory border border-camel/10 shadow-xl mt-0.5"
+                      className="rounded-xl bg-(--tpl-bg-primary) border border-(--tpl-bg-tertiary)/10 shadow-xl mt-0.5"
                     >
                       <SelectItem
                         value="1"
-                        className="py-2.5 px-5 focus:bg-camel/10 text-espresso font-serif cursor-pointer rounded-lg text-base"
+                        className="py-2.5 px-5 focus:bg-camel/10 text-(--tpl-text-primary) font-(family-name:--tpl-font-heading) cursor-pointer rounded-lg text-base"
                       >
                         1 Person
                       </SelectItem>
                       <SelectItem
                         value="2"
-                        className="py-2.5 px-5 focus:bg-camel/10 text-espresso font-serif cursor-pointer rounded-lg text-base"
+                        className="py-2.5 px-5 focus:bg-camel/10 text-(--tpl-text-primary) font-(family-name:--tpl-font-heading) cursor-pointer rounded-lg text-base"
                       >
                         2 Persons
                       </SelectItem>
@@ -227,14 +227,14 @@ export function RSVPAgnimaya({ publicToken, mode, guestSlug, guestName }: Props)
                   {...register("wish")}
                   rows={4}
                   placeholder="Send your warm wishes to the couple..."
-                  className="w-full bg-camel/5 border border-transparent px-5 py-2.5 rounded-xl text-espresso focus-visible:ring-0 focus-visible:border-rosegold placeholder:text-camel/40 text-base font-serif shadow-sm resize-none"
+                  className="w-full bg-camel/5 border border-transparent px-5 py-2.5 rounded-xl text-(--tpl-text-primary) focus-visible:ring-0 focus-visible:border-rosegold placeholder:text-(--tpl-text-secondary)/40 text-base font-(family-name:--tpl-font-heading) shadow-sm resize-none"
                 />
               </div>
 
               <Button
                 type="submit"
                 disabled={isSubmitting || isPreview}
-                className="w-full py-7 rounded-full bg-espresso text-ivory mt-4 font-sans font-normal uppercase text-xs tracking-[0.2em] hover:bg-gold hover:text-white transition-all duration-500 shadow-lg active:scale-[0.98] group disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full py-7 rounded-full bg-(--tpl-bg-secondary) text-(--tpl-text-primary) mt-4 font-(family-name:--tpl-font-body) font-normal uppercase text-xs tracking-[0.2em] hover:bg-gold hover:text-white transition-all duration-500 shadow-lg active:scale-[0.98] group disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 <span className="flex items-center gap-2">
                   {isSubmitting ? (

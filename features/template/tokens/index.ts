@@ -10,6 +10,7 @@ export { templateCssVars } from "./css-vars";
 export { kalandraTokens } from "./kalandra";
 export { dikaraTokens } from "./dikara";
 export { pradiptaTokens } from "./pradipta";
+export { agnimayaTokens } from "./agnimaya";
 export {
   TEMPLATE_TOKENS,
   getTemplateTokens,
