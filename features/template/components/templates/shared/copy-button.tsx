@@ -2,9 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import { Check, Copy } from "lucide-react";
-import { useCallback, useEffect, useState, type HTMLAttributes } from "react";
+import { useCallback, useEffect, useState, type ComponentPropsWithoutRef } from "react";
 
-interface Props extends HTMLAttributes<HTMLButtonElement> {
+interface Props extends ComponentPropsWithoutRef<"button"> {
   value: string;
 }
 
@@ -59,7 +59,7 @@ export default function CopyButton({ value, className, ...props }: Props) {
           hasCopied ? "scale-0 opacity-0" : "scale-100 opacity-100",
         )}
       >
-        Copy
+        Salin
       </span>
     </button>
   );
