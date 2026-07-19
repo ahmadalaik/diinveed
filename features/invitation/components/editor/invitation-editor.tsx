@@ -3,9 +3,9 @@
 import { EditorInitialData } from "../../types/invitation.type";
 import { useInvitationAutoSave } from "../../hooks/use-invitation-autosave";
 import { InvitationStoreProvider } from "../../store/invitation-store";
-import { Editor } from "./editor";
-import { LivePreview } from "../live-preview/live-preview";
 import { InitialThemeDialog } from "./initial-theme-dialog";
+import { StudioHeader } from "./header";
+import { StudioContent } from "./content";
 
 interface Props {
   initialData: EditorInitialData;
@@ -23,9 +23,9 @@ function InvitationEditorContent() {
   useInvitationAutoSave();
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      <Editor />
-      <LivePreview />
+    <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <StudioHeader />
+      <StudioContent />
       <InitialThemeDialog />
     </div>
   );

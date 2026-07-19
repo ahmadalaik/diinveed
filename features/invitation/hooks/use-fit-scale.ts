@@ -10,17 +10,17 @@ export function useFitScale(
   maxScale = 1,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(maxScale);
+  const [containerSize, setContainerSize] = useState<{
+    w: number;
+    h: number;
+  } | null>(null);
 
   useIsomorphicLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const update = () => {
-      const availableW = el.clientWidth - padding * 2;
-      const availableH = el.clientHeight - padding * 2;
-      const next = Math.min(availableW / width, availableH / height, maxScale);
-      setScale(next > 0 ? next : maxScale);
+      setContainerSize({ w: el.clientWidth, h: el.clientHeight });
     };
 
     update();
@@ -28,7 +28,18 @@ export function useFitScale(
     ro.observe(el);
 
     return () => ro.disconnect();
-  }, [width, height, padding, maxScale]);
+  }, []);
+
+  const scale = containerSize
+    ? Math.max(
+        0,
+        Math.min(
+          (containerSize.w - padding * 2) / width,
+          (containerSize.h - padding * 2) / height,
+          maxScale,
+        ),
+      )
+    : maxScale;
 
   return { containerRef, scale };
 }

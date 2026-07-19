@@ -22,17 +22,17 @@ import {
   Type,
   type LucideIcon,
 } from "lucide-react";
-import { TemplateSelectorSection } from "./sections/template-selector-section";
-import { BasicsSection } from "./sections/basic";
-import { CoupleSection } from "./sections/couple";
-import { QuoteSection } from "./sections/quote";
-import { StoriesSection } from "./sections/story";
-import { EventsSection } from "./sections/event";
-import { GallerySection } from "./sections/gallery";
-import { GiftsSection } from "./sections/gift";
-import { RsvpSection } from "./sections/rsvp";
-import { FontSection } from "./sections/typography";
-import { ColorSection } from "./sections/color";
+import { TemplateSelectorSection } from "./content/sections/template-selector-section";
+import { BasicsSection } from "./content/sections/basic";
+import { CoupleSection } from "./content/sections/couple";
+import { QuoteSection } from "./content/sections/quote";
+import { StoriesSection } from "./content/sections/story";
+import { EventsSection } from "./content/sections/event";
+import { GallerySection } from "./content/sections/gallery";
+import { GiftsSection } from "./content/sections/gift";
+import { RsvpSection } from "./content/sections/rsvp";
+import { FontSection } from "./content/sections/typography";
+import { ColorSection } from "./content/sections/color";
 
 type Section = {
   value: string;
@@ -122,9 +122,9 @@ export function AccordionSection() {
   const errorSections = useMemo(() => {
     if (!publishErrors) return new Set<string>();
     return new Set(
-      SECTIONS
-        .filter((s) => s.fields?.some((f) => publishErrors[f]?.length))
-        .map((s) => s.value),
+      SECTIONS.filter((s) =>
+        s.fields?.some((f) => publishErrors[f]?.length),
+      ).map((s) => s.value),
     );
   }, [publishErrors]);
 
