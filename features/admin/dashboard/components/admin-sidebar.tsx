@@ -11,9 +11,10 @@ import {
 import { GalleryVerticalEnd } from "lucide-react";
 import { AdminNavMain } from "./admin-nav-main";
 import Link from "next/link";
-import { navData } from "../configs/admin-navigation";
+import { buildNavData } from "../configs/admin-navigation";
+import type { UserRole } from "@/generated/prisma/enums";
 
-export function AdminSidebar() {
+export function AdminSidebar({ role }: { role: UserRole }) {
   return (
     <Sidebar className="py-4 px-0 bg-background" collapsible="icon">
       <div className="flex flex-col gap-6 bg-background h-full">
@@ -36,7 +37,7 @@ export function AdminSidebar() {
         </SidebarHeader>
 
         <SidebarContent className="overflow-y-auto gap-0 px-4 group-data-[collapsible=icon]:px-2">
-          <AdminNavMain items={navData} />
+          <AdminNavMain items={buildNavData(role)} />
         </SidebarContent>
       </div>
     </Sidebar>

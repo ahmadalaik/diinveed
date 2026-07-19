@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { RoleSelector } from "@/features/user/components/role-selector";
 import { PageBreadcrumb } from "@/components/layout/breadcrumb";
 import { adminIsRequired } from "@/features/auth/utils/middleware";
-import { canManageUser, getAllowedRoles } from "@/lib/permissions";
+import { canManageUser, getAllowedRoles, type Target } from "@/lib/permissions";
 import { UpdateUserForm } from "@/features/user/components/form/update-user-form";
+import type { UserRole } from "@/generated/prisma/enums";
 
 export default async function EditUserPage({
   params,
@@ -22,14 +23,13 @@ export default async function EditUserPage({
     select: {
       id: true,
       name: true,
-      username: true,
       email: true,
       phone: true,
       role: true,
     },
   });
 
-  if (!user || !canManageUser(actor, user)) {
+  if (!user || !canManageUser(actor, user as Target)) {
     notFound();
   }
 
@@ -37,6 +37,7 @@ export default async function EditUserPage({
     ...user,
     password: "",
     phone: user.phone ?? undefined,
+    role: user.role as UserRole | undefined,
   };
 
   return (
@@ -65,7 +66,7 @@ export default async function EditUserPage({
           <h2 className="mb-4 text-base font-medium">Role</h2>
           <RoleSelector
             userId={user.id}
-            currentRole={user.role}
+            currentRole={user.role as UserRole}
             allowedRoles={getAllowedRoles(actor.role)}
           />
         </section>

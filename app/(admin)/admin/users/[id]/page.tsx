@@ -5,6 +5,7 @@ import { PageBreadcrumb } from "@/components/layout/breadcrumb";
 import { adminIsRequired } from "@/features/auth/utils/middleware";
 import { canViewUser } from "@/lib/permissions";
 import type { UserListItem } from "@/features/user/types/user.type";
+import type { UserRole } from "@/generated/prisma/enums";
 
 export default async function UserDetailPage({
   params,
@@ -19,7 +20,6 @@ export default async function UserDetailPage({
     select: {
       id: true,
       name: true,
-      username: true,
       email: true,
       role: true,
       status: true,
@@ -30,7 +30,7 @@ export default async function UserDetailPage({
     },
   });
 
-  if (!user || !canViewUser(actor.role, user.role)) {
+  if (!user || !canViewUser(actor.role, user.role as UserRole)) {
     notFound();
   }
 

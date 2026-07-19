@@ -16,7 +16,7 @@ export default async function AdminLayout({
 
   return (
     <SidebarProvider>
-      <AdminSidebar />
+      <AdminSidebar role={user.role} />
       <SidebarInset>
         <header className="flex h-14 items-center gap-2 border-b px-4">
           <SidebarTrigger />

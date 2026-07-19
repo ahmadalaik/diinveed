@@ -21,7 +21,7 @@ export default async function TransactionDetailPage({
     select: {
       id: true,
       userId: true,
-      user: { select: { name: true, email: true, username: true } },
+      user: { select: { name: true, email: true } },
       originalPrice: true,
       discountType: true,
       discountValue: true,
