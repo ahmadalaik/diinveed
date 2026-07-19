@@ -1,0 +1,18 @@
+.templateRoot {
+  --dikara-accent: #b45309;
+  --dikara-surface: #fff7ed;
+  --dikara-text: #4b5563;
+}
+
+.accentBar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 0.35rem;
+  background: var(--dikara-accent, #b45309);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.contentSurface {
+  color: var(--dikara-text, #4b5563);
+}
