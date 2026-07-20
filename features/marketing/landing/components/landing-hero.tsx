@@ -16,7 +16,7 @@ export function LandingHero() {
       aria-labelledby="landing-title"
       className="overflow-hidden bg-landing-pearl"
     >
-      <div className="landing-container grid min-h-[46rem] items-stretch lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="landing-container grid min-h-184 items-stretch lg:grid-cols-[0.9fr_1.1fr]">
         <div className="relative z-10 flex flex-col justify-center py-24 sm:py-28 lg:py-32">
           <p className="mb-6 max-w-max rounded-full border border-landing-ink/15 px-4 py-2 text-xs uppercase text-landing-ink/70">
             {landingContent.hero.eyebrow}
@@ -57,10 +57,10 @@ export function LandingHero() {
             Aktif selama {landingContent.offer.activeMonths} bulan.
           </p>
         </div>
-        <div className="relative min-h-[32rem] lg:min-h-full">
+        <div className="relative min-h-128 lg:min-h-full">
           <div className="absolute inset-y-10 left-0 right-[-18vw] overflow-hidden rounded-l-[3rem] bg-landing-ink shadow-[0_28px_80px_rgba(16,20,20,0.18)] lg:left-12">
             <Image
-              src="/marketing/landing/diinveed-editorial-hero.png"
+              src="/marketing/landing/diinveed-editorial-hero.webp"
               alt="Komposisi editorial undangan pernikahan digital diinveed"
               fill
               priority
