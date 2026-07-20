@@ -1,7 +1,6 @@
-import "dotenv/config";
-import bcrypt from "bcrypt";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient, UserRole } from "../generated/prisma/client";
+import { auth } from "../lib/auth";
 
 const adapter = new PrismaMariaDb({
   host: process.env.DATABASE_HOST,
@@ -20,39 +19,33 @@ const PASSWORD = "password123";
 const SEED_USERS = [
   {
     name: "Root Admin",
-    username: "root",
     email: "root@diinveed.test",
-    role: "super_admin" as const,
+    role: UserRole.super_admin,
   },
   {
     name: "Ops Admin",
-    username: "ops",
     email: "ops@diinveed.test",
-    role: "admin" as const,
+    role: UserRole.admin,
   },
   {
     name: "Support Admin",
-    username: "support",
     email: "support@diinveed.test",
-    role: "admin" as const,
+    role: UserRole.admin,
   },
   {
     name: "Alice",
     email: "alice@example.test",
-    username: "alice17",
-    role: "user" as const,
+    role: UserRole.user,
   },
   {
     name: "Bob",
     email: "bob@example.test",
-    username: "bob99",
-    role: "user" as const,
+    role: UserRole.user,
   },
   {
     name: "Carol",
     email: "carol@example.test",
-    username: "carol21",
-    role: "user" as const,
+    role: UserRole.user,
   },
 ];
 
@@ -62,24 +55,23 @@ async function main() {
   await prisma.invitation.deleteMany();
   await prisma.transaction.deleteMany();
   await prisma.session.deleteMany();
+  await prisma.account.deleteMany();
   await prisma.user.deleteMany();
 
-  const hash = await bcrypt.hash(PASSWORD, 10);
-
   for (const u of SEED_USERS) {
-    await prisma.user.upsert({
-      where: { email: u.email },
-      update: { role: u.role, status: "active", deletedAt: null },
-      create: {
-        name: u.name,
-        username: u.username,
+    await auth.api.createUser({
+      body: {
         email: u.email,
-        password: hash,
-        role: u.role,
-        status: "active",
+        password: PASSWORD,
+        name: u.name,
+        role: u.role as "user" | "admin",
+        data: {
+          emailVerified: true,
+          status: "active",
+        },
       },
     });
-    console.log(`✔ upserted ${u.role.padEnd(11)} ${u.email}`);
+    console.log(`✔ created ${u.role.padEnd(11)} ${u.email}`);
   }
 
   console.log(`\nAll seeded accounts use password: ${PASSWORD}`);
