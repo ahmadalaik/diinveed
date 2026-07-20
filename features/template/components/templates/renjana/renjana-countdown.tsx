@@ -33,7 +33,7 @@ export function CountdownRenjana({ inv }: Props) {
   });
 
   const mainEvent = inv.events[0];
-  const gallery = inv.gallery.filter((g) => g.url);
+  const gallery = inv.gallery.items.filter((g) => g.url);
   const extendedGallery = gallery.length > 0 ? [...gallery, gallery[0]] : [];
 
   const handleNext = () => {
@@ -42,10 +42,41 @@ export function CountdownRenjana({ inv }: Props) {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      handleNext();
-    }, 5000);
-    return () => clearInterval(interval);
+    let intervalId: NodeJS.Timeout | null = null;
+
+    const startInterval = () => {
+      if (!intervalId) {
+        intervalId = setInterval(() => {
+          handleNext();
+        }, 5000);
+      }
+    };
+
+    const stopInterval = () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopInterval();
+      } else {
+        startInterval();
+      }
+    };
+
+    if (!document.hidden) {
+      startInterval();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      stopInterval();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {

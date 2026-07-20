@@ -4,20 +4,20 @@ import { useEffect, useState } from "react";
 import type { TemplateProps } from "../types";
 import { Lightbox } from "./lightbox";
 import { RenjanaLayout } from "./layout/renjana-layout";
-import { EnvelopeRenjana } from "./envelope-renjana";
-import { BannerRenjana } from "./banner-renjana";
-import { PrologRenjana } from "./prolog-renjana";
-import { QuoteRenjana } from "./quote-renjana";
-import { CoupleRenjana } from "./couple-renjana";
-import { CountdownRenjana } from "./countdown-renjana";
-import { EventsRenjana } from "./events-renjana";
-import { StoriesRenjana } from "./stories-renjana";
-import { GalleryRenjana } from "./gallery-renjana";
-import { GiftsRenjana } from "./gifts-renjana";
-import { RSVPRenjana } from "./rsvp-renjana";
-import { WishesRenjana } from "./wishes-renjana";
-import { FooterRenjana } from "./footer-renjana";
-import { MusicPlayer } from "./music-player";
+import { EnvelopeRenjana } from "./renjana-cover";
+import { BannerRenjana } from "./renjana-banner";
+import { PrologRenjana } from "./renjana-prolog";
+import { QuoteRenjana } from "./renjana-quote";
+import { CoupleRenjana } from "./renjana-couple";
+import { CountdownRenjana } from "./renjana-countdown";
+import { EventsRenjana } from "./renjana-events";
+import { StoriesRenjana } from "./renjana-stories";
+import { GalleryRenjana } from "./renjana-gallery";
+import { GiftsRenjana } from "./renjana-gifts";
+import { RSVPRenjana } from "./renjana-rsvp";
+import { WishesRenjana } from "./renjana-wishes";
+import { FooterRenjana } from "./renjana-footer";
+import { MusicPlayer } from "./renjana-music-player";
 
 export default function RenjanaTemplate({
   invitation,
@@ -49,7 +49,7 @@ export default function RenjanaTemplate({
   }, [lightboxOpen]);
 
   return (
-    <div className="font-(family-name:--font-montserrat)">
+    <div className="font-montserrat">
       <Lightbox
         lightboxOpen={lightboxOpen}
         closeLightbox={closeLightbox}
@@ -74,9 +74,11 @@ export default function RenjanaTemplate({
         <CoupleRenjana inv={invitation} />
         <CountdownRenjana inv={invitation} />
         <EventsRenjana inv={invitation} />
-        <StoriesRenjana inv={invitation} />
-        <GalleryRenjana inv={invitation} openLightbox={openLightbox} />
-        <GiftsRenjana inv={invitation} />
+        {invitation.stories?.enabled && <StoriesRenjana inv={invitation} />}
+        {invitation.gallery?.enabled && (
+          <GalleryRenjana inv={invitation} openLightbox={openLightbox} />
+        )}
+        {invitation.gifts?.enabled && <GiftsRenjana inv={invitation} />}
         <RSVPRenjana
           publicToken={invitation.publicToken}
           mode={mode}

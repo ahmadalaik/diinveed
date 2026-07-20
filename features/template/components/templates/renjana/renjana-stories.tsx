@@ -64,7 +64,7 @@ export function StoriesRenjana({ inv }: Props) {
         </motion.div>
 
         <div className="space-y-6">
-          {inv.stories.map((story, i) => (
+          {inv.stories.items.map((story, i) => (
             <StoryCard key={story.id} delay={i * 0.15}>
               <div className="text-[#c98a96] mb-3 flex justify-center items-center p-2 rounded-full border border-[#e8c9c9] bg-white/50">
                 <Milestone strokeWidth={1.5} />

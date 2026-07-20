@@ -23,15 +23,39 @@ const fadeUp = {
   },
 };
 
+const DUMMY_WISHES: PublicWish[] = [
+  {
+    id: "dummy-1",
+    name: "Ahmad & Keluarga",
+    wish: "Selamat menempuh hidup baru! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah.",
+    category: "Keluarga",
+    createdAt: new Date(),
+  },
+  {
+    id: "dummy-2",
+    name: "Budi Santoso",
+    wish: "Happy wedding! Lancar-lancar sampai hari H ya.",
+    category: "Sahabat",
+    createdAt: new Date(),
+  },
+  {
+    id: "dummy-3",
+    name: "Citra",
+    wish: "Selamat ya! Semoga bahagia selalu bersama pasangan.",
+    category: "Rekan Kerja",
+    createdAt: new Date(),
+  },
+];
+
 export function WishesRenjana({ publicToken, showCategory, mode }: Props) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
-  const [wishes, setWishes] = useState<PublicWish[]>([]);
+  const isPreview = mode === "preview" || publicToken === "preview";
+  const [wishes, setWishes] = useState<PublicWish[]>(isPreview ? DUMMY_WISHES : []);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-  const isPreview = mode === "preview";
 
   useEffect(() => {
     if (isPreview) return;
@@ -87,11 +111,7 @@ export function WishesRenjana({ publicToken, showCategory, mode }: Props) {
       </motion.div>
 
       <div className="max-w-md mx-auto space-y-4">
-        {isPreview ? (
-          <p className="text-center text-[10px] text-amber-500 tracking-widest uppercase">
-            Preview Mode · Ucapan tampil di undangan publik
-          </p>
-        ) : wishes.length === 0 && !loading ? (
+        {wishes.length === 0 && !loading ? (
           <p className="text-center text-sm text-stone-400 py-8">
             Belum ada ucapan. Jadilah yang pertama!
           </p>

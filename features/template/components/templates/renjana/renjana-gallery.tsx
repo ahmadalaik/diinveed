@@ -66,7 +66,7 @@ export function GalleryRenjana({ inv, openLightbox }: Props) {
         animate={isInView ? "visible" : "hidden"}
         variants={gridVariants}
       >
-        {inv.gallery.filter((g) => g.url).map((gallery, index) => (
+        {inv.gallery.items.filter((g) => g.url).map((gallery, index) => (
           <motion.div
             key={gallery.id}
             className="aspect-square relative group overflow-hidden cursor-zoom-in"

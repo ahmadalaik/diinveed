@@ -17,9 +17,9 @@ export function BannerRenjana({ inv }: Props) {
   return (
     <section className="relative w-full h-dvh overflow-hidden bg-[#a85d6b]">
       <div className="absolute inset-0">
-        {inv.coverImage && (
+        {inv.coverDesktopImage && (
           <Image
-            src={inv.coverImage}
+            src={inv.coverDesktopImage}
             alt="Cover Image"
             fill
             preload
@@ -42,7 +42,7 @@ export function BannerRenjana({ inv }: Props) {
         }}
       >
         <motion.p
-          className="uppercase text-sm italic text-[#f6e3e2] tracking-widest font-(family-name:--font-serif) font-medium mb-5"
+          className="uppercase text-sm italic text-[#f6e3e2] tracking-widest font-serif font-medium mb-5"
           variants={{
             hidden: { opacity: 0, y: -20 },
             visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
@@ -52,7 +52,7 @@ export function BannerRenjana({ inv }: Props) {
         </motion.p>
 
         <motion.h1
-          className="text-7xl leading-none font-(family-name:--font-script) mb-2 drop-shadow-lg"
+          className="text-7xl leading-none font-script mb-2 drop-shadow-lg"
           variants={{
             hidden: { opacity: 0, y: 30 },
             visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" } },
@@ -69,7 +69,7 @@ export function BannerRenjana({ inv }: Props) {
           }}
         >
           <CalendarHeart strokeWidth={1.5} />
-          <span className="font-(family-name:--font-serif) text-lg tracking-wide">
+          <span className="font-serif text-lg tracking-wide">
             {formatDate(inv.events[0]?.date, "PPP")}
           </span>
         </motion.div>

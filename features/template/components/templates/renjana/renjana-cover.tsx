@@ -33,7 +33,7 @@ export function EnvelopeRenjana({ inv, onOpen, guestName }: Props) {
       <div className="absolute inset-0 transition-opacity duration-5000 ease-in-out overflow-hidden opacity-80">
         <Image
           src={
-            inv.coverImage ??
+            inv.coverMobileImage ??
             "https://images.pexels.com/photos/36190389/pexels-photo-36190389.jpeg"
           }
           alt="Thumbnail"
@@ -64,14 +64,14 @@ export function EnvelopeRenjana({ inv, onOpen, guestName }: Props) {
             },
           }}
         >
-          <p className="text-xs [text-transform:uppercase] tracking-[0.2em] text-[#c98a96] mb-4 drop-shadow-md">
+          <p className="text-xs uppercase tracking-[0.2em] text-[#c98a96] mb-4 drop-shadow-md">
             The Wedding of
           </p>
         </motion.div>
 
         {inv.isBrideFirst ? (
           <motion.h1
-            className="text-stone-50 leading-none text-5xl font-(family-name:--font-script) mb-5 drop-shadow-lg"
+            className="text-stone-50 leading-none text-5xl font-script mb-5 drop-shadow-lg"
             variants={{
               hidden: { opacity: 0, y: 16 },
               visible: {
@@ -87,7 +87,7 @@ export function EnvelopeRenjana({ inv, onOpen, guestName }: Props) {
           </motion.h1>
         ) : (
           <motion.h1
-            className="text-stone-50 leading-none text-5xl font-(family-name:--font-script) mb-5 drop-shadow-lg"
+            className="text-stone-50 leading-none text-5xl font-script mb-5 drop-shadow-lg"
             variants={{
               hidden: { opacity: 0, y: 16 },
               visible: {
@@ -114,11 +114,11 @@ export function EnvelopeRenjana({ inv, onOpen, guestName }: Props) {
           }}
         >
           <div className="flex items-baseline-last justify-center">
-            <span className="font-(family-name:--font-serif) font-medium text-2xl text-stone-50 mb-1 drop-shadow-md text-balance">
+            <span className="font-serif font-medium text-2xl text-stone-50 mb-1 drop-shadow-md text-balance">
               Dear {guestName ?? "Guest"}
             </span>
           </div>
-          <p className="font-(family-name:--font-serif) text-sm text-stone-200 leading-relaxed text-balance drop-shadow-md">
+          <p className="font-serif text-sm text-stone-200 leading-relaxed text-balance drop-shadow-md">
             Sorry if there are any mistakes in writing names or titles
           </p>
         </motion.div>
