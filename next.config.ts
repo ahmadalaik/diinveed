@@ -4,6 +4,7 @@ const r2Url = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: "standalone",
   serverExternalPackages: ["better-auth", "@better-auth/core"],
   images: {
     remotePatterns: [
