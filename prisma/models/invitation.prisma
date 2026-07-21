@@ -23,6 +23,7 @@ model Invitation {
     coverMobileImageKey  String? @map("cover_mobile_image_key")
     music                String  @default("")
     musicKey             String  @default("") @map("music_key")
+    musicFileName        String? @map("music_file_name")
 
     quote          String @default("")
     quoteReference String @default("")
@@ -39,6 +40,11 @@ model Invitation {
     groomImage       String? @map("groom_image")
     groomImageKey    String? @map("groom_image_key")
 
+    coupleSceneImage    String? @map("couple_scene_image")
+    coupleSceneImageKey String? @map("couple_scene_image_key")
+    livestreamUrl       String? @db.VarChar(2048) @map("livestream_url")
+    dressCode           Json?   @map("dress_code")
+
     events Json
     stories   Json
     gallery   Json
@@ -49,7 +55,7 @@ model Invitation {
     wishesOptions Json?  @map("wishes_options")
 
     tokenOverrides Json?  @map("token_overrides")
-    templateSlug   String @default("kelana") @map("template_slug")
+    templateSlug   String @default("kalandra") @map("template_slug")
     backgroundType String @default("solid") @map("background_type")
 
     isPublished Boolean  @default(false) @map("is_published")
