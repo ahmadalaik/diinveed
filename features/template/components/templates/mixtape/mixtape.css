@@ -1,0 +1,63 @@
+/*
+ * Motif Mixtape.
+ *
+ * `--mixtape-heading-thin` adalah berat tipis di dalam judul dua bobot.
+ * Sengaja TIDAK diambil dari `typography.body.weight`: token body mengatur
+ * teks paragraf, dan menautkannya ke judul membuat perubahan body ikut
+ * mengubah judul secara tak terduga.
+ */
+.mixtape-root {
+  --mixtape-heading-thin: 300;
+}
+
+@keyframes mixtape-wave {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-25%);
+  }
+}
+
+.mixtape-wave-band {
+  animation: mixtape-wave 18s linear infinite;
+}
+
+@keyframes mixtape-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes mixtape-story-progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/*
+ * Normalisasi panjang path dilakukan lewat atribut `pathLength={1}` pada tiap
+ * <path> di `doodle.tsx` — BUKAN di sini. `pathlength` bukan properti CSS yang
+ * ada; menulisnya di sini tidak berefek apa pun, dan `stroke-dasharray: 1`
+ * kemudian bekerja pada path sepanjang ~100 unit sehingga garisnya terlihat
+ * sebagai titik-titik, bukan tergambar utuh.
+ */
+.mixtape-doodle path {
+  stroke-dasharray: 1;
+  animation: mixtape-draw 1.4s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mixtape-wave-band,
+  .mixtape-doodle path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
