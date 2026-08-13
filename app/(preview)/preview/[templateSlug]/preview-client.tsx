@@ -6,6 +6,7 @@ import {
 } from "@/features/template/registry/templates";
 import type { InvitationState } from "@/features/invitation/types/invitation.type";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { GoogleFontLoader } from "@/features/invitation/components/google-font-loader";
 
 function createDirectPreviewInvitation(templateSlug: string): InvitationState {
   return {
@@ -13,12 +14,12 @@ function createDirectPreviewInvitation(templateSlug: string): InvitationState {
     userId: "preview",
     slug: "preview",
     publicToken: "preview",
-    title: "The Wedding of Amelia & Theo",
+    title: "The Wedding of Zahra & Daffa",
     coverDesktopImage:
-      "https://images.pexels.com/photos/24023256/pexels-photo-24023256.jpeg",
+      "https://i.pinimg.com/originals/58/41/aa/5841aa2a9a65e6e04b22847ab0f7e284.jpg",
     coverDesktopImageKey: null,
     coverMobileImage:
-      "https://images.pexels.com/photos/19714385/pexels-photo-19714385.jpeg",
+      "https://i.pinimg.com/originals/ce/5b/53/ce5b530efe02beb91ef46de112ab5353.jpg",
     coverMobileImageKey: null,
     music:
       "https://pub-3f4024c2e27241cd8bb9531a1d174687.r2.dev/eclat-bentuk_cinta.mp4",
@@ -28,18 +29,19 @@ function createDirectPreviewInvitation(templateSlug: string): InvitationState {
       "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.",
     quoteReference: "Ar-Rum: 21",
     isBrideFirst: true,
-    brideName: "Amelia",
-    brideNickname: "Amel",
+    brideName: "Zahra Putri",
+    brideNickname: "Zahra",
     brideDescription: "Putri pertama dari keluarga tercinta.",
     brideImage:
-      "https://images.pexels.com/photos/19714385/pexels-photo-19714385.jpeg",
+      "https://i.pinimg.com/originals/01/7e/6e/017e6e400d34da746a33408a747ea2ec.jpg",
     brideImageKey: null,
-    groomName: "Theo",
-    groomNickname: "Theo",
+    groomName: "Daffa Pratama",
+    groomNickname: "Daffa",
     groomDescription: "Putra pertama dari keluarga tercinta.",
     groomImage:
-      "https://images.pexels.com/photos/19714385/pexels-photo-19714385.jpeg",
+      "https://i.pinimg.com/originals/84/21/61/842161664628613d67ffd5946ba9c34d.jpg",
     groomImageKey: null,
+    relationshipStartDate: "2021-06-15",
     coupleSceneImage: null,
     coupleSceneImageKey: null,
     livestreamUrl: null,
@@ -47,24 +49,24 @@ function createDirectPreviewInvitation(templateSlug: string): InvitationState {
     events: [
       {
         id: "preview-akad",
-        date: "2026-08-08",
+        date: "2026-10-10",
         timeStart: "09:00",
         timeEnd: "11:00",
         timezone: "WIB",
         title: "Akad Nikah",
         description: "Prosesi akad bersama keluarga dan sahabat terdekat.",
-        locationName: "Diinveed Garden Hall",
+        locationName: "Onestoria Garden Hall",
         mapsUrl: "https://maps.google.com",
       },
       {
         id: "preview-resepsi",
-        date: "2026-08-08",
+        date: "2026-10-10",
         timeStart: "18:30",
         timeEnd: "21:00",
         timezone: "WIB",
         title: "Resepsi",
         description: "Malam perayaan penuh doa dan kebahagiaan.",
-        locationName: "Diinveed Ballroom",
+        locationName: "Onestoria Ballroom",
         mapsUrl: "https://maps.google.com",
       },
     ],
@@ -86,8 +88,8 @@ function createDirectPreviewInvitation(templateSlug: string): InvitationState {
         {
           id: "preview-story-3",
           year: "2025",
-          title: "Tunangan",
-          body: "Komitmen untuk melangkah ke jalan yang serius",
+          title: "Menikah",
+          body: "Mengikat sumpah setia dalam satu hati baik senang maupun susah",
         },
       ],
     },
@@ -96,28 +98,43 @@ function createDirectPreviewInvitation(templateSlug: string): InvitationState {
       items: [
         {
           id: "preview-gallery-1",
-          url: "https://images.pexels.com/photos/19714384/pexels-photo-19714384.jpeg",
+          url: "https://i.pinimg.com/originals/a2/b7/d9/a2b7d905d90e397c484cc61e808aa2af.jpg",
           key: "preview-gallery-1",
         },
         {
           id: "preview-gallery-2",
-          url: "https://images.pexels.com/photos/19714749/pexels-photo-19714749.jpeg",
+          url: "https://i.pinimg.com/originals/34/0a/25/340a25c2319d53dd63a2866063e562ac.jpg",
           key: "preview-gallery-2",
         },
         {
           id: "preview-gallery-3",
-          url: "https://images.pexels.com/photos/19714750/pexels-photo-19714750.jpeg",
+          url: "https://i.pinimg.com/originals/c4/32/84/c4328405373658313fdf43ce61e1b51c.jpg",
           key: "preview-gallery-3",
         },
         {
           id: "preview-gallery-4",
-          url: "https://images.pexels.com/photos/19714386/pexels-photo-19714386.jpeg",
+          url: "https://i.pinimg.com/originals/b9/a3/d7/b9a3d751fa8e12cec16530f59f0a0ed5.jpg",
           key: "preview-gallery-4",
         },
         {
           id: "preview-gallery-5",
-          url: "https://images.pexels.com/photos/24023257/pexels-photo-24023257.jpeg",
+          url: "https://i.pinimg.com/originals/93/37/a9/9337a9d9fc28966bcb676d5238e81ab8.jpg",
           key: "preview-gallery-5",
+        },
+        {
+          id: "preview-gallery-6",
+          url: "https://i.pinimg.com/originals/df/81/cd/df81cdfee5e912ebde3157dca3d4b990.jpg",
+          key: "preview-gallery-6",
+        },
+        {
+          id: "preview-gallery-7",
+          url: "https://i.pinimg.com/originals/84/21/61/842161664628613d67ffd5946ba9c34d.jpg",
+          key: "preview-gallery-7",
+        },
+        {
+          id: "preview-gallery-8",
+          url: "https://i.pinimg.com/originals/58/41/aa/5841aa2a9a65e6e04b22847ab0f7e284.jpg",
+          key: "preview-gallery-8",
         },
       ],
     },
@@ -127,16 +144,16 @@ function createDirectPreviewInvitation(templateSlug: string): InvitationState {
         {
           id: "preview-transfer-1",
           provider: "BCA",
-          accountName: "Theodore",
+          accountName: "Daffa Pratama",
           accountNumber: "1234567890",
         },
       ],
       packages: [
         {
           id: "preview-package-1",
-          recipientName: "Amelia",
+          recipientName: "Zahra Putri",
           recipientPhoneNumber: "081234567890",
-          address: "Jl. Kebahagiaan No. 1, Jakarta Selatan",
+          address: "Jl. Kebahagiaan No. 1, Kudus",
         },
       ],
     },
@@ -189,6 +206,7 @@ export function PreviewClient({ templateSlug }: { templateSlug: string }) {
 
   return (
     <div className="min-h-screen bg-black text-foreground">
+      <GoogleFontLoader invitation={invitation} />
       <SelectedTemplate invitation={invitation} mode="guest" />
     </div>
   );
