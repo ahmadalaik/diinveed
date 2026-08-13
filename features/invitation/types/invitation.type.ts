@@ -1,4 +1,5 @@
 import { TemplateTokenOverrides } from "@/features/template/tokens";
+import type { EditorEventItem } from "../events/session.types";
 
 export type RsvpOptions = {
   accept: boolean;
@@ -97,6 +98,8 @@ export type InvitationState = {
   groomImage: string | null;
   groomImageKey: string | null;
 
+  relationshipStartDate?: string;
+
   coupleSceneImage: string | null;
   coupleSceneImageKey: string | null;
   livestreamUrl: string | null;
@@ -120,6 +123,8 @@ export type InvitationState = {
   backgroundType: string;
 
   isPublished: boolean;
+  countdownEventId?: string | null;
+  countdownEnded?: boolean;
 };
 
 export type PublicWish = {
@@ -142,7 +147,9 @@ export type WishRow = {
 };
 
 /** Shape returned to the editor: full state + live/publish metadata. */
-export type EditorInitialData = InvitationState & {
+export type EditorInitialData = Omit<InvitationState, "events"> & {
+  /** Relational draft sessions plus editor-only lifecycle metadata. */
+  events: EditorEventItem[];
   /** Slug currently live to the public (Invitation.slug). May differ from the draft slug. */
   liveSlug: string;
   /** True when the draft has edits not yet published. */
