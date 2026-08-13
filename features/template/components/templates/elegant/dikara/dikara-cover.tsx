@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/features/invitation/lib/datetime";
+import { resolveCountdownEvent } from "@/features/invitation/lib/countdown-event";
 import { InvitationState } from "@/features/invitation/types/invitation.type";
 import { cn } from "@/lib/utils";
 import { Mail } from "lucide-react";
@@ -17,6 +18,7 @@ interface Props {
 
 export function DikaraCover({ inv, onOpen, guestName }: Props) {
   const [isClosing, setIsClosing] = useState(false);
+  const countdownEvent = resolveCountdownEvent(inv.events, inv.countdownEventId);
 
   const handleOpen = () => {
     setIsClosing(true);
@@ -28,7 +30,7 @@ export function DikaraCover({ inv, onOpen, guestName }: Props) {
   return (
     <section
       className={cn(
-        "fixed right-0 top-0 z-50 transition-transform duration-1000 ease-in-out w-full lg:w-[30%] min-h-dvh flex flex-col px-8 py-14 text-center bg-stone-900",
+        "fixed right-0 top-0 z-50 transition-transform duration-1000 ease-in-out w-full lg:w-[35%] min-h-dvh flex flex-col px-8 py-14 text-center bg-stone-900",
         // "bg-(--tpl-bg-secondary)", // uncomment this for apply overlay blend feature
         isClosing ? "-translate-y-full" : "translate-y-0",
       )}
@@ -121,7 +123,7 @@ export function DikaraCover({ inv, onOpen, guestName }: Props) {
                   "[text-transform:var(--tpl-transform-body)]",
                 )}
               >
-                {formatDate(inv.events[0].date, "PPPP")}
+                {countdownEvent ? formatDate(countdownEvent.date, "PPPP") : "Tanggal akan diumumkan"}
               </p>
             </motion.div>
           )}

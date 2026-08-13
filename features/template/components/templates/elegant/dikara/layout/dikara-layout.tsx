@@ -28,9 +28,9 @@ export function DikaraLayout({ children, inv }: Props) {
   return (
     <main
       ref={wrapperRef}
-      className="fixed right-0 top-0 w-full lg:w-[30%] h-dvh overflow-y-auto overflow-x-hidden bg-stone-900 scroll-smooth z-10 scrollbar-none [&::-webkit-scrollbar]:hidden snap-y snap-mandatory"
+      className="fixed right-0 top-0 w-full lg:w-[35%] h-dvh overflow-y-auto overflow-x-hidden bg-stone-900 scroll-smooth z-10 scrollbar-none [&::-webkit-scrollbar]:hidden snap-y snap-mandatory"
     >
-      <div className="fixed top-0 right-0 inset-x-0 lg:inset-x-auto h-dvh w-full lg:w-[30%] pointer-events-none -z-10">
+      <div className="fixed top-0 right-0 inset-x-0 lg:inset-x-auto h-dvh w-full lg:w-[35%] pointer-events-none -z-10">
         {inv.gallery.items
           .filter((g) => g.url)
           .map((gallery, index) => (

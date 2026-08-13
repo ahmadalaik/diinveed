@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Send } from "lucide-react";
 import { motion, useInView } from "motion/react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { FieldSet } from "@/components/ui/field";
@@ -21,11 +21,13 @@ import {
 } from "@/features/template/tokens";
 import Image from "next/image";
 import { DikaraWishes } from "./dikara-wishes";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { BackgroundDecorations } from "./rsvp/background-decorations";
 import { NameInput } from "./rsvp/name-input";
 import { AttendanceInput } from "./rsvp/attendance-input";
 import { WishesInput } from "./rsvp/wishes-input";
+import { RsvpSessionSelector } from "@/features/invitation/components/rsvp/rsvp-session-selector";
+import type { SessionOption } from "@/features/invitation/events/session.types";
 
 const fadeUp = (delay: number) => ({
   hidden: { opacity: 0, y: 24 },
@@ -42,6 +44,7 @@ interface Props {
   guestSlug?: string;
   guestName?: string;
   inv?: InvitationState;
+  sessions?: SessionOption[];
 }
 
 export function DikaraRsvp({
@@ -50,6 +53,7 @@ export function DikaraRsvp({
   guestSlug,
   guestName,
   inv,
+  sessions = [],
 }: Props) {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.25 });
@@ -66,6 +70,7 @@ export function DikaraRsvp({
       response: undefined,
       guests: "1",
       wish: "",
+      eventIds: [],
     },
   });
 
@@ -75,6 +80,14 @@ export function DikaraRsvp({
     formState: { isSubmitting },
   } = form;
   const isPreview = mode === "preview";
+  const response = useWatch({ control: form.control, name: "response" });
+  const eventIds = useWatch({ control: form.control, name: "eventIds" }) ?? [];
+
+  useEffect(() => {
+    if (response && response !== "ACCEPT") {
+      form.setValue("eventIds", []);
+    }
+  }, [form, response]);
 
   const onSubmit = async (data: RsvpFormType) => {
     try {
@@ -143,6 +156,16 @@ export function DikaraRsvp({
             <NameInput control={form.control} />
             <AttendanceInput control={form.control} themeStyle={themeStyle} />
             <WishesInput control={form.control} />
+            {response === "ACCEPT" ? (
+              <RsvpSessionSelector
+                sessions={sessions}
+                value={eventIds}
+                onChange={(value) =>
+                  form.setValue("eventIds", value, { shouldValidate: true })
+                }
+                error={form.formState.errors.eventIds?.message}
+              />
+            ) : null}
             <Button
               type="submit"
               className={cn(

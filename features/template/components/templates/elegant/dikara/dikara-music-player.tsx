@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Disc3, PlayCircle } from "lucide-react";
+import {
+  Disc3,
+  Expand,
+  Minimize,
+  Music,
+  PlayCircle,
+  VolumeX,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   open: boolean;
@@ -81,10 +89,20 @@ export function MusicPlayer({ open, autoPlay = true, src }: Props) {
     }
   };
 
+  const [fullscreen, setFullscreen] = useState(false);
+  useEffect(() => {
+    const update = () => setFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", update);
+    return () => document.removeEventListener("fullscreenchange", update);
+  }, []);
+
   if (!src) return null;
 
+  const controlClass =
+    "absolute right-[18px] z-40 h-[46px] w-[46px] rounded-full border-0 bg-white/0 text-white shadow-[0_6px_18px_rgba(0,0,0,0.25)] backdrop-blur-md transition-all hover:bg-white/50 hover:text-white";
+
   return (
-    <div className="fixed top-6 right-6 z-100">
+    <div className="fixed bottom-2 right-2 z-100">
       <audio
         ref={audioRef}
         src={src}
@@ -95,7 +113,7 @@ export function MusicPlayer({ open, autoPlay = true, src }: Props) {
         }}
       />
 
-      <button
+      {/* <button
         onClick={togglePlay}
         className={cn(
           "p-3 rounded-full transition-all text-stone-50/80 flex items-center justify-center pointer-events-auto",
@@ -108,7 +126,37 @@ export function MusicPlayer({ open, autoPlay = true, src }: Props) {
         ) : (
           <PlayCircle strokeWidth={1.5} />
         )}
-      </button>
+      </button> */}
+
+      <Button
+        className={cn(
+          "tpl-fullscreen-btn bottom-[max(78px,calc(env(safe-area-inset-bottom)+78px))]",
+          controlClass,
+          fullscreen && "active",
+        )}
+        size="icon"
+        type="button"
+        aria-label={fullscreen ? "Keluar dari layar penuh" : "Buka layar penuh"}
+        onClick={() => {
+          if (document.fullscreenElement) void document.exitFullscreen();
+          else void document.documentElement.requestFullscreen?.();
+        }}
+      >
+        {fullscreen ? <Minimize /> : <Expand />}
+      </Button>
+      <Button
+        className={cn(
+          "bottom-[max(22px,calc(env(safe-area-inset-bottom)+22px))]",
+          controlClass,
+        )}
+        size="icon"
+        type="button"
+        aria-label={!isPlaying ? "Putar musik" : "Jeda musik"}
+        aria-pressed={isPlaying}
+        onClick={togglePlay}
+      >
+        {!isPlaying ? <VolumeX /> : <Music />}
+      </Button>
     </div>
   );
 }

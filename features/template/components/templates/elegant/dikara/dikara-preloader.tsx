@@ -115,7 +115,7 @@ export function DikaraPreloader({ inv, onDone, preload }: Props) {
           Powered by
         </span>
         <span className="text-xs tracking-widest text-(--tpl-text-secondary)/80 font-(family-name:--tpl-font-heading)">
-          Diinveed
+          Onestoria
         </span>
       </div>
 

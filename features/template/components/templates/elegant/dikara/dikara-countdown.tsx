@@ -2,6 +2,7 @@
 
 import { InvitationState } from "@/features/invitation/types/invitation.type";
 import { toDateTime } from "@/features/invitation/lib/datetime";
+import { resolveCountdownEvent } from "@/features/invitation/lib/countdown-event";
 import { cn } from "@/lib/utils";
 import { motion, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +25,7 @@ interface Props {
 export function DikaraCountdown({ inv }: Props) {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
-  const mainEvent = inv.events[0];
+  const mainEvent = resolveCountdownEvent(inv.events, inv.countdownEventId);
 
   const [timeLeft, setTimeLeft] = useState({
     days: "00",
@@ -102,11 +103,16 @@ export function DikaraCountdown({ inv }: Props) {
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}${dates ? `&dates=${dates}` : ""}`;
   };
 
+  if (!mainEvent && inv.countdownEnded) {
+    return <p className="px-8 py-24 text-center">The event has ended</p>;
+  }
+
   return (
     <section
       ref={sectionRef}
       className="relative min-h-svh px-8  text-center overflow-hidden snap-start flex flex-col justify-center"
     >
+      <div className="absolute inset-0 -z-10 bg-black/15" />
       <div className="relative z-10">
         <motion.p
           className={cn(
@@ -122,10 +128,7 @@ export function DikaraCountdown({ inv }: Props) {
         </motion.p>
 
         <motion.div
-          className={cn(
-            "grid grid-cols-4 gap-4",
-            "text-(--tpl-text-primary)",
-          )}
+          className={cn("grid grid-cols-4 gap-4", "text-(--tpl-text-primary)")}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={fadeUp(0.35)}

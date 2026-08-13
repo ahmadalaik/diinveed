@@ -54,7 +54,7 @@ export function DikaraStories({ inv }: Props) {
       className={cn("relative min-h-dvh px-8 py-24 snap-start")}
       style={{ clipPath: "inset(0)" }}
     >
-      <div className="absolute inset-0 bg-black/25 -z-10" />
+      <div className="absolute inset-0 bg-black/15 -z-10" />
       <div className="relative z-10">
         <motion.div
           className="text-center mb-10"
@@ -78,15 +78,15 @@ export function DikaraStories({ inv }: Props) {
               <div className="relative flex flex-col items-center self-stretch">
                 <div
                   className={cn(
-                    "relative z-10 flex justify-center items-center p-2 rounded-full border shrink-0",
-                    "border-(--tpl-bg-secondary) bg-(--tpl-bg-tertiary)",
-                    "text-(--tpl-text-secondary)",
+                    "relative z-10 flex h-10 w-10 items-center justify-center rounded-full shrink-0",
+                    "bg-white/15 backdrop-blur-md border border-white/15",
+                    "text-(--tpl-text-primary)",
                   )}
                 >
-                  <Milestone strokeWidth={1.5} />
+                  <Milestone strokeWidth={1.5} size={20} />
                 </div>
                 {i !== inv.stories.items.length - 1 && (
-                  <div className="absolute top-0 -bottom-6 left-1/2 w-px bg-(--tpl-bg-primary) -translate-x-1/2" />
+                  <div className="absolute top-10 -bottom-6 left-1/2 w-px bg-(--tpl-bg-primary)/25 -translate-x-1/2" />
                 )}
               </div>
               <div className="pb-8">

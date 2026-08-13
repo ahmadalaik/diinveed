@@ -33,7 +33,10 @@ function GiftCard({
 }) {
   return (
     <motion.div
-      className={cn("rounded-xl text-center border border-(--tpl-text-primary)/50 p-6", className)}
+      className={cn(
+        "rounded-xl text-center border border-(--tpl-text-primary)/50 p-6",
+        className,
+      )}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={fadeUp(delay)}
@@ -123,8 +126,8 @@ export function DikaraGifts({ inv }: Props) {
                     <span className="font-medium">{gift.accountNumber}</span>
                     <CopyButton
                       className={cn(
-                        "transition-all duration-500 tracking-wider text-xs uppercase rounded-sm shadow-sm font-medium py-1.5",
-                        "bg-white text-(--tpl-text-secondary) hover:bg-(--tpl-btn-bg-primary) hover:text-(--tpl-text-primary)",
+                        "transition-all duration-500 tracking-wider text-xs uppercase rounded-sm shadow-md font-medium py-1.5",
+                        "bg-white/5 text-(--tpl-text-tertiary) hover:bg-white/45 hover:text-(--tpl-text-primary) backdrop-blur-md",
                       )}
                       value={gift.accountNumber}
                     />
@@ -172,11 +175,13 @@ export function DikaraGifts({ inv }: Props) {
                     Alamat Pengiriman
                   </span>
                   <div className="flex items-start justify-between w-full gap-4">
-                    <span className="font-medium text-left w-[18ch]">{pkg.address}</span>
+                    <span className="font-medium text-left w-[18ch]">
+                      {pkg.address}
+                    </span>
                     <CopyButton
                       className={cn(
                         "transition-all duration-500 tracking-wider text-xs uppercase rounded-sm shadow-sm font-medium shrink-0 py-1.5",
-                        "bg-white text-(--tpl-text-secondary) hover:bg-(--tpl-btn-bg-primary) hover:text-(--tpl-text-primary)",
+                        "bg-white/5 text-(--tpl-text-tertiary) hover:bg-white/45 hover:text-(--tpl-text-primary) backdrop-blur-md",
                       )}
                       value={pkg.address}
                     />

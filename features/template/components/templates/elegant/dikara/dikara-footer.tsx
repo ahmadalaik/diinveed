@@ -72,7 +72,7 @@ export function DikaraFooter({ inv }: Props) {
             Instagram
           </a>
           <p className="text-[10px] uppercase tracking-widest text-(--tpl-text-primary)/80">
-            &copy; 2026 Diinveed. Design with love
+            &copy; 2026 Onestoria. Design with love
           </p>
         </div>
       </motion.div>

@@ -35,8 +35,11 @@ export default function DikaraTemplate({
   mode = "guest",
   guestSlug,
   guestName,
+  guest,
+  canRsvp,
 }: TemplateProps) {
-  const isPreview = mode === "preview";
+  // const isPreview = mode === "preview";
+  const isPreview = true;
   const [opened, setOpened] = useState(!isPreview);
   const templateTokens = useMemo(
     () => mergeTemplateTokenOverrides(dikaraTokens, invitation.tokenOverrides),
@@ -96,7 +99,7 @@ export default function DikaraTemplate({
       <div
         className={`relative w-full h-dvh overflow-hidden font-(family-name:--tpl-font-body) ${styles.contentSurface}`}
       >
-        <div className="hidden lg:block fixed left-0 top-0 w-[70%] h-dvh">
+        <div className="hidden lg:block fixed left-0 top-0 w-[65%] h-dvh">
           <DikaraBanner inv={invitation} />
         </div>
         {!opened && (
@@ -127,13 +130,16 @@ export default function DikaraTemplate({
             />
           )}
           {invitation.gifts?.enabled && <DikaraGifts inv={invitation} />}
-          <DikaraRsvp
-            inv={invitation}
-            publicToken={invitation.publicToken}
-            mode={mode}
-            guestSlug={guestSlug}
-            guestName={guestName}
-          />
+          {canRsvp || isPreview ? (
+            <DikaraRsvp
+              inv={invitation}
+              publicToken={invitation.publicToken}
+              mode={mode}
+              guestSlug={guestSlug}
+              guestName={guestName}
+              sessions={guest?.sessions ?? []}
+            />
+          ) : null}
           <DikaraFooter inv={invitation} />
         </DikaraLayout>
       </div>

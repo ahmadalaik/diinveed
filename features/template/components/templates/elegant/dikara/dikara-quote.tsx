@@ -34,7 +34,7 @@ export function DikaraQuote({ inv }: Props) {
             quality={100}
             className="object-cover -z-20"
           />
-          <div className="absolute inset-0 bg-linear-to-b from-slate-900/20 via-slate-900/30 to-slate-900/40 -z-10" />
+          <div className="absolute inset-0 bg-black/35 -z-10" />
         </>
       )}
 
@@ -88,7 +88,7 @@ export function DikaraQuote({ inv }: Props) {
 
       <motion.div
         className={cn(
-          "absolute bottom-16 right-8 flex items-center gap-2.5 drop-shadow-md z-10",
+          "absolute bottom-16 left-8 flex items-center gap-2.5 drop-shadow-md z-10",
           "text-(--tpl-text-primary)",
           "font-(family-name:--tpl-font-heading)",
         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { ArrowUpRight, CalendarHeart, MapPin } from "lucide-react";
+import { CalendarHeart, MapPin } from "lucide-react";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,18 +62,18 @@ function EventCard({
         role="article"
         aria-labelledby={titleId}
         className={cn(
-          "gap-0 overflow-hidden border border-white/20 bg-zinc-950/55 py-0 text-(--tpl-text-primary)",
-          "shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_24px_70px_rgba(9,9,11,0.3)]",
-          "backdrop-blur-xl backdrop-saturate-150",
-          "[@media(prefers-reduced-transparency:reduce)]:bg-zinc-900/95",
-          "[@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none",
+          "gap-0 overflow-hidden border-0 ring-0 bg-transparent py-0 text-(--tpl-text-primary)",
+          // "shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_24px_70px_rgba(9,9,11,0.3)]",
+          // "backdrop-blur-xl backdrop-saturate-150",
+          "[@media(prefers-reduced-transparency:reduce)]:bg-white/0",
+          // "[@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none",
         )}
       >
         <CardHeader className="gap-5 px-5 pt-5 pb-4 sm:px-6 sm:pt-6">
           <div className="flex items-start gap-3">
             <div
               aria-hidden="true"
-              className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/8 text-(--tpl-text-tertiary)"
+              className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-(--tpl-text-tertiary)"
             >
               <CalendarHeart className="size-4" strokeWidth={1.5} />
             </div>
@@ -131,7 +131,7 @@ function EventCard({
               size="lg"
               variant="outline"
               className={cn(
-                "h-11 w-full justify-between border-white/25 bg-white/10 px-4",
+                "h-11 justify-between border-white/25 bg-transparent px-4",
                 "text-xs font-semibold tracking-[0.12em] text-(--tpl-text-primary) uppercase",
                 "hover:border-white/40 hover:bg-white/18 hover:text-(--tpl-text-primary)",
                 "motion-reduce:transition-none",
@@ -144,7 +144,7 @@ function EventCard({
                 aria-label={`Lihat lokasi ${event.title}`}
               >
                 Lihat Lokasi
-                <ArrowUpRight data-icon="inline-end" strokeWidth={1.5} />
+                {/* <ArrowUpRight data-icon="inline-end" strokeWidth={1.5} /> */}
               </a>
             </Button>
           </CardFooter>
@@ -171,7 +171,7 @@ export function DikaraEvents({ inv }: Props) {
       className="relative flex min-h-dvh snap-start flex-col overflow-hidden px-5 py-20 sm:px-7"
       style={{ clipPath: "inset(0)" }}
     >
-      <div className="absolute inset-0 -z-10 bg-zinc-950/45" />
+      <div className="absolute inset-0 bg-black/15 -z-10" />
 
       <motion.div
         className="mb-7 text-center"

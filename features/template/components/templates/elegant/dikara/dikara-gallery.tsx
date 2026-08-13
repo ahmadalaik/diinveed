@@ -76,7 +76,7 @@ export function GalleryDikara({ inv, openLightbox }: Props) {
           untuk bolak-balik menguji tampilannya.
         */}
         {(() => {
-          const layoutMode = "masonry" as "horizontal" | "masonry";
+          const layoutMode = "horizontal" as "horizontal" | "masonry";
 
           if (layoutMode === "horizontal") {
             const items = inv.gallery.items
